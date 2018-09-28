@@ -53,6 +53,7 @@ user = DbCrudApiRolePermissions(
                         },
                         { 'data': 'active', 'name': 'active', 'label': 'Active', 
                           '_treatment' : { 'boolean' : { 'formfield':'active', 'dbfield':'active' } },
+                          'ed':{ 'def':'yes' }, 
                         },
                         { 'data': 'last_login_at', 'name': 'last_login_at', 'label': 'Last Login At', 'type': 'readonly' },
                         { 'data': 'current_login_at', 'name': 'current_login_at', 'label': 'Current Login At', 'type': 'readonly' },
