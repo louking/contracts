@@ -20,9 +20,9 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from racesupportcontracts.dbmodel import db, User, Role
-from racesupportcontracts.crudapi import DbCrudApiRolePermissions
-from racesupportcontracts.request import addscripts
+from contracts.dbmodel import db, User, Role
+from contracts.crudapi import DbCrudApiRolePermissions
+from contracts.request import addscripts
 
 ##########################################################################################
 # users endpoint

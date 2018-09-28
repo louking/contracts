@@ -21,9 +21,9 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from racesupportcontracts.dbmodel import db, Event, State, Lead, Course, Service, AddOn, FeeType
-from racesupportcontracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
-from racesupportcontracts.request import addscripts
+from contracts.dbmodel import db, Event, State, Lead, Course, Service, AddOn, FeeType
+from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
+from contracts.request import addscripts
 
 ##########################################################################################
 # states endpoint

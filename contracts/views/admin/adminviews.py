@@ -1,5 +1,5 @@
 ###########################################################################################
-# adminviews - administrative views for racesupportcontracts database
+# adminviews - administrative views for contracts database
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -8,7 +8,7 @@
 #   Copyright 2018 Lou King.  All rights reserved
 ###########################################################################################
 '''
-adminviews - administrative views for racesupportcontracts database
+adminviews - administrative views for contracts database
 =======================================================================
 '''
 
@@ -69,7 +69,7 @@ class rowObj(dict):
             raise AttributeError("No such attribute: " + name)
 
 #######################################################################
-class racesupportcontractsTable(CrudApi):
+class contractsTable(CrudApi):
 #######################################################################
 
     fields = (('event,date,courseId,leadId,mainStartTime,mainDistance,mainDistanceUnits,' +
@@ -94,7 +94,7 @@ class racesupportcontractsTable(CrudApi):
         any processing which needs to be done at the beginning of any method
         '''
         # must authorize if not already authorized
-        if debug: print 'racesupportcontractsTable.init()'
+        if debug: print 'contractsTable.init()'
 
         # load credentials for us and for self.files instance
         credentials = get_credentials(APP_CRED_FOLDER)
@@ -117,7 +117,7 @@ class racesupportcontractsTable(CrudApi):
         '''
         open workbook sheet for current year
         '''
-        if debug: print 'racesupportcontractsTable.open()'
+        if debug: print 'contractsTable.open()'
 
         # get the header, and all the values
         theserows = Event.query.all()
@@ -131,7 +131,7 @@ class racesupportcontractsTable(CrudApi):
         return next record, similar to csv.DictReader - raises StopIteration
         :rtype: dict with row data
         '''
-        if debug: print 'racesupportcontractsTable.nexttablerow()'
+        if debug: print 'contractsTable.nexttablerow()'
 
         thisrow = self.rows.next().__dict__
         csvdata = dict(izip_longest(self.header,thisrow,fillvalue=''))
@@ -145,7 +145,7 @@ class racesupportcontractsTable(CrudApi):
         '''
         close source of "csv" data
         '''
-        if debug: print 'racesupportcontractsTable.close()'
+        if debug: print 'contractsTable.close()'
 
         # nothing to do
         self.rows = iter([])
@@ -157,7 +157,7 @@ class racesupportcontractsTable(CrudApi):
         check for permission on data
         :rtype: boolean
         '''
-        if debug: print 'racesupportcontractsTable.permission()'
+        if debug: print 'contractsTable.permission()'
 
         try:
             routedb = self.drive.files().get(fileId=self.fid, fields='capabilities').execute()['capabilities']
@@ -177,7 +177,7 @@ class racesupportcontractsTable(CrudApi):
         :param formdata: data from create form
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
-        if debug: print 'racesupportcontractsTable.createrow()'
+        if debug: print 'contractsTable.createrow()'
 
         datafolder = self.sheets.spreadsheets().values().get(spreadsheetId=self.fid, range='datafolder').execute()
 
@@ -226,7 +226,7 @@ class racesupportcontractsTable(CrudApi):
         :param formdata: data from create form
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
-        if debug: print 'racesupportcontractsTable.updaterow()'
+        if debug: print 'contractsTable.updaterow()'
         
         rowrange = self._findrow(thisid)
 
@@ -272,7 +272,7 @@ class racesupportcontractsTable(CrudApi):
         :param thisid: id of row to be updated
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
-        if debug: print 'racesupportcontractsTable.deleterow()'
+        if debug: print 'contractsTable.deleterow()'
 
         pass
 
@@ -311,7 +311,7 @@ class racesupportcontractsTable(CrudApi):
         # the args dict has all the defined parameters to 
         # caller supplied keyword args are used to update the defaults
         # all arguments are made into attributes for self
-        if debug: print 'racesupportcontractsTable.render_template()'
+        if debug: print 'contractsTable.render_template()'
 
         configfile = self.app.config['APP_JS_CONFIG']
         args = dict(
@@ -335,28 +335,28 @@ class racesupportcontractsTable(CrudApi):
 
         any processing which must be done on page abort or exception
         '''
-        if debug: print 'racesupportcontractsTable.rollback()'
+        if debug: print 'contractsTable.rollback()'
         
         pass
 
 
 #######################################################################
-class racesupportcontractsFiles(CrudFiles):
+class contractsFiles(CrudFiles):
 #######################################################################
 
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
     #----------------------------------------------------------------------
-        if debug: print 'racesupportcontractsFiles.__init__() **kwargs={}'.format(kwargs)
+        if debug: print 'contractsFiles.__init__() **kwargs={}'.format(kwargs)
         self.datafolderid = None
-        super(racesupportcontractsFiles, self).__init__(**kwargs)
-        if debug: print 'racesupportcontractsFiles self.app = {}'.format(self.app)
+        super(contractsFiles, self).__init__(**kwargs)
+        if debug: print 'contractsFiles self.app = {}'.format(self.app)
 
 
     #----------------------------------------------------------------------
     def upload(self):
     #----------------------------------------------------------------------
-        if (debug): print 'racesupportcontractsFiles.upload()'
+        if (debug): print 'contractsFiles.upload()'
 
         self._set_services()
 
@@ -486,7 +486,7 @@ class racesupportcontractsFiles(CrudFiles):
     #----------------------------------------------------------------------
     def list(self):
     #----------------------------------------------------------------------
-        if (debug): print 'racesupportcontractsFiles.list()'
+        if (debug): print 'contractsFiles.list()'
 
         self._set_services()
 
@@ -507,7 +507,7 @@ class racesupportcontractsFiles(CrudFiles):
     #----------------------------------------------------------------------
     def _set_services(self):
     #----------------------------------------------------------------------
-        if (debug): print 'racesupportcontractsFiles._set_services()'
+        if (debug): print 'contractsFiles._set_services()'
 
         if not self.datafolderid:
             credentials = get_credentials(APP_CRED_FOLDER)
@@ -546,7 +546,7 @@ logout = Logout(app)
 
 #############################################
 # files handling
-rrfiles = racesupportcontractsFiles(
+rrfiles = contractsFiles(
              app = app,
              uploadendpoint = 'admin/upload',
             )
@@ -557,7 +557,7 @@ admin_dbattrs = 'id,name,distance,start location,latlng,surface,elevation gain,m
 admin_formfields = 'rowid,name,distance,location,latlng,surface,elev,map,fileid,description,active'.split(',')
 admin_dbmapping = dict(zip(admin_dbattrs, admin_formfields))
 admin_formmapping = dict(zip(admin_formfields, admin_dbattrs))
-rrtable = racesupportcontractsTable(app=app, 
+rrtable = contractsTable(app=app, 
                              pagename='Edit Routes', 
                              idSrc = 'rowid',
                              endpoint = 'admin',

@@ -1,5 +1,5 @@
 ###########################################################################################
-# racesupportcontracts - package
+# contracts - package
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -32,7 +32,7 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from loutilities.configparser import getitems
 
 # get configuration
-# configfile = "racesupportcontracts.cfg"
+# configfile = "contracts.cfg"
 # configpath = os.path.join(os.path.sep.join(os.path.dirname(__file__).split(os.path.sep)[:-1]), configfile)
 # appconfig = getitems(configpath, 'app')
 # app.config.update(appconfig)
@@ -61,17 +61,17 @@ def create_app(config_obj, config_filename=None):
     app.jinja_env.globals['_productname_text'] = app.config['THISAPP_PRODUCTNAME_TEXT']
 
     # initialize database
-    from racesupportcontracts.dbmodel import db, init_db
+    from contracts.dbmodel import db, init_db
     db.init_app(app)
 
     # Set up Flask-Security
-    from racesupportcontracts.dbmodel import User, Role
+    from contracts.dbmodel import User, Role
     global user_datastore, security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(app, user_datastore)
 
     # activate views
-    from racesupportcontracts.views.frontend import bp as frontend
+    from contracts.views.frontend import bp as frontend
     app.register_blueprint(frontend)
 
     # need to force app context else get
@@ -80,10 +80,10 @@ def create_app(config_obj, config_filename=None):
     # see http://kronosapiens.github.io/blog/2014/08/14/understanding-contexts-in-flask.html
     with app.app_context():
         # admin views need to be defined within app context because of requests.addscripts() using url_for
-        from racesupportcontracts.views.admin import bp as admin
+        from contracts.views.admin import bp as admin
         app.register_blueprint(admin)
         ## initialize login processing
-        from racesupportcontracts.views.admin.login import init_login
+        from contracts.views.admin.login import init_login
         init_login(app)
 
         # import navigation after views created

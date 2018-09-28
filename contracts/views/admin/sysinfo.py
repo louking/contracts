@@ -18,7 +18,7 @@ from flask_security import roles_accepted
 
 # home grown
 from . import bp
-from racesupportcontracts.dbmodel import db 
+from contracts.dbmodel import db 
 from loutilities.flask_helpers.blueprints import add_url_rules
 
 class testException(Exception): pass

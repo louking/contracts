@@ -38,14 +38,14 @@ class Config(object):
     # SECURITY_LOGOUT_URL = False
 
     # javascript configuration
-    APP_JS_CONFIG = 'racesupportcontracts-prod-config.js'
+    APP_JS_CONFIG = 'contracts-prod-config.js'
 
     # avoid warning
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # branding
-    THISAPP_PRODUCTNAME = '<span class="brand-all"><span class="brand-left">racebiz</span><span class="brand-right">tility</span></span>'
-    THISAPP_PRODUCTNAME_TEXT = 'racebiztility'
+    THISAPP_PRODUCTNAME = '<span class="brand-all"><span class="brand-left">contrac</span><span class="brand-right">tility</span></span>'
+    THISAPP_PRODUCTNAME_TEXT = 'contractility'
 
 class Testing(Config):
     TESTING = True

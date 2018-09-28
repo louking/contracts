@@ -1,5 +1,5 @@
 ###########################################################################################
-# racesupportcontracts.wsgi - run the web application
+# contracts.wsgi - run the web application
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -19,7 +19,7 @@ if True:
 
 
 # set configuration file, for here and for app
-os.environ['RSC_CONFIG_FILE'] = 'racesupportcontracts.cfg'
+os.environ['RSC_CONFIG_FILE'] = 'contracts.cfg'
 
 # get configuration
 config = SafeConfigParser()
@@ -39,6 +39,6 @@ sys.path.append(thisdir)
 # goes to /var/log/httpd/error_log, per http://modwsgi.readthedocs.io/en/develop/user-guides/debugging-techniques.html
 if False:
     from getpass import getuser
-    print >> sys.stderr, 'racesupportcontracts user = {}'.format(getuser())
+    print >> sys.stderr, 'contracts user = {}'.format(getuser())
 
-from racesupportcontracts import app as application
+from contracts import app as application

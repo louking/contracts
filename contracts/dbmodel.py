@@ -1,5 +1,5 @@
 ###########################################################################################
-# dbmodel - database model for racesupportcontracts database
+# dbmodel - database model for contracts database
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -202,7 +202,7 @@ class OAuth(OAuthConsumerMixin, Base):
 def init_db(defineowner=True):
 #--------------------------------------------------------------------------
     # must wait until user_datastore is initialized before import
-    from racesupportcontracts import user_datastore
+    from contracts import user_datastore
 
     # TODO: move the following to config file
     # define states here

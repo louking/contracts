@@ -1,5 +1,5 @@
 ###########################################################################################
-# frontend - views for racesupportcontracts database
+# frontend - views for contracts database
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -8,7 +8,7 @@
 #   Copyright 2018 Lou King.  All rights reserved
 ###########################################################################################
 '''
-frontend - views for racesupportcontracts database
+frontend - views for contracts database
 =======================================================================
 '''
 

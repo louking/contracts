@@ -21,11 +21,11 @@ import sys
 import os.path
 
 # homegrown
-from racesupportcontracts import create_app
-from racesupportcontracts.settings import Development
+from contracts import create_app
+from contracts.settings import Development
 
 
-configfile = "racesupportcontracts.cfg"
+configfile = "contracts.cfg"
 abspath = os.path.abspath(__file__)
 configpath = os.path.join(os.path.dirname(abspath), 'config', configfile)
 app = create_app(Development(configpath), configpath)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     if "--setup" in sys.argv:
         with app.app_context():
             # must be within app context
-            from racesupportcontracts.dbmodel import db
+            from contracts.dbmodel import db
             db.create_all()
             db.session.commit()
             print("Database tables created")
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     elif "--RESET" in sys.argv:
         with app.app_context():
             # must be within app context
-            from racesupportcontracts.dbmodel import db, init_db
+            from contracts.dbmodel import db, init_db
             db.drop_all()
             db.create_all()
 

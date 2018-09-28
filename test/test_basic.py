@@ -8,13 +8,13 @@
 #   Copyright 2018 Lou King.  All rights reserved
 ###########################################################################################
 
-# racesupportcontracts/test_basic.py
+# contracts/test_basic.py
  
 import pytest
 
 def create_user(email, roles):
-    from racesupportcontracts import user_datastore
-    from racesupportcontracts.dbmodel import db
+    from contracts import user_datastore
+    from contracts.dbmodel import db
     user = user_datastore.create_user(email=email)
     if type(roles) != list:
         roles = [roles]
@@ -23,7 +23,7 @@ def create_user(email, roles):
     db.session.commit()
 
 def login_test_user(email):
-    from racesupportcontracts.dbmodel import db, User
+    from contracts.dbmodel import db, User
     from flask_security import login_user
     user = User.query.filter_by(email=email).one()
     login_user(user)
@@ -36,8 +36,8 @@ def login_test_user(email):
  
 def test_login(dbapp):
     app = dbapp
-    from racesupportcontracts.dbmodel import db, init_db
-    from racesupportcontracts import user_datastore
+    from contracts.dbmodel import db, init_db
+    from contracts import user_datastore
     from flask import url_for
     # init_db should create at least superadmin, admin roles
     init_db(defineowner=False)
