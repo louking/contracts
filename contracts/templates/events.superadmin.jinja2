@@ -1,0 +1,48 @@
+{% extends "datatables.jinja2" %}
+{% block editorform %}
+<div id="customForm">
+    <fieldset class="event-info">
+        <legend>Event</legend>
+        <div data-editor-template="event"></div>
+        <div data-editor-template="date"></div>
+        <div data-editor-template="state"></div>
+        <div data-editor-template="eventUrl"></div>
+        <div data-editor-template="registrationUrl"></div>
+        <div data-editor-template="course"></div>
+        <div data-editor-template="mainStartTime"></div>
+        <div data-editor-template="mainDistance"></div>
+        <div data-editor-template="mainDistanceUnits"></div>
+        <div data-editor-template="funStartTime"></div>
+        <div data-editor-template="funDistance"></div>
+        <div data-editor-template="funDistanceUnits"></div>
+    </fieldset>
+    <fieldset class="organization">
+        <legend>Organization</legend>
+        <div data-editor-template="organization"></div>
+        <div data-editor-template="organizationUrl"></div>
+        <div data-editor-template="contactFirstName"></div>
+        <div data-editor-template="contactFullName"></div>
+        <div data-editor-template="contactEmail"></div>
+    </fieldset>
+    <fieldset class="contract">
+        <legend>Contract</legend>
+        <div data-editor-template="lead"></div>
+        <div data-editor-template="services"></div>
+        <div data-editor-template="finishersPrevYear"></div>
+        <div data-editor-template="finishersCurrYear"></div>
+        <div data-editor-template="maxParticipants"></div>
+        <div data-editor-template="addOns"></div>
+        <div data-editor-template="paymentRecdDate"></div>
+        <div data-editor-template="invoiceSentDate"></div>
+
+        <div data-editor-template="contractSentDate"></div>
+        <div data-editor-template="contractSignedDate"></div>
+        <div data-editor-template="contractDocId"></div>
+    </fieldset>
+    <fieldset class="misc">
+        <legend>Misc</legend>
+        <div data-editor-template="isOnCalendar"></div>
+        <div data-editor-template="notes"></div>
+    </fieldset>
+</div>
+{% endblock editorform %}
