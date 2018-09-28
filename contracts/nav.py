@@ -40,6 +40,7 @@ def nav_menu():
     if current_user.has_role('superadmin'):
         navbar.items.append(View('Users', 'admin.users'))
         navbar.items.append(View('Services', 'admin.services'))
+        navbar.items.append(View('Add-Ons', 'admin.addon'))
         navbar.items.append(View('Fee Types', 'admin.feetype'))
         navbar.items.append(View('Roles', 'admin.roles'))
         navbar.items.append(View('States', 'admin.states'))

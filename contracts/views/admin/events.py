@@ -179,6 +179,44 @@ feetype = DbCrudApiRolePermissions(
                     )
 feetype.register()
 
+##########################################################################################
+# addon endpoint
+###########################################################################################
+
+addon_dbattrs = 'id,shortDescr,longDescr,fee'.split(',')
+addon_formfields = 'rowid,shortDescr,longDescr,fee'.split(',')
+addon_dbmapping = dict(zip(addon_dbattrs, addon_formfields))
+addon_formmapping = dict(zip(addon_formfields, addon_dbattrs))
+
+addon = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = AddOn, 
+                    roles_accepted = ['superadmin', 'admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'Add-Ons', 
+                    endpoint = 'admin.addon', 
+                    rule = '/addon', 
+                    dbmapping = addon_dbmapping, 
+                    formmapping = addon_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Add-on' },
+                        { 'data': 'longDescr', 'name': 'longDescr', 'label': 'Description' },
+                        { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                  },
+                        scriptfilter = addscripts,
+                    )
+addon.register()
+
 ###########################################################################################
 # services endpoint
 ###########################################################################################

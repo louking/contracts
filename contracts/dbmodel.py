@@ -73,6 +73,7 @@ class FeeType(Base):
     # feeHandling = Column( String(ALGNAME_LEN) ) # e.g., fixed, basedOnField, addOn
     description = Column( String(DESCR_LEN) )
 
+# see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
 eventservice_table = Table('eventservice', Base.metadata,
     Column( 'event_id', Integer, ForeignKey('event.id' ) ),
     Column( 'service_id', Integer, ForeignKey('service.id' ), nullable=False ),
@@ -106,13 +107,19 @@ class Course(Base):
     address     = Column( String(ADDRESS_LEN) )
     isStandard  = Column( Boolean ) # true if standard city course
 
+# see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+eventaddon_table = Table('eventaddon', Base.metadata,
+    Column( 'event_id', Integer, ForeignKey('event.id' ) ),
+    Column( 'addon_id', Integer, ForeignKey('addon.id' ), nullable=False ),
+    )
+
 class AddOn(Base):
     __tablename__ = 'addon'
     id          = Column( Integer, primary_key=True ) 
     shortDescr  = Column( String(SERVICE_LEN) )
     longDescr   = Column( String(NOTES_LEN) )
     fee         = Column( Integer )
-    eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
+    # eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
 
 class State(Base):
     __tablename__ = 'state'
@@ -152,7 +159,8 @@ class Event(Base):
     finishersPrevYear   = Column( Integer )
     finishersCurrYear   = Column( Integer )
     maxParticipants     = Column( Integer )
-    addOns              = relationship( 'AddOn', backref='event', lazy=True )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+    addOns              = relationship( 'AddOn', secondary=eventaddon_table, backref='events', lazy=True )
     contractSentDate    = Column( String(DATETIME_LEN) )
     contractSignedDate  = Column( String(DATETIME_LEN) )
     invoiceSentDate     = Column( String(DATE_LEN) )
