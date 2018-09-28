@@ -118,6 +118,7 @@ dmypy.json
 *.json
 *.cfg
 *-config.js
+config/
 
 # external javascript
 js/
