@@ -202,7 +202,6 @@ class DbCrudApi(CrudApi):
     '''
 
     # class specific imports here so users of other classes do not need to install
-    from datatables import DataTables
 
     def __init__(self, **kwargs):
         current_app.logger.debug('DbCrudApi.__init__()')

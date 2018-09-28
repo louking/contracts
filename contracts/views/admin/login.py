@@ -22,7 +22,7 @@ from flask_dance.contrib.google import make_google_blueprint, google
 from sqlalchemy.orm.exc import NoResultFound
 
 # homegrown
-from racesupportcontracts.dbmodel import db, OAuth, User
+from contracts.dbmodel import db, OAuth, User
 
 #----------------------------------------------------
 def init_login(app):
