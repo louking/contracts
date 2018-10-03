@@ -60,7 +60,9 @@ class DteDbRelationship():
         children = DteDbRelationship(Child, 'name', 'children', 'children')
         
     '''
+    #----------------------------------------------------------------------
     def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
         # the args dict has default values for arguments added by this class
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
@@ -83,7 +85,9 @@ class DteDbRelationship():
         for key in args:
             setattr(self, key, args[key])
 
+    #----------------------------------------------------------------------
     def set(self, formrow):
+    #----------------------------------------------------------------------
         if self.uselist:
             # return empty list if no items, rather than list with empty item
             itemnames = [this for this in formrow[self.formfield].split(',') if this]
@@ -99,13 +103,17 @@ class DteDbRelationship():
             queryfilter = {self.modelfield : itemname}
             return self.model.query.filter_by(**queryfilter).one()
 
+    #----------------------------------------------------------------------
     def get(self, dbrow):
+    #----------------------------------------------------------------------
         if self.uselist:
             return ','.join(getattr(item, self.modelfield) for item in getattr(dbrow, self.dbfield))
         else:
             return getattr(getattr(dbrow, self.dbfield), self.modelfield)
 
+    #----------------------------------------------------------------------
     def options(self):
+    #----------------------------------------------------------------------
         return [getattr(item, self.modelfield) for item in self.model.query.all()]
 
 #####################################################
@@ -119,7 +127,9 @@ class DteDbBool():
     * truedisplay - how to display True to user (default 'yes')
     * falsedisplay - hot to display False to user (default 'no')
     '''
+    #----------------------------------------------------------------------
     def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
         # the args dict has default values for arguments added by this class
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
@@ -140,13 +150,19 @@ class DteDbBool():
         for key in args:
             setattr(self, key, args[key])
 
+    #----------------------------------------------------------------------
     def get(self, dbrow):
+    #----------------------------------------------------------------------
         return self.truedisplay if getattr(dbrow, self.dbfield) else self.falsedisplay
 
+    #----------------------------------------------------------------------
     def set(self, formrow):
+    #----------------------------------------------------------------------
         return formrow[self.formfield] == self.truedisplay
 
+    #----------------------------------------------------------------------
     def options(self):
+    #----------------------------------------------------------------------
         return [{'label':self.truedisplay,'value':self.truedisplay}, {'label':self.falsedisplay, 'value':self.falsedisplay}]
 
 #####################################################
@@ -493,7 +509,9 @@ class DbCrudApiRolePermissions(DbCrudApi):
     '''
     from flask_security import current_user
 
+    #----------------------------------------------------------------------
     def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
         current_app.logger.debug('DbCrudApiRolePermissions.__init__()')
 
         # the args dict has default values for arguments added by this derived class
@@ -515,7 +533,9 @@ class DbCrudApiRolePermissions(DbCrudApi):
         if self.roles_required and type(self.roles_required) != list:
             self.roles_required = [ self.roles_required ]
 
+    #----------------------------------------------------------------------
     def permission(self):
+    #----------------------------------------------------------------------
         '''
         determine if current user is permitted to use the view
         '''
