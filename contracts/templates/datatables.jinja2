@@ -28,6 +28,9 @@
           NOTES: - if chart is to be drawn, pagejsfiles must include script file 
                    which has dtchart() entry point
                  - if table should not be visible, use 'beforetable' and have dtopts 'dom': ''
+
+      ## TODO: should this be in this file or should there db a dbdatables.jinja2 which extends this?
+      saformjsurls: list of js urls which contain Editor standalone form code (see DbCrudApi)
 #}
 
 {% extends "layout.jinja2" %}
@@ -36,7 +39,12 @@
 {% endblock pagename %}
 {% block css %}
 {% endblock css %}
+
 {% block scripts %}
+  {% for saformurl in saformjsurls %}
+    <script type="text/javascript" src="{{ saformurl }}"></script>
+  {% endfor %}
+
   <script type="text/javascript">
     $( document ).ready( function() {
       var 

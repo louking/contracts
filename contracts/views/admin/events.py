@@ -315,7 +315,12 @@ event = DbCrudApiRolePermissions(
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
-                          '_treatment' : { 'relationship' : { 'model':Course, 'modelfield':'course', 'formfield':'course', 'dbfield':'course', 'uselist':False, 'searchbox':True } },
+                          '_treatment' : { 'relationship' : { 
+                                                             'model':Course, 'modelfield':'course', 'formfield':'course', 
+                                                             'dbfield':'course', 'uselist':False, 'searchbox':True,
+                                                             'editable' : { 'api':course, 'id':'eventcourse' },
+                                                            } 
+                                         },
                           'ed':{ 'def':'to be added' }, 
                         },
                         { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time',
@@ -391,6 +396,11 @@ event = DbCrudApiRolePermissions(
                     pagejsfiles = ['events.js'],
                     pagecssfiles = ['editor-forms.css'],
                     scriptfilter = addscripts,
+                    # templateargs = {'saformjsurls': 
+                    #                     lambda: 
+                    #                       [ course.saformurl('course', 'eventcourse'), 
+                    #                         lead.saformurl('lead', 'eventlead'), 
+                    #                       ] }
                     )
 event.register()
 

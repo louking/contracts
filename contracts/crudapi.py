@@ -12,8 +12,17 @@
 crudapi - CRUD api for this application
 =========================================
 '''
+
+# standard
+from urllib import urlencode
+from json import dumps
+from copy import deepcopy
+
+# pypi
+from flask import request, current_app, make_response, url_for
+
+# home grown
 from loutilities.tables import CrudApi, DataTablesEditor
-from flask import request, current_app
 
 class parameterError(Exception): pass
 
@@ -185,6 +194,7 @@ class DbCrudApi(CrudApi):
             * label - used for the DataTable table column and the Editor form label 
             * optional render key is eval'd into javascript
             * id - is specified by idSrc, and should be in the mapping function but not columns
+
             additionally the update option can be used to _update the options for any type = 'select', 'selectize'
             * _update - dict with following keys
                 * endpoint - url endpoint to retrieve new options 
@@ -195,7 +205,8 @@ class DbCrudApi(CrudApi):
         
             * _treatment - dict with (only) one of following keys - note this causes override of dbmapping and formmapping configuration
                 * boolean - {DteDbBool keyword parameters}
-                * relationship - {DteDbRelationship keyword parameters}
+                * relationship - {DteDbRelationship keyword parameters, 'editable' : { 'api':<DbCrudApi()>, 'id':<id of control> }}
+                    'editable' is set only if it is desired to bring up a form to edit the underlying model row
 
         **servercolumns** - if present table will be displayed through ajax get calls
 
@@ -203,7 +214,9 @@ class DbCrudApi(CrudApi):
 
     # class specific imports here so users of other classes do not need to install
 
+    #----------------------------------------------------------------------
     def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
         current_app.logger.debug('DbCrudApi.__init__()')
 
         # the args dict has default values for arguments added by this derived class
@@ -215,8 +228,12 @@ class DbCrudApi(CrudApi):
                     formmapping = {},
                     queryparams = {},
                     dtoptions = {},
+                    filtercoloptions = [],
                     )
         args.update(kwargs)
+
+        # make sure '_treatment' column option is removed before invoking DataTables and Editor
+        args['filtercoloptions'].append('_treatment')
 
         super(DbCrudApi, self).__init__(**args)
 
@@ -227,13 +244,16 @@ class DbCrudApi(CrudApi):
         self.booleanform = {}
         self.relationshipdb = {}
         self.relationshipform = {}
+        saforms = []
         for col in self.clientcolumns:
+            current_app.logger.debug('__init__(): col = {}'.format(col))
             # remove readonly fields from dbmapping
             if col.get('type',None) == 'readonly':
                 self.dbmapping.pop(col['name'], None)
             
             # handle special treatment for column
-            treatment = col.pop('_treatment', None)
+            treatment = col.get('_treatment', None)
+            current_app.logger.debug('__init__(): treatment = {}'.format(treatment))
             if treatment:
                 if type(treatment) != dict or len(treatment) != 1 or treatment.keys()[0] not in ['boolean', 'relationship']:
                     raise parameterError, 'invalid treatment: {}'.format(treatment)
@@ -258,29 +278,108 @@ class DbCrudApi(CrudApi):
 
                 # handle relationship treatment
                 if 'relationship' in treatment:
-                    thisbool = DteDbRelationship(**treatment['relationship'])
+                    # peel off any parameters not required by DteDbRelationship
+                    editable = treatment['relationship'].get('editable', {})
+                    current_app.logger.debug('__init__(): modelfield={} editable={}'.format(treatment['relationship']['modelfield'], editable))
+                    # now create the relationship
+                    thisreln = DteDbRelationship(**treatment['relationship'])
                     col['type'] = 'select2'
-                    col['opts'] = { 'minimumResultsForSearch': 0 if thisbool.searchbox else 'Infinity', 'multiple':thisbool.uselist }
-                    if thisbool.uselist:
+                    col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 'multiple':thisreln.uselist }
+                    if thisreln.uselist:
                         col['separator'] = ','
                     # get original formfield and dbattr
                     formfield = col['data'] # TODO: should this come from 'name' or 'data'?
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
-                    self.booleanform[formfield] = thisbool
+                    self.booleanform[formfield] = thisreln
                     self.formmapping[formfield] = self.booleanform[formfield].get
                     col['options'] = self.booleanform[formfield].options
                     # db processing section
                     ## save handler, set data to db using handler set function
-                    self.booleandb[dbattr] = thisbool
+                    self.booleandb[dbattr] = thisreln
                     self.dbmapping[dbattr] = self.booleandb[dbattr].set
+                    # if this field needs form for editing the record it points at, remember information
+                    if editable:
+                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['modelfield'], 'id':editable['id'] } })
+
+        # if any standalone forms required, add to templateargs
+        if saforms:
+            self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
 
         # set up mapping between database and editor form
         # Note: translate '' to None and visa versa
         self.dte = DataTablesEditor(self.dbmapping, self.formmapping, null2emptystring=True)
 
+    #----------------------------------------------------------------------
+    def get(self):
+    #----------------------------------------------------------------------
+        # this allows standalone editor form to be created for this model class from another model class
+        # NOTE: request.args need to match keyword args in self.saformurl()
+
+        if request.path[-9:] == '/saformjs':
+            ed_options = self.getedoptions()
+
+            # TODO: indent all by 4 and use indent=2 for testing
+            edoptsjson = ['    {}'.format(l) for l in dumps(ed_options, indent=2).split('\n')]
+
+            js  = [
+                   '$( function () {', 
+                   "  $('#{}').click (function () {{".format(request.args['id']), 
+                   '    editor.close();', 
+                   '    {}_editor'.format(request.args['name']), 
+                   '      .edit (null, false)', 
+                   '      .buttons( {', 
+                   '         label: "Save",', 
+                   '         fn: function () {', 
+                   '               this.close();', 
+                   '               editor.open();', 
+                   '         },', 
+                   '      } )', 
+                   '      .edit();', 
+                   '  } );',
+                   '',
+                   '  {}_editor = new $.fn.dataTable.Editor( '.format(request.args['name']),
+            ]
+
+            js += edoptsjson
+
+            js += [
+                   '  );',
+                   '} );',
+            ]
+            # see https://stackoverflow.com/questions/11017466/flask-return-image-created-from-database
+            response = make_response('\n'.join(js))
+            response.headers.set('Content-Type', 'application/javascript')            
+            return response
+
+        # otherwise handle get from base class
+        else:
+            return super(DbCrudApi, self).get()
+
+    #----------------------------------------------------------------------
+    def saformurl(self, name='', id=''):
+    #----------------------------------------------------------------------
+        # NOTE: keyword arguments need to match request.args access in self.get()
+        params = {'name' : name, 'id' : id }
+        args = urlencode(params)
+        # self.__name__ is endpoint -- see https://github.com/pallets/flask/blob/master/flask/views.py View.as_view method
+        url = '{}/saformjs?{}'.format(url_for('.'+self.my_view.__name__), args)
+        return url
+    
+    #----------------------------------------------------------------------
+    def register(self):
+    #----------------------------------------------------------------------
+        # name for view is last bit of fully named endpoint
+        name = self.endpoint.split('.')[-1]
+
+        # create the inherited class endpoints, as by product my_view attribute is initialized
+        super(DbCrudApi, self).register()
+        self.app.add_url_rule('{}/saformjs'.format(self.rule),view_func=self.my_view,methods=['GET',])
+
+    #----------------------------------------------------------------------
     def open(self):
+    #----------------------------------------------------------------------
         '''
         retrieve all the data in the indicated table
         '''
@@ -296,7 +395,9 @@ class DbCrudApi(CrudApi):
         # rowTable = self.DataTables(params, query, self.servercolumns)
         # self.outputResult = rowTable.output_result()
 
+    #----------------------------------------------------------------------
     def nexttablerow(self):
+    #----------------------------------------------------------------------
         '''
         since open has done all the work, tell the caller we're done
         '''
@@ -305,7 +406,9 @@ class DbCrudApi(CrudApi):
         dbrecord = self.rows.next()
         return self.dte.get_response_data(dbrecord)
 
+    #----------------------------------------------------------------------
     def close(self):
+    #----------------------------------------------------------------------
         current_app.logger.debug('DbCrudApi.close()')
         pass
 
