@@ -253,6 +253,13 @@ class DbCrudApi(CrudApi):
 
         super(DbCrudApi, self).__init__(**args)
 
+        # make copy of dbmapping and formmapping
+        # Need to do this because we update the mapping with functions. 
+        # view class gets reinstantiated when page painted, so we'll need to make sure we
+        # don't corrupt the original data
+        self.formmapping = deepcopy(args['formmapping'])
+        self.dbmapping = deepcopy(args['dbmapping'])
+
         self.pagejsfiles = ['datatables.js'] + self.pagejsfiles
 
         # do some preprocessing on columns
@@ -308,13 +315,13 @@ class DbCrudApi(CrudApi):
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
-                    self.booleanform[formfield] = thisreln
-                    self.formmapping[formfield] = self.booleanform[formfield].get
-                    col['options'] = self.booleanform[formfield].options
+                    self.relationshipform[formfield] = thisreln
+                    self.formmapping[formfield] = self.relationshipform[formfield].get
+                    col['options'] = self.relationshipform[formfield].options
                     # db processing section
                     ## save handler, set data to db using handler set function
-                    self.booleandb[dbattr] = thisreln
-                    self.dbmapping[dbattr] = self.booleandb[dbattr].set
+                    self.relationshipdb[dbattr] = thisreln
+                    self.dbmapping[dbattr] = self.relationshipdb[dbattr].set
                     # if this field needs form for editing the record it points at, remember information
                     if editable:
                         saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['modelfield'], 'id':editable['id'] } })
@@ -458,6 +465,8 @@ class DbCrudApi(CrudApi):
         :param formdata: data from create form
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
+        current_app.logger.debug('updaterow({},{})'.format(thisid, formdata))
+
         # edit item
         dbrow = self.model.query.filter_by(id=thisid).one()
         current_app.logger.debug('editing id={} dbrow={}'.format(thisid, dbrow.__dict__))
