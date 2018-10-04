@@ -284,10 +284,6 @@ def event_validate(action, formdata):
         if formdata[field] and not match(r"([01]?[0-9]|2[0-3]):[0-5][0-9]", formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid time: correct format is h:mm' })
 
-    for field in ['lead', 'state', 'course']:
-        if not formdata[field]:
-            results.append({'name' : field, 'status' : 'need to choose from list' })
-
     return results
 
 event = DbCrudApiRolePermissions(
@@ -321,7 +317,6 @@ event = DbCrudApiRolePermissions(
                                                              'editable' : { 'api':course, 'id':'eventcourse' },
                                                             } 
                                          },
-                          'ed':{ 'def':'to be added' }, 
                         },
                         { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time',
                             'ed':{'format':'H:mm',
@@ -350,7 +345,6 @@ event = DbCrudApiRolePermissions(
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
                           '_treatment' : { 'relationship' : { 'model':Lead, 'modelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
-                          'ed':{ 'def':'to be added' }, 
                         },
                         { 'data': 'services', 'name': 'services', 'label': 'Services', 
                           '_treatment' : { 'relationship' : { 'model':Service, 'modelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },

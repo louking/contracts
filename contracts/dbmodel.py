@@ -229,25 +229,29 @@ def init_db(defineowner=True):
         {'feeType':'addOn',         'description':'service is an add on'},
     ]
 
-    # define initial leads here
-    leads = [
-        {'name':'to be added'}
-    ]
-
-    courses = [
-        {'course':'to be added'}
+    services = [
+        {'service':'finishline', 'serviceLong':'Finish Line', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='basedOnField').one, 'basedOnField':'finishersPrevYear'},
+        {'service':'coursemarking', 'serviceLong':'Course Marking', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='fixed').one, 'fee':100},
+        {'service':'permiumpromotion', 'serviceLong':'Premium Promotion', 'isCalendarBlocked': False, 'feeType':FeeType.query.filter_by(feeType='fixed').one, 'fee':75},
     ]
 
     # initialize these tables
     modelitems = [
         (State, states),
         (FeeType, feetypes),
-        (Lead, leads),
-        (Course, courses),
+        (Service, services),
     ]
     for model, items in modelitems:
         for item in items:
-            db.session.add( model(**item) )
+            resolveitem ={}
+            for key in item:
+                if not callable(item[key]):
+                    resolveitem[key] = item[key]
+                else:
+                    resolveitem[key] = item[key]()
+            db.session.add( model(**resolveitem) )
+        # need to commit here because next table might use this table data
+        db.session.commit()
 
     # special processing for user roles because need to remember the roles when defining the owner
     # define user roles here

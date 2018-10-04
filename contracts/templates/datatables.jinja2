@@ -41,10 +41,6 @@
 {% endblock css %}
 
 {% block scripts %}
-  {% for saformurl in saformjsurls %}
-    <script type="text/javascript" src="{{ saformurl }}"></script>
-  {% endfor %}
-
   <script type="text/javascript">
     $( document ).ready( function() {
       var 
@@ -60,6 +56,11 @@
       {% endif %}
     })
   </script>
+  
+  {% for saformurl in saformjsurls %}
+    <script type="text/javascript" src="{{ saformurl }}"></script>
+  {% endfor %}
+
 {% endblock scripts %}
 {% block body %}
   {% if chartloc == 'beforeprehtml' %}

@@ -113,7 +113,7 @@ SCRIPTS = [
     ('select/{ver}/js/dataTables.select.js', dt_select_ver, dt_cdn),
     ('select/{ver}/css/select.jqueryui.css', dt_select_ver, dt_cdn),
 
-    # selectize is required for use by Editor forms
+    # select2 is required for use by Editor forms
     ('select2/{ver}/js/select2.full{min}.js', s2_ver, s2_cdn),
     ('select2/{ver}/css/select2{min}.css', s2_ver, s2_cdn),
     'js/FieldType-Select2/editor.select2.js',

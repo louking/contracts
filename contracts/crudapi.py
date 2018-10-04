@@ -26,6 +26,9 @@ from loutilities.tables import CrudApi, DataTablesEditor
 
 class parameterError(Exception): pass
 
+# separator for select2 tag list
+SEPARATOR = ', '
+
 #####################################################
 class DteDbRelationship():
 #####################################################
@@ -88,33 +91,52 @@ class DteDbRelationship():
     #----------------------------------------------------------------------
     def set(self, formrow):
     #----------------------------------------------------------------------
+        # set form from database
         if self.uselist:
             # return empty list if no items, rather than list with empty item
-            itemnames = [this for this in formrow[self.formfield].split(',') if this]
+            itemnames = [this for this in formrow[self.formfield].split(SEPARATOR) if this]
             print 'itemnames={}'.format(itemnames)
             items = []
             for itemname in itemnames:
-                queryfilter = {self.modelfield : itemname}
+                queryfilter = {'id' : itemname}
+                # queryfilter = {self.modelfield : itemname}
                 thisitem = self.model.query.filter_by(**queryfilter).one()
                 items.append( thisitem )
             return items
         else:
             itemname = formrow[self.formfield] if formrow[self.formfield] else None
-            queryfilter = {self.modelfield : itemname}
-            return self.model.query.filter_by(**queryfilter).one()
+            queryfilter = {'id' : itemname}
+            # queryfilter = {self.modelfield : itemname}
+            return self.model.query.filter_by(**queryfilter).one_or_none()
 
     #----------------------------------------------------------------------
     def get(self, dbrow):
     #----------------------------------------------------------------------
+        # get form to database
         if self.uselist:
-            return ','.join(getattr(item, self.modelfield) for item in getattr(dbrow, self.dbfield))
+            return SEPARATOR.join(getattr(item, self.modelfield) for item in getattr(dbrow, self.dbfield))
         else:
-            return getattr(getattr(dbrow, self.dbfield), self.modelfield)
+            # get the attribute if specified
+            if getattr(dbrow, self.dbfield):
+                return getattr(getattr(dbrow, self.dbfield), self.modelfield)
+            # otherwise return None
+            else:
+                return None
 
     #----------------------------------------------------------------------
     def options(self):
     #----------------------------------------------------------------------
-        return [getattr(item, self.modelfield) for item in self.model.query.all()]
+        # return sorted list of items in the model
+        items = [{'label': getattr(item, self.modelfield), 'value': item.id} for item in self.model.query.all()]
+        items.sort(key=lambda k: k['label'].lower())
+        return items
+
+    #----------------------------------------------------------------------
+    def new_plus_options(self):
+    #----------------------------------------------------------------------
+        # return sorted list of items in the model
+        items = [{'label': '<new>', 'value': 0}] + self.options()
+        return items
 
 #####################################################
 class DteDbBool():
@@ -301,15 +323,14 @@ class DbCrudApi(CrudApi):
 
                 # handle relationship treatment
                 if 'relationship' in treatment:
-                    # peel off any parameters not required by DteDbRelationship
-                    editable = treatment['relationship'].get('editable', {})
-                    current_app.logger.debug('__init__(): modelfield={} editable={}'.format(treatment['relationship']['modelfield'], editable))
                     # now create the relationship
                     thisreln = DteDbRelationship(**treatment['relationship'])
                     col['type'] = 'select2'
-                    col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 'multiple':thisreln.uselist }
+                    col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 
+                                    'multiple':thisreln.uselist, 
+                                    'placeholder': None if thisreln.uselist else '(select)' }
                     if thisreln.uselist:
-                        col['separator'] = ','
+                        col['separator'] = SEPARATOR
                     # get original formfield and dbattr
                     formfield = col['data'] # TODO: should this come from 'name' or 'data'?
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
@@ -317,14 +338,20 @@ class DbCrudApi(CrudApi):
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
                     self.relationshipform[formfield] = thisreln
                     self.formmapping[formfield] = self.relationshipform[formfield].get
-                    col['options'] = self.relationshipform[formfield].options
                     # db processing section
                     ## save handler, set data to db using handler set function
                     self.relationshipdb[dbattr] = thisreln
                     self.dbmapping[dbattr] = self.relationshipdb[dbattr].set
-                    # if this field needs form for editing the record it points at, remember information
+                    ## if this field needs form for editing the record it points at, remember information
+                    ## also add <new> option
+                    editable = treatment['relationship'].get('editable', {})
+                    current_app.logger.debug('__init__(): modelfield={} editable={}'.format(treatment['relationship']['modelfield'], editable))
                     if editable:
                         saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['modelfield'], 'id':editable['id'] } })
+                        col['options'] = self.relationshipform[formfield].new_plus_options
+                    else:
+                        col['options'] = self.relationshipform[formfield].options
+
 
         # if any standalone forms required, add to templateargs
         if saforms:
@@ -346,12 +373,17 @@ class DbCrudApi(CrudApi):
             # TODO: indent all by 4 and use indent=2 for testing
             edoptsjson = ['    {}'.format(l) for l in dumps(ed_options, indent=2).split('\n')]
 
+            fieldname = request.args['name']
             js  = [
                    '$( function () {', 
-                   "  $('#{}').click (function () {{".format(request.args['id']), 
+                   '  // handle save, then open editor on submit',
+                   '  $( editor.field( "{}" ).input() ).on ("change", function () {{'.format(fieldname), 
+                   '    console.log("{} select2 change fired");'.format(fieldname), 
+                   '    console.log("editor.get() = " + editor.get("{}"));'.format(fieldname), 
+                   '    // only fire if <new> entry',
+                   '    if ( editor.get("{}") != 0 ) return;'.format(fieldname),
                    '    editor.close();', 
-                   '    {}_editor'.format(request.args['name']), 
-                   '      .edit (null, false)', 
+                   '    {}_editor'.format(fieldname), 
                    '      .buttons( {', 
                    '         label: "Save",', 
                    '         fn: function () {', 
@@ -362,13 +394,18 @@ class DbCrudApi(CrudApi):
                    '      .edit();', 
                    '  } );',
                    '',
-                   '  {}_editor = new $.fn.dataTable.Editor( '.format(request.args['name']),
+                   '  {}_editor = new $.fn.dataTable.Editor( '.format(fieldname),
             ]
 
             js += edoptsjson
 
             js += [
                    '  );',
+                   '  // if form closes, reopen editor',
+                   '  {}_editor'.format(fieldname),
+                   '    .on("close", function () {',
+                   '      editor.open();',
+                   '  });',
                    '} );',
             ]
             # see https://stackoverflow.com/questions/11017466/flask-return-image-created-from-database
