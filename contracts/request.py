@@ -106,9 +106,9 @@ SCRIPTS = [
     ('fixedcolumns/{ver}/css/fixedColumns.jqueryui{min}.css', dt_fixedcolumns_ver, dt_cdn),
 
     # Editor is not yet available from the dataTables CDN
-    'js/Editor-1.7.4/js/dataTables.editor.js',
-    'js/Editor-1.7.4/js/editor.jqueryui.js',
-    'js/Editor-1.7.4/css/editor.jqueryui.css',
+    'js/Editor-1.8.0/js/dataTables.editor.js',
+    'js/Editor-1.8.0/js/editor.jqueryui.js',
+    'js/Editor-1.8.0/css/editor.jqueryui.css',
 
     ('select/{ver}/js/dataTables.select.js', dt_select_ver, dt_cdn),
     ('select/{ver}/css/select.jqueryui.css', dt_select_ver, dt_cdn),
@@ -121,17 +121,7 @@ SCRIPTS = [
     # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
     ('moment.js/{ver}/moment{min}.js', moment_ver, moment_cdn),
 
-    # # selectize is required for use by Editor forms
-    # ('selectize.js/{ver}/css/selectize{min}.css', sz_ver, sz_cdn),
-    # ('selectize.js/{ver}/js/standalone/selectize{min}.js', sz_ver, sz_cdn),
-    # # can editor selectize come from here? Why no version?
-    # #   https://editor.datatables.net/plug-ins/download?cdn=cdn-download&amp;q=field-type/editor.selectize.min.js 
-    # #   https://editor.datatables.net/plug-ins/download?cdn=cdn-download&amp;q=field-type/editor.selectize.min.css
-    # 'js/FieldType-Selectize/editor.selectize.js',
-    # 'js/FieldType-Selectize/editor.selectize.css',
-
     ('yadcf/{ver}/jquery.dataTables.yadcf{min}.js', yadcf_ver, yadcf_cdn),
-    # 'jquery.dataTables.yadcf-0.9.1-beta.6.js',
     ('yadcf/{ver}/jquery.dataTables.yadcf{min}.css', yadcf_ver, yadcf_cdn),
 
     # 'js/jquery.ui.dialog-clickoutside.js', # from https://github.com/coheractio/jQuery-UI-Dialog-ClickOutside
