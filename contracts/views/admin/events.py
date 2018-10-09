@@ -324,7 +324,8 @@ event = DbCrudApiRolePermissions(
                             } 
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance' },
-                        { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2',  
+                        { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
+                          'className': 'inhibitlabel', 
                           'options':['M', 'km'], 
                           'ed':{ 'def':'M' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
@@ -336,6 +337,7 @@ event = DbCrudApiRolePermissions(
                         },
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance' },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
+                          'className': 'inhibitlabel', 
                           'options':['M', 'km'], 'ed':{ 'def':'M' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'organization', 'name': 'organization', 'label': 'Organization Name' },

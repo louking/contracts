@@ -405,11 +405,30 @@ table.DataList tr:hover td
     cursor: pointer;
 }
 
+._rsc-class-pfriendly-races a {
+  color: black;
+}
+
 /* fix labels on editor popups */
 div.DTE_Body div.DTE_Body_Content div.DTE_Field > label {
   margin-right: 0px;
 }
 
-._rsc-class-pfriendly-races a {
-  color: black;
+#customForm fieldset {
+    flex: 1;
+    flex-direction: column;
+}
+
+div.row {
+    display: flex;
+    flex-flow: nowrap;
+}
+ 
+div.DTE_Field.inhibitlabel > label {
+  display: none;
+  width: 0% !important;
+}
+
+div.DTE_Field.inhibitlabel > div.DTE_Field_Input {
+  width: 100% !important;
 }
