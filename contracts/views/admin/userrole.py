@@ -49,7 +49,7 @@ user = DbCrudApiRolePermissions(
                         { 'data': 'name', 'name': 'name', 'label': 'Full Name' },
                         { 'data': 'given_name', 'name': 'given_name', 'label': 'First Name' },
                         { 'data': 'roles', 'name': 'roles', 'label': 'Roles', 
-                          '_treatment' : { 'relationship' : { 'model':Role, 'modelfield':'name', 'formfield':'roles', 'dbfield':'roles', 'uselist':True } }
+                          '_treatment' : { 'relationship' : { 'model':Role, 'labelfield':'name', 'formfield':'roles', 'dbfield':'roles', 'uselist':True } }
                         },
                         { 'data': 'active', 'name': 'active', 'label': 'Active', 
                           '_treatment' : { 'boolean' : { 'formfield':'active', 'dbfield':'active' } },

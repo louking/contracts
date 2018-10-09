@@ -246,7 +246,7 @@ service = DbCrudApiRolePermissions(
                           '_treatment' : { 'boolean' : {'formfield':'isCalendarBlocked', 'dbfield':'isCalendarBlocked'} },
                         },
                         { 'data': 'feeType', 'name': 'feeType', 'label': 'Fee Type',
-                          '_treatment' : { 'relationship' : { 'model':FeeType, 'modelfield':'feeType', 'formfield':'feeType', 'dbfield':'feeType', 'uselist':False } }
+                          '_treatment' : { 'relationship' : { 'model':FeeType, 'labelfield':'feeType', 'formfield':'feeType', 'dbfield':'feeType', 'uselist':False } }
                         },
                         { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
                         { 'data': 'basedOnField', 'name': 'basedOnField', 'label': 'Based on Field' },
@@ -305,14 +305,14 @@ event = DbCrudApiRolePermissions(
                         # TODO: why did the following display a time widget?
                         # { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 'ed':{'format':'yyyy-mm-dd'} },
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
-                          '_treatment' : { 'relationship' : { 'model':State, 'modelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
+                          '_treatment' : { 'relationship' : { 'model':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
                           'ed':{ 'def':'pending' }, 
                         },
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
                           '_treatment' : { 'relationship' : { 
-                                                             'model':Course, 'modelfield':'course', 'formfield':'course', 
+                                                             'model':Course, 'labelfield':'course', 'formfield':'course', 
                                                              'dbfield':'course', 'uselist':False, 'searchbox':True,
                                                              'editable' : { 'api':course, 'id':'eventcourse' },
                                                             } 
@@ -344,16 +344,16 @@ event = DbCrudApiRolePermissions(
                         { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
-                          '_treatment' : { 'relationship' : { 'model':Lead, 'modelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
+                          '_treatment' : { 'relationship' : { 'model':Lead, 'labelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
                         },
                         { 'data': 'services', 'name': 'services', 'label': 'Services', 
-                          '_treatment' : { 'relationship' : { 'model':Service, 'modelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
+                          '_treatment' : { 'relationship' : { 'model':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'finishersPrevYear', 'name': 'finishersPrevYear', 'label': 'Prev Year #Finishers' },
                         { 'data': 'finishersCurrYear', 'name': 'finishersCurrYear', 'label': 'Curr Year #Finishers' },
                         { 'data': 'maxParticipants', 'name': 'maxParticipants', 'label': 'Max Participants' },
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
-                          '_treatment' : { 'relationship' : { 'model':AddOn, 'modelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
+                          '_treatment' : { 'relationship' : { 'model':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'paymentRecdDate', 'name': 'paymentRecdDate', 'label': 'Pymt Recd Date', 'type':'date', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Pymt Recd Date (yyyy-mm-dd)' }

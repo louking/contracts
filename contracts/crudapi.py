@@ -40,7 +40,8 @@ class DteDbRelationship():
         dbfield            = relationship( 'mappingmodel', backref='event', lazy=True )
 
     * model - name of model comprises list in dbfield
-    * modelfield - field in model which is used to be displayed to the user
+    * labelfield - field in model which is used to be displayed to the user
+    * valuefield - field in model which is used as value for select and to retrieve record, passed on Editor interface, default 'id' - needs to be a key for model record
     * formfield - field as used on the form
     * dbfield - field as used in the database table (not the model -- this is field in table which has list of model items)
     * uselist - set to True if using tags, otherwise field expects single entry, default True
@@ -70,16 +71,17 @@ class DteDbRelationship():
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
         args = dict(model=None, 
-                    modelfield=None,
+                    labelfield=None,
+                    valuefield ='id',
                     formfield=None,
                     dbfield=None,
                     uselist=True,
-                    searchbox=False,
+                    searchbox=False,    # TODO: is this needed?
                     )
         args.update(kwargs)
 
         # some of the args are required
-        reqdfields = ['model', 'modelfield', 'formfield', 'dbfield']
+        reqdfields = ['model', 'labelfield', 'formfield', 'dbfield']
         for field in reqdfields:
             if not args[field]:
                 raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
@@ -91,43 +93,66 @@ class DteDbRelationship():
     #----------------------------------------------------------------------
     def set(self, formrow):
     #----------------------------------------------------------------------
-        # set form from database
+        # set database from form
         if self.uselist:
-            # return empty list if no items, rather than list with empty item
-            itemnames = [this for this in formrow[self.formfield].split(SEPARATOR) if this]
-            print 'itemnames={}'.format(itemnames)
+            # accumulate list of database model instances
             items = []
-            for itemname in itemnames:
-                queryfilter = {'id' : itemname}
-                # queryfilter = {self.modelfield : itemname}
+
+            # return empty list if no items, rather than list with empty item
+            # this allows for multiple keys in formrow[self.formfield], but seems like there'd only be one
+            itemvalues = []
+            for key in formrow[self.formfield]:
+                vallist = formrow[self.formfield][key].split(SEPARATOR)
+                # empty list is actually null list with one entry
+                if len(vallist) == 1 and not vallist[0]: continue
+                # loop through nonempty entries -- will we ever see null entry? hope not else exception on .one() call below
+                for ndx in range(len(vallist)):
+                    if len(itemvalues) < ndx+1:
+                        itemvalues.append({key:vallist[ndx]})
+                    else:
+                        itemvalues[ndx].update({key:vallist[ndx]})
+            current_app.logger.debug( 'itemvalues={}'.format(itemvalues) )
+            for itemvalue in itemvalues:
+                queryfilter = itemvalue
+                # queryfilter = {self.valuefield : itemvalue}
                 thisitem = self.model.query.filter_by(**queryfilter).one()
-                items.append( thisitem )
+                items.append(thisitem)
             return items
         else:
-            itemname = formrow[self.formfield] if formrow[self.formfield] else None
-            queryfilter = {'id' : itemname}
-            # queryfilter = {self.modelfield : itemname}
-            return self.model.query.filter_by(**queryfilter).one_or_none()
+            itemvalue = formrow[self.formfield] if formrow[self.formfield] else None
+            queryfilter = itemvalue
+            # queryfilter = {self.valuefield : itemvalue}
+            thisitem = self.model.query.filter_by(**queryfilter).one_or_none()
+            return thisitem
 
     #----------------------------------------------------------------------
     def get(self, dbrow):
     #----------------------------------------------------------------------
-        # get form to database
+        # get from database to form
         if self.uselist:
-            return SEPARATOR.join(getattr(item, self.modelfield) for item in getattr(dbrow, self.dbfield))
+            items = {}
+            labelitems = []
+            valueitems = []
+            for item in getattr(dbrow, self.dbfield):
+                labelitems.append( str( getattr( item, self.labelfield ) ) )
+                valueitems.append( str( getattr( item, self.valuefield ) ) )
+            items = { self.labelfield:SEPARATOR.join(labelitems), self.valuefield:SEPARATOR.join(valueitems) }
+            return items
         else:
             # get the attribute if specified
             if getattr(dbrow, self.dbfield):
-                return getattr(getattr(dbrow, self.dbfield), self.modelfield)
+                item = { self.labelfield:getattr(getattr(dbrow, self.dbfield), self.labelfield), 
+                         self.valuefield:getattr(getattr(dbrow, self.dbfield), self.valuefield) }
+                return item
             # otherwise return None
             else:
-                return None
+                return { self.labelfield:None, self.valuefield:None }
 
     #----------------------------------------------------------------------
     def options(self):
     #----------------------------------------------------------------------
         # return sorted list of items in the model
-        items = [{'label': getattr(item, self.modelfield), 'value': item.id} for item in self.model.query.all()]
+        items = [{'label': getattr(item, self.labelfield), 'value': item.id} for item in self.model.query.all()]
         items.sort(key=lambda k: k['label'].lower())
         return items
 
@@ -273,8 +298,6 @@ class DbCrudApi(CrudApi):
         # make sure '_treatment' column option is removed before invoking DataTables and Editor
         args['filtercoloptions'].append('_treatment')
 
-        super(DbCrudApi, self).__init__(**args)
-
         # make copy of dbmapping and formmapping
         # Need to do this because we update the mapping with functions. 
         # view class gets reinstantiated when page painted, so we'll need to make sure we
@@ -282,15 +305,11 @@ class DbCrudApi(CrudApi):
         self.formmapping = deepcopy(args['formmapping'])
         self.dbmapping = deepcopy(args['dbmapping'])
 
-        self.pagejsfiles = ['datatables.js'] + self.pagejsfiles
-
         # do some preprocessing on columns
-        self.booleandb = {}
-        self.booleanform = {}
-        self.relationshipdb = {}
-        self.relationshipform = {}
+        booleandb = {}
+        booleanform = {}
         saforms = []
-        for col in self.clientcolumns:
+        for col in args['clientcolumns']:
             current_app.logger.debug('__init__(): col = {}'.format(col))
             # remove readonly fields from dbmapping
             if col.get('type',None) == 'readonly':
@@ -313,13 +332,13 @@ class DbCrudApi(CrudApi):
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
-                    self.booleanform[formfield] = thisbool
-                    self.formmapping[formfield] = self.booleanform[formfield].get
-                    col['options'] = self.booleanform[formfield].options
+                    booleanform[formfield] = thisbool
+                    self.formmapping[formfield] = booleanform[formfield].get
+                    col['options'] = booleanform[formfield].options
                     # db processing section
                     ## save handler, set data to db using handler set function
-                    self.booleandb[dbattr] = thisbool
-                    self.dbmapping[dbattr] = self.booleandb[dbattr].set
+                    booleandb[dbattr] = thisbool
+                    self.dbmapping[dbattr] = booleandb[dbattr].set
 
                 # handle relationship treatment
                 if 'relationship' in treatment:
@@ -332,34 +351,57 @@ class DbCrudApi(CrudApi):
                     if thisreln.uselist:
                         col['separator'] = SEPARATOR
                     # get original formfield and dbattr
-                    formfield = col['data'] # TODO: should this come from 'name' or 'data'?
+                    # TODO: should this come from 'name' or 'data'?
+                    ## actually name and data should be the same value, name for editor and data for datatable
+                    ## see https://editor.datatables.net/examples/simple/join.html
+                    formfield = col['data'] 
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
-                    self.relationshipform[formfield] = thisreln
-                    self.formmapping[formfield] = self.relationshipform[formfield].get
+                    # relationshipform[formfield] = thisreln
+                    self.formmapping[formfield] = thisreln.get
                     # db processing section
                     ## save handler, set data to db using handler set function
-                    self.relationshipdb[dbattr] = thisreln
-                    self.dbmapping[dbattr] = self.relationshipdb[dbattr].set
+                    self.dbmapping[dbattr] = thisreln.set
                     ## if this field needs form for editing the record it points at, remember information
                     ## also add <new> option
                     editable = treatment['relationship'].get('editable', {})
-                    current_app.logger.debug('__init__(): modelfield={} editable={}'.format(treatment['relationship']['modelfield'], editable))
+                    current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
+                    valuefield = 'id' if 'valuefield' not in treatment['relationship'] else treatment['relationship']['valuefield']
                     if editable:
-                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['modelfield'], 'id':editable['id'] } })
-                        col['options'] = self.relationshipform[formfield].new_plus_options
+                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'id':editable['id'], 'valuefield':valuefield } })
+                        col['options'] = thisreln.new_plus_options
                     else:
-                        col['options'] = self.relationshipform[formfield].options
+                        col['options'] = thisreln.options
+                        col['options'] = thisreln.options
 
+                    # convert this column for dt and ed configuration
+                    # this conversion happens with super(DbCrudApi, self).__init__(**args) 
+                    # column attributes are updated based on 'dtonly', 'edonly' at very end of initialization
+                    if 'data' in col:
+                        col.setdefault('dt', {}).update({'data':'{}.{}'.format(col['data'],thisreln.labelfield)})
+                        col.setdefault('ed', {}).update({'data':'{}.{}'.format(col['data'],thisreln.valuefield)})
+                    if 'name' in col:
+                        col.setdefault('dt', {}).update({'name':'{}.{}'.format(col['name'],thisreln.labelfield)})
+                        col.setdefault('ed', {}).update({'name':'{}.{}'.format(col['name'],thisreln.valuefield)})
 
-        # if any standalone forms required, add to templateargs
-        if saforms:
-            self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
+        # from pprint import PrettyPrinter
+        # pp = PrettyPrinter()
+        # current_app.logger.debug('args["columns"]={}'.format(pp.pformat(args['clientcolumns'])))
 
         # set up mapping between database and editor form
         # Note: translate '' to None and visa versa
         self.dte = DataTablesEditor(self.dbmapping, self.formmapping, null2emptystring=True)
+
+        # initialize inherited class, and a couple of attributes
+        super(DbCrudApi, self).__init__(**args)
+
+        # make sure we load datatables.js
+        self.pagejsfiles = ['datatables.js'] + self.pagejsfiles
+
+        # if any standalone forms required, add to templateargs
+        if saforms:
+            self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
 
     #----------------------------------------------------------------------
     def get(self):
@@ -374,14 +416,15 @@ class DbCrudApi(CrudApi):
             edoptsjson = ['    {}'.format(l) for l in dumps(ed_options, indent=2).split('\n')]
 
             fieldname = request.args['name']
+            valuefield = request.args['valuefield']
             js  = [
                    '$( function () {', 
                    '  // handle save, then open editor on submit',
-                   '  $( editor.field( "{}" ).input() ).on ("change", function () {{'.format(fieldname), 
+                   '  $( editor.field( "{}.{}" ).input() ).on ("change", function () {{'.format(fieldname, valuefield), 
                    '    console.log("{} select2 change fired");'.format(fieldname), 
-                   '    console.log("editor.get() = " + editor.get("{}"));'.format(fieldname), 
+                   '    console.log("editor.get() = " + editor.get("{}.{}"));'.format(fieldname, valuefield), 
                    '    // only fire if <new> entry',
-                   '    if ( editor.get("{}") != 0 ) return;'.format(fieldname),
+                   '    if ( editor.get("{}.{}") != 0 ) return;'.format(fieldname, valuefield),
                    '    editor.close();', 
                    '    {}_editor'.format(fieldname), 
                    '      .buttons( {', 
@@ -418,11 +461,10 @@ class DbCrudApi(CrudApi):
             return super(DbCrudApi, self).get()
 
     #----------------------------------------------------------------------
-    def saformurl(self, name='', id=''):
+    def saformurl(self, **kwargs):
     #----------------------------------------------------------------------
         # NOTE: keyword arguments need to match request.args access in self.get()
-        params = {'name' : name, 'id' : id }
-        args = urlencode(params)
+        args = urlencode(kwargs)
         # self.__name__ is endpoint -- see https://github.com/pallets/flask/blob/master/flask/views.py View.as_view method
         url = '{}/saformjs?{}'.format(url_for('.'+self.my_view.__name__), args)
         return url
