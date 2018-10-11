@@ -117,6 +117,8 @@ SCRIPTS = [
     ('select2/{ver}/js/select2.full{min}.js', s2_ver, s2_cdn),
     ('select2/{ver}/css/select2{min}.css', s2_ver, s2_cdn),
     'js/FieldType-Select2/editor.select2.js',
+    # extend standard editor.select2 methods
+    'editor.select2.mymethods.js',
 
     # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
     ('moment.js/{ver}/moment{min}.js', moment_ver, moment_cdn),
