@@ -295,8 +295,8 @@ class DbCrudApi(CrudApi):
                     )
         args.update(kwargs)
 
-        # make sure '_treatment' column option is removed before invoking DataTables and Editor
-        args['filtercoloptions'].append('_treatment')
+        # make sure '_treatment' and '_unique' column options are removed before invoking DataTables and Editor
+        args['filtercoloptions'] += ['_treatment', '_unique']
 
         # make copy of dbmapping and formmapping
         # Need to do this because we update the mapping with functions. 
@@ -304,6 +304,9 @@ class DbCrudApi(CrudApi):
         # don't corrupt the original data
         self.formmapping = deepcopy(args['formmapping'])
         self.dbmapping = deepcopy(args['dbmapping'])
+
+        # keep track of columns which must be unique in the database
+        self.uniquecols = []
 
         # do some preprocessing on columns
         booleandb = {}
@@ -315,6 +318,13 @@ class DbCrudApi(CrudApi):
             if col.get('type',None) == 'readonly':
                 self.dbmapping.pop(col['name'], None)
             
+            # need formfield for a couple of things
+            formfield = col['name'] # TODO: should this come from 'name' or 'data'?
+
+            # maybe this column needs to be unique
+            if col.get('_unique', False):
+                self.uniquecols.append(self.formmapping[formfield])
+
             # handle special treatment for column
             treatment = col.get('_treatment', None)
             current_app.logger.debug('__init__(): treatment = {}'.format(treatment))
@@ -328,7 +338,6 @@ class DbCrudApi(CrudApi):
                     col['type'] = 'select2'
                     col['opts'] = { 'minimumResultsForSearch': 'Infinity' }
                     # get original formfield and dbattr
-                    formfield = col['name'] # TODO: should this come from 'name' or 'data'?
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
@@ -354,7 +363,6 @@ class DbCrudApi(CrudApi):
                     # TODO: should this come from 'name' or 'data'?
                     ## actually name and data should be the same value, name for editor and data for datatable
                     ## see https://editor.datatables.net/examples/simple/join.html
-                    formfield = col['data'] 
                     dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
@@ -402,6 +410,11 @@ class DbCrudApi(CrudApi):
         # if any standalone forms required, add to templateargs
         if saforms:
             self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
+
+        # save caller's validation method and update validation to local version
+        self.callervalidate = self.validate
+        self.validate = self.validatedb
+        current_app.logger.debug('updated validate() to validatedb()')
 
     #----------------------------------------------------------------------
     def get(self):
@@ -529,6 +542,28 @@ class DbCrudApi(CrudApi):
         # params = request.args.to_dict()
         # rowTable = self.DataTables(params, query, self.servercolumns)
         # self.outputResult = rowTable.output_result()
+
+    #----------------------------------------------------------------------
+    def validatedb(self, action, formdata):
+    #----------------------------------------------------------------------
+        current_app.logger.debug('DbCrudApi.validatedb({})'.format(action))
+
+        # check results of caller's validation
+        results = self.callervalidate( action, formdata )
+
+        # check if any records conflict with uniqueness requirements
+        if action == 'create' and self.uniquecols:
+            dbrow = self.model()
+            self.dte.set_dbrow(formdata, dbrow)
+            for field in self.uniquecols:
+                # current_app.logger.debug('DbCrudApi.validatedb(): checking field "{}":"{}"'.format(field,getattr(dbrow,field)))
+                row = self.model.query.filter_by(**{field:getattr(dbrow,field)}).one_or_none()
+                # if we found a row that matches, flag error
+
+                if row:
+                    results.append({ 'name' : field, 'status' : 'duplicate found, must be unique' })
+
+        return results
 
     #----------------------------------------------------------------------
     def nexttablerow(self):

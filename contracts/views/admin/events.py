@@ -123,7 +123,7 @@ course = DbCrudApiRolePermissions(
                     dbmapping = course_dbmapping, 
                     formmapping = course_formmapping, 
                     clientcolumns = [
-                        { 'data': 'course', 'name': 'course', 'label': 'Course' },
+                        { 'data': 'course', 'name': 'course', 'label': 'Course', '_unique':True },
                         { 'data': 'address', 'name': 'address', 'label': 'Address' },
                         { 'data': 'isStandard', 'name': 'isStandard', 'label': 'Standard Course', 
                           '_treatment' : { 'boolean' : { 'formfield':'isStandard', 'dbfield':'isStandard' } }
@@ -163,7 +163,7 @@ feetype = DbCrudApiRolePermissions(
                     dbmapping = feetype_dbmapping, 
                     formmapping = feetype_formmapping, 
                     clientcolumns = [
-                        { 'data': 'feeType', 'name': 'feeType', 'label': 'Fee Type' },
+                        { 'data': 'feeType', 'name': 'feeType', 'label': 'Fee Type', '_unique': True },
                         { 'data': 'description', 'name': 'description', 'label': 'Description' },
                     ], 
                     servercolumns = None,  # not server side
@@ -200,7 +200,7 @@ addon = DbCrudApiRolePermissions(
                     dbmapping = addon_dbmapping, 
                     formmapping = addon_formmapping, 
                     clientcolumns = [
-                        { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Add-on' },
+                        { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Add-on', '_unique': True },
                         { 'data': 'longDescr', 'name': 'longDescr', 'label': 'Description' },
                         { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
                     ], 
@@ -238,7 +238,7 @@ service = DbCrudApiRolePermissions(
                     dbmapping = service_dbmapping, 
                     formmapping = service_formmapping, 
                     clientcolumns = [
-                        { 'data': 'service', 'name': 'service', 'label': 'Service' },
+                        { 'data': 'service', 'name': 'service', 'label': 'Service', '_unique': True },
                         { 'data': 'serviceLong', 'name': 'serviceLong', 'label': 'Description',
                             'ed':{ 'label': 'Description (for contract)' }
                         },
