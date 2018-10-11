@@ -21,7 +21,7 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, State, Lead, Course, Service, AddOn, FeeType
+from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
 
@@ -265,11 +265,53 @@ service = DbCrudApiRolePermissions(
 service.register()
 
 ##########################################################################################
+# clients endpoint
+###########################################################################################
+
+client_dbattrs = 'id,client,clientUrl,contactFirstName,contactFullName,contactEmail'.split(',')
+client_formfields = 'rowid,client,clientUrl,contactFirstName,contactFullName,contactEmail'.split(',')
+client_dbmapping = dict(zip(client_dbattrs, client_formfields))
+client_formmapping = dict(zip(client_formfields, client_dbattrs))
+
+client = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = Client, 
+                    pagename = 'clients', 
+                    roles_accepted = ['admin'],
+                    template = 'datatables.jinja2',
+                    endpoint = 'admin.clients-admin', 
+                    rule = '/clients', 
+                    dbmapping = client_dbmapping, 
+                    formmapping = client_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'client', 'name': 'client', 'label': 'Client Name' },
+                        { 'data': 'clientUrl', 'name': 'clientUrl', 'label': 'Client URL' },
+                        { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name' },
+                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
+                        { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                'scrollCollapse': True,
+                                'scrollX': True,
+                                'scrollXInner': "100%",
+                                'scrollY': True,
+                                },
+                    # pagejsfiles = ['events.js'],
+                    # pagecssfiles = ['editor-forms.css'],
+                    scriptfilter = addscripts,
+                    )
+client.register()
+
+##########################################################################################
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,organization,organizationUrl,contactFirstName,contactFullName,contactEmail,registrationUrl,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,organization,organizationUrl,contactFirstName,contactFullName,contactEmail,registrationUrl,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
+event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
+event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -308,6 +350,11 @@ event = DbCrudApiRolePermissions(
                           '_treatment' : { 'relationship' : { 'model':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
                           'ed':{ 'def':'pending' }, 
                         },
+                        { 'data': 'client', 'name': 'client', 'label': 'Client', 
+                          '_treatment' : { 'relationship' : { 'model':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
+                                                              'editable' : { 'api':client, 'id':'eventclient' },
+                           } },
+                        },
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
@@ -340,11 +387,7 @@ event = DbCrudApiRolePermissions(
                           'className': 'inhibitlabel', 
                           'options':['M', 'km'], 'ed':{ 'def':'M' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
-                        { 'data': 'organization', 'name': 'organization', 'label': 'Organization Name' },
-                        { 'data': 'organizationUrl', 'name': 'organizationUrl', 'label': 'Organization URL' },
-                        { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name' },
-                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
-                        { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
+
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
                           '_treatment' : { 'relationship' : { 'model':Lead, 'labelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
                         },

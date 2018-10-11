@@ -127,12 +127,21 @@ class State(Base):
     state       = Column( String(STATE_LEN) )
     description = Column( String(DESCR_LEN) )
 
+class Client(Base):
+    id                  = Column( Integer, primary_key=True ) 
+    client              = Column( String(ORGANIZATION_LEN) )
+    clientUrl           = Column( String(URL_LEN) )
+    contactFirstName    = Column( String(NAME_LEN) )
+    contactFullName     = Column( String(NAME_LEN) )
+    contactEmail        = Column( String(EMAIL_LEN) )
+
 class Event(Base):
     __tablename__ = 'event'
     id                  = Column( Integer, primary_key=True )
     event               = Column( String(EVENT_LEN) )
     date                = Column( String(DATE_LEN) )
     eventUrl            = Column( String(URL_LEN) )
+    registrationUrl     = Column( String(URL_LEN) )
 
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
     state_id            = Column( Integer, ForeignKey('state.id') )
@@ -141,6 +150,8 @@ class Event(Base):
     lead                = relationship( 'Lead', backref='events', lazy=True )
     course_id           = Column( Integer, ForeignKey('course.id') )
     course              = relationship( 'Course', backref='events', lazy=True )
+    client_id           = Column( Integer, ForeignKey('client.id') )
+    client              = relationship( 'Client', backref='events', lazy=True )
 
     mainStartTime       = Column( String(TIME_LEN) )
     mainDistance        = Column( Float )
@@ -148,12 +159,7 @@ class Event(Base):
     funStartTime        = Column( String(TIME_LEN) )
     funDistance         = Column( Float )
     funDistanceUnits    = Column( Enum('M', 'km') )
-    organization        = Column( String(ORGANIZATION_LEN) )
-    organizationUrl     = Column( String(URL_LEN) )
-    contactFirstName    = Column( String(NAME_LEN) )
-    contactFullName     = Column( String(NAME_LEN) )
-    contactEmail        = Column( String(EMAIL_LEN) )
-    registrationUrl     = Column( String(URL_LEN) )
+
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
     services            = relationship( 'Service', secondary=eventservice_table, backref='events', lazy=True )
     finishersPrevYear   = Column( Integer )

@@ -423,7 +423,7 @@ div.row {
     display: flex;
     flex-flow: nowrap;
 }
- 
+
 div.DTE_Field.inhibitlabel > label {
   display: none;
   width: 0% !important;

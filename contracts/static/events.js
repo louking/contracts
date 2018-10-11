@@ -1,3 +1,5 @@
+// TODO: this needs work -- make similar import scheme for clients table
+
 // set editor form width
 $.extend( $.fn.DataTable.Editor.display.jqueryui.modalOptions, {
     width: '1200px'
