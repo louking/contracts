@@ -25,6 +25,12 @@ from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, A
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
 
+# https://www.regextester.com/93652 - modified to allow upper case
+REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
+
+# https://www.regular-expressions.info/email.html
+REGEX_EMAIL = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"
+
 ##########################################################################################
 # states endpoint
 ###########################################################################################
@@ -273,6 +279,20 @@ client_formfields = 'rowid,client,clientUrl,contactFirstName,contactFullName,con
 client_dbmapping = dict(zip(client_dbattrs, client_formfields))
 client_formmapping = dict(zip(client_formfields, client_dbattrs))
 
+def client_validate(action, formdata):
+    results = []
+
+    # regex patterns from http://www.noah.org/wiki/RegEx_Python#URL_regex_pattern
+    for field in ['clientUrl']:
+        if formdata[field] and not match(REGEX_URL, formdata[field]):
+            results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
+
+    for field in ['contactEmail']:
+        if formdata[field] and not match(REGEX_EMAIL, formdata[field]):
+            results.append({ 'name' : field, 'status' : 'invalid email: correct format is like john.doe@example.com' })
+
+    return results
+
 client = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
@@ -285,12 +305,13 @@ client = DbCrudApiRolePermissions(
                     dbmapping = client_dbmapping, 
                     formmapping = client_formmapping, 
                     clientcolumns = [
-                        { 'data': 'client', 'name': 'client', 'label': 'Client Name' },
+                        { 'data': 'client', 'name': 'client', 'label': 'Client Name', '_unique':True },
                         { 'data': 'clientUrl', 'name': 'clientUrl', 'label': 'Client URL' },
                         { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name' },
                         { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
                     ], 
+                    validate = client_validate,
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
                     buttons = ['create', 'edit', 'remove'],
@@ -325,6 +346,11 @@ def event_validate(action, formdata):
     for field in ['mainStartTime', 'funStartTime']:
         if formdata[field] and not match(r"([01]?[0-9]|2[0-3]):[0-5][0-9]", formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid time: correct format is h:mm' })
+
+    # regex patterns from http://www.noah.org/wiki/RegEx_Python#URL_regex_pattern
+    for field in ['eventUrl', 'registrationUrl']:
+        if formdata[field] and not match(REGEX_URL, formdata[field]):
+            results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
     return results
 
