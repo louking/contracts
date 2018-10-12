@@ -40,6 +40,14 @@ function datatables(data, buttons, options, files) {
 
     // configure editor if requested
     if (options.editoropts !== undefined) {
+        // disable autocomplete / autofill by default
+        $.extend( true, $.fn.dataTable.Editor.Field.defaults, {
+          attr: {
+            autocomplete: 'off'
+          }
+        } );
+
+        // create editor instance
         $.extend(options.editoropts,{table:'#datatable'})
         editor = new $.fn.dataTable.Editor ( options.editoropts );
 
