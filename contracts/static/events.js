@@ -1,9 +1,77 @@
-// TODO: this needs work -- make similar import scheme for clients table
-
 // set editor form width
 $.extend( $.fn.DataTable.Editor.display.jqueryui.modalOptions, {
     width: '1200px'
 } );
+
+// current date for form
+function currentdate() {
+    var now = new Date()
+
+    var day  = now.getDate().toString().padStart(2, '0');
+    var mon  = (now.getMonth()+1).toString().padStart(2, '0');
+    var year = now.getFullYear().toString();
+
+    return year + '-' + mon + '-' + day;
+}
+
+// set up buttons for edit form after datatables has been initialized
+function afterdatatables() {
+    editor.on('open', function( e, mode, action ) {
+        // set buttons for create
+        if ( action == 'create' ) {
+            this.buttons( 'Create' );
+
+        // set buttons for edit
+        } else if ( action == 'edit' ) {
+            this.buttons([
+                    {
+                        text: 'Resend Contract',
+                        action: function () {
+                            console.log('Resend Contract');
+                        }
+                    },
+                    {
+                        text: 'Mark Invoice Sent',
+                        action: function () {
+                            this.field( 'invoiceSentDate' ).set( currentdate() );
+                            this.submit();
+                        }
+                    },
+                    {
+                        text: 'Mark as Paid',
+                        action: function () {
+                            this.field( 'paymentRecdDate' ).set( currentdate() );
+                            this.submit();
+                        }
+                    },
+                    {
+                        text: 'Update',
+                        action: function () {
+                            this.submit();
+                        }
+                    },
+                    {
+                        text: 'Update and Send Contract',
+                        action: function () {
+                            console.log('Update and Send Contract');
+                            this.field( 'contractSentDate' ).set( currentdate() );
+                            this.submit();
+                        }
+                    },
+
+                ]);
+
+        // set buttons for remove (only other choice)
+        } else {
+            this.buttons( 'Delete' );
+        }
+
+        return true;
+    });
+}
+
+
+// TODO: below needs work -- make import scheme for events and clients tables
 
 // set up tools button
 function membertools( e, dt, node, config ) {
