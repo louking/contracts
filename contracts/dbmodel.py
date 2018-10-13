@@ -59,6 +59,8 @@ ORGANIZATION_LEN = 30
 NOTES_LEN = 1024
 DESCR_LEN = 512
 FID_LEN = 128   # not taking chance, but 44 per https://stackoverflow.com/questions/38780572/is-there-any-specific-for-google-drive-file-id
+SNAILADDR_LEN = 256
+PHONE_LEN = 13
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -134,6 +136,8 @@ class Client(Base):
     contactFirstName    = Column( String(NAME_LEN) )
     contactFullName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
+    clientPhone         = Column( String(SNAILADDR_LEN) )
+    clientAddr          = Column( String(PHONE_LEN) )
 
 class Event(Base):
     __tablename__ = 'event'

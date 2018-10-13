@@ -274,8 +274,8 @@ service.register()
 # clients endpoint
 ###########################################################################################
 
-client_dbattrs = 'id,client,clientUrl,contactFirstName,contactFullName,contactEmail'.split(',')
-client_formfields = 'rowid,client,clientUrl,contactFirstName,contactFullName,contactEmail'.split(',')
+client_dbattrs = 'id,client,clientUrl,contactFirstName,contactFullName,contactEmail,clientPhone,clientAddr'.split(',')
+client_formfields = 'rowid,client,clientUrl,contactFirstName,contactFullName,contactEmail,clientPhone,clientAddr'.split(',')
 client_dbmapping = dict(zip(client_dbattrs, client_formfields))
 client_formmapping = dict(zip(client_formfields, client_dbattrs))
 
@@ -310,6 +310,8 @@ client = DbCrudApiRolePermissions(
                         { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name' },
                         { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
+                        { 'data': 'clientPhone', 'name': 'clientPhone', 'label': 'Client Phone' },
+                        { 'data': 'clientAddr', 'name': 'clientAddr', 'label': 'Client Address', 'type': 'textarea' },
                     ], 
                     validate = client_validate,
                     servercolumns = None,  # not server side
