@@ -56,16 +56,19 @@ class EventsApi(DbCrudApiRolePermissions):
                 if not eventdb.state or eventdb.state.state not in ['contract-sent', 'committed']:
 
                     # generate contract
-                    docid = cm.create('{}-{}.docx'.format(eventdb.client.client, eventdb.date), eventdb)
+                    docid = cm.create('{}-{}.docx'.format(eventdb.client.client, eventdb.date), eventdb, 
+                                      addlfields={'_servicenames_': [s.service for s in eventdb.services]})
                     
                     # update database to show contract sent
                     eventdb.state = State.query.filter_by(state='contract-sent').one()
                     eventdb.contractSentDate = dt.dt2asc( date.today() )
+                    eventdb.contractDocId = docid
                     
                     # find index with correct id and show database updates
                     for resprow in self._responsedata:
                         if resprow['rowid'] == thisid: 
                             resprow['state'] = { key:val for (key,val) in eventdb.state.__dict__.items() if key[0] != '_' }
                             resprow['contractSentDate'] = eventdb.contractSentDate
+                            resprow['contractDocId'] = eventdb.contractDocId
 
                 # TODO: send contract mail to client

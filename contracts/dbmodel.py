@@ -257,9 +257,10 @@ def init_db(defineowner=True):
     # define blocktypes
     blocktypes = [
         {'blockType' : 'para', 'description' : 'normal paragraph'},
-        {'blockType' : 'listitem', 'description' : 'item in a list, repeated through array of entries'},
+        {'blockType' : 'listitem', 'description' : 'item in a list, optionally repeated through array of entries'},
+        {'blockType' : 'listitem2', 'description' : 'item in a list indented, optionally repeated through array of entries'},
         {'blockType' : 'tablehdr', 'description' : 'table header, html format'},
-        {'blockType' : 'tablerow', 'description' : 'table row, html format, repeated through array of entries'},
+        {'blockType' : 'tablerow', 'description' : 'table row, html format, optionally repeated through array of entries'},
     ]
 
     contracts = [
@@ -267,19 +268,19 @@ def init_db(defineowner=True):
             'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
             'blockPriority'      : 10,
             'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
-            'block'              : '{_date_}'
+            'block'              : '{{ _date_ }}'
         }, 
         {   
             'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
             'blockPriority'      : 20,
             'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
-            'block'              : '{client.contactFullName}\n{event} - {date}'
+            'block'              : '{{ client.contactFullName }}\n{{ event }} - {{ date }}'
         }, 
         {   
             'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
             'blockPriority'      : 30,
             'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
-            'block'              : 'Dear {client.contactFirstName},'
+            'block'              : 'Dear {{ client.contactFirstName }},'
         }, 
         {   
             'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
@@ -288,8 +289,103 @@ def init_db(defineowner=True):
             'block'              : 'You have requested race support services from Frederick ' +
                                    'Steeplechasers Running Club for your event.  This is to ' +
                                    'confirm that we have scheduled the race support services as ' +
-                                   'detailed on the following agreement.'
+                                   'detailed on the following agreement.',
         }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 50,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : 'Your organization is responsible for the following:',
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 60,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem').one,
+            'block'              : '{% if "finishline" in _servicenames_ %}' +
+                                   'Finish Line/Timing Services: Provide race bib numbers with ' +
+                                   'pull-off tags to all participants with the name, age and ' +
+                                   'gender of each participant recorded on the tags. The runners ' +
+                                   'should be instructed to pin the race bib (with the pull-tag in ' +
+                                   'place) on the front where it can be clearly seen by the finish ' +
+                                   'line personnel' +
+                                   '{% endif %}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 70,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem').one,
+            'block'              : '{% if "premiumpromotion" not in _servicenames_ %}' +
+                                   'Standard Promotion: Add your race to the FSRC website event ' +
+                                   'calendar (if not already present): ' +
+                                   'https://steeplechasers.org/events/community/add' +
+                                   '{% endif %}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 80,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem').one,
+            'block'              : '{% if "premiumpromotion" in _servicenames_ %}' +
+                                   "Premium Promotion: Provide spreadsheet file of your participants' " +
+                                   'email addresses from the previous year (if available) , and then ' +
+                                   'provide the current list at the conclusion of the race. Please ' +
+                                   'include a statement in your race waiver as follows: "I understand ' +
+                                   'that I may receive emails about this race and other races promoted ' +
+                                   'by the Frederick Steeplechasers Running Club.' +
+                                   '{% endif %}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 90,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem').one,
+            'block'              : 'Course Support: Aid stations and Course Marshals at key locations ' +
+                                   'along the route are recommended and are the responsibility of the ' +
+                                   'race organizers.'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 100,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : 'FSRC is responsible for:'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 110,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem').one,
+            'block'              : '{% if "finishline" in _servicenames_ %}' +
+                                   'Finish Line/Timing Services' +
+                                   '{% endif %}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 110,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem2').one,
+            'block'              : '{% if "finishline" in _servicenames_ %}' +
+                                   'Transport, setup and operation of FSRC equipment (Display ' +
+                                   'Clock, Time Machine Race Timer, Finish Line Chute, flags, ' +
+                                   'signage and related materials)' +
+                                   '{% endif %}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 110,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='listitem2').one,
+            'block'              : '{% if "finishline" in _servicenames_ %}' +
+                                   'Timing and scoring, including generation of a list of award ' +
+                                   'winners, posting of ordered bib pull-tags with finish times at ' +
+                                   'the race site, and delivery of bib pull-tags at the conclusion ' +
+                                   'of the event. Note: FSRC does not tally final race results ' +
+                                   'beyond the award winners. Race Directors are expected to use ' +
+                                   'the delivered bib pull-tags to generate race results.' +
+                                   '{% endif %}'
+        }, 
+    ]
+
+    # define courses here
+    courses = [
+        {'course':'Baker Park', 'address':'21 N. Bentz St, Frederick, MD 21701', 'isStandard':True},
+        {'course':'Riverside Park', 'address':'Monocacy Blvd @ Laurel Wood Way, Frederick, MD 21701', 'isStandard':True},
+        {'course':'Monocacy Village Park', 'address':'413 Delaware Rd, Frederick, MD 21701', 'isStandard':True},
+        {'course':'Whittier', 'address':'2117 Independence St, Frederick, MD 21702', 'isStandard':True},
     ]
 
     # define states here
@@ -311,7 +407,7 @@ def init_db(defineowner=True):
     services = [
         {'service':'finishline', 'serviceLong':'Finish Line', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='basedOnField').one, 'basedOnField':'finishersPrevYear'},
         {'service':'coursemarking', 'serviceLong':'Course Marking', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='fixed').one, 'fee':100},
-        {'service':'permiumpromotion', 'serviceLong':'Premium Promotion', 'isCalendarBlocked': False, 'feeType':FeeType.query.filter_by(feeType='fixed').one, 'fee':75},
+        {'service':'premiumpromotion', 'serviceLong':'Premium Promotion', 'isCalendarBlocked': False, 'feeType':FeeType.query.filter_by(feeType='fixed').one, 'fee':75},
     ]
 
     # initialize these tables
@@ -319,6 +415,7 @@ def init_db(defineowner=True):
         (State, states),
         (FeeType, feetypes),
         (Service, services),
+        (Course, courses),
         (ContractType, contracttypes),
         (ContractBlockType, blocktypes),
         (Contract, contracts),

@@ -310,7 +310,7 @@ client = DbCrudApiRolePermissions(
                         { 'data': 'client', 'name': 'client', 'label': 'Client Name', '_unique':True },
                         { 'data': 'clientUrl', 'name': 'clientUrl', 'label': 'Client URL' },
                         { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name' },
-                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Name' },
+                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Full Name' },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email' },
                         { 'data': 'clientPhone', 'name': 'clientPhone', 'label': 'Client Phone' },
                         { 'data': 'clientAddr', 'name': 'clientAddr', 'label': 'Client Address', 'type': 'textarea' },
