@@ -24,6 +24,8 @@ from . import bp
 from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
+from contracts.contractmanager import ContractManager
+from eventscontract import EventsApi
 
 # https://www.regextester.com/93652 - modified to allow upper case
 REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
@@ -329,7 +331,7 @@ client = DbCrudApiRolePermissions(
                     )
 client.register()
 
-##########################################################################################
+###########################################################################################
 # events endpoint
 ###########################################################################################
 
@@ -356,7 +358,7 @@ def event_validate(action, formdata):
 
     return results
 
-event = DbCrudApiRolePermissions(
+event = EventsApi(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Event, 
@@ -463,11 +465,6 @@ event = DbCrudApiRolePermissions(
                     pagejsfiles = ['events.js'],
                     pagecssfiles = ['editor-forms.css'],
                     scriptfilter = addscripts,
-                    # templateargs = {'saformjsurls': 
-                    #                     lambda: 
-                    #                       [ course.saformurl('course', 'eventcourse'), 
-                    #                         lead.saformurl('lead', 'eventlead'), 
-                    #                       ] }
                     )
 event.register()
 

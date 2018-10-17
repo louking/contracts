@@ -17,4 +17,5 @@ bp = Blueprint('admin', __name__.split('.')[0], url_prefix='/admin')
 import login
 import userrole
 import events
+import contractviews
 import sysinfo

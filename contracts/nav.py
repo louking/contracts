@@ -18,7 +18,7 @@ define navigation bar based on privileges
 
 # pypi
 from flask_nav import Nav
-from flask_nav.elements import Navbar, View
+from flask_nav.elements import Navbar, View, Subgroup
 from flask_security import current_user
 from flask import current_app
 
@@ -45,6 +45,18 @@ def nav_menu():
         navbar.items.append(View('Fee Types', 'admin.feetype'))
         navbar.items.append(View('Roles', 'admin.roles'))
         navbar.items.append(View('States', 'admin.states'))
+        
+        # TODO: Contracts won't expand for some reason
+        # contracts = Subgroup('Contracts',
+        #                      View('Contracts', 'admin.contracts'),
+        #                      View('Contract Types', 'admin.contracttypes'),
+        #                      View('Block Types', 'admin.contractblocktypes'),
+        #                     )
+        # navbar.items.append(contracts)
+        navbar.items.append(View('Contracts', 'admin.contracts')),
+        navbar.items.append(View('Contract Types', 'admin.contracttypes')),
+        navbar.items.append(View('Block Types', 'admin.contractblocktypes')),
+
         navbar.items.append(View('Debug', 'admin.debug'))
 
     return navbar

@@ -61,12 +61,37 @@ DESCR_LEN = 512
 FID_LEN = 128   # not taking chance, but 44 per https://stackoverflow.com/questions/38780572/is-there-any-specific-for-google-drive-file-id
 SNAILADDR_LEN = 256
 PHONE_LEN = 13
+CONTRACT_TYPE_LEN = 30
+CONTRACK_BLOCK_LEN = 2048
+CONTRACT_BLOCK_TYPE_LEN = 10
 
 class Lead(Base):
     __tablename__ = 'lead'
     id          = Column( Integer, primary_key=True )
     name        = Column( String(NAME_LEN) )
     email       = Column( String(EMAIL_LEN) )
+
+class ContractType(Base):
+    __tablename__ = 'contracttype'
+    id              = Column( Integer, primary_key=True )
+    contractType    = Column( String(CONTRACT_TYPE_LEN) )
+    description     = Column( String(DESCR_LEN) )
+    
+class ContractBlockType(Base):
+    __tablename__ = 'contractblocktype'
+    id              = Column( Integer, primary_key=True )
+    blockType       = Column( String(CONTRACT_BLOCK_TYPE_LEN) )
+    description     = Column( String(DESCR_LEN) )
+    
+class Contract(Base):
+    __tablename__ = 'contract'
+    id                  = Column( Integer, primary_key=True )
+    contractTypeId      = Column( Integer, ForeignKey('contracttype.id' ) )
+    contractType        = relationship( 'ContractType', backref='contracts', lazy=True )
+    blockPriority       = Column( Integer, nullable=False )
+    contractBlockTypeId = Column( Integer, ForeignKey('contractblocktype.id' ) )
+    contractBlockType   = relationship( 'ContractBlockType', backref='contracts', lazy=True )
+    block               = Column( String(CONTRACK_BLOCK_LEN) )
 
 class FeeType(Base):
     __tablename__ = 'feetype'
@@ -130,6 +155,7 @@ class State(Base):
     description = Column( String(DESCR_LEN) )
 
 class Client(Base):
+    __tablename__ = 'client'
     id                  = Column( Integer, primary_key=True ) 
     client              = Column( String(ORGANIZATION_LEN) )
     clientUrl           = Column( String(URL_LEN) )
@@ -223,6 +249,49 @@ def init_db(defineowner=True):
     from contracts import user_datastore
 
     # TODO: move the following to config file
+    contracttypes = [
+        {'contractType' : 'race services', 'description' : 'race services contract'},
+        {'contractType' : 'race sponsorship', 'description' : 'signature race sponsorship agreement'},
+    ]
+
+    # define blocktypes
+    blocktypes = [
+        {'blockType' : 'para', 'description' : 'normal paragraph'},
+        {'blockType' : 'listitem', 'description' : 'item in a list, repeated through array of entries'},
+        {'blockType' : 'tablehdr', 'description' : 'table header, html format'},
+        {'blockType' : 'tablerow', 'description' : 'table row, html format, repeated through array of entries'},
+    ]
+
+    contracts = [
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 10,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : '{_date_}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 20,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : '{client.contactFullName}\n{event} - {date}'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 30,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : 'Dear {client.contactFirstName},'
+        }, 
+        {   
+            'contractType'       : ContractType.query.filter_by(contractType='race services').one, 
+            'blockPriority'      : 40,
+            'contractBlockType'  : ContractBlockType.query.filter_by(blockType='para').one,
+            'block'              : 'You have requested race support services from Frederick ' +
+                                   'Steeplechasers Running Club for your event.  This is to ' +
+                                   'confirm that we have scheduled the race support services as ' +
+                                   'detailed on the following agreement.'
+        }, 
+    ]
+
     # define states here
     states = [
         {'state':'pending', 'description':'race was copied automatically to the next year ("renewed") during Post Race Processing or by clicking Renew button. The admin is expected to confirm with race director that the race will happen and that the date and other race details are correct. This is set automatically through Post Race Processing or after clicking Renew.'},
@@ -250,6 +319,9 @@ def init_db(defineowner=True):
         (State, states),
         (FeeType, feetypes),
         (Service, services),
+        (ContractType, contracttypes),
+        (ContractBlockType, blocktypes),
+        (Contract, contracts),
     ]
     for model, items in modelitems:
         for item in items:
