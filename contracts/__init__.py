@@ -61,7 +61,7 @@ def create_app(config_obj, config_filename=None):
     app.jinja_env.globals['_productname_text'] = app.config['THISAPP_PRODUCTNAME_TEXT']
 
     # initialize database
-    from contracts.dbmodel import db, init_db
+    from contracts.dbmodel import db
     db.init_app(app)
 
     # Set up Flask-Security

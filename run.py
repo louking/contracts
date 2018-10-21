@@ -31,8 +31,8 @@ configpath = os.path.join(os.path.dirname(abspath), 'config', configfile)
 app = create_app(Development(configpath), configpath)
 
 from loutilities.flask_helpers.blueprints import list_routes
-with app.app_context():
-    list_routes(app)
+# with app.app_context():
+#     list_routes(app)
 
 if __name__ == "__main__":
     if "--setup" in sys.argv:
@@ -46,7 +46,8 @@ if __name__ == "__main__":
     elif "--RESET" in sys.argv:
         with app.app_context():
             # must be within app context
-            from contracts.dbmodel import db, init_db
+            from contracts.dbmodel import db
+            from contracts.dbinit import init_db
             db.drop_all()
             db.create_all()
 
