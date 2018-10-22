@@ -18,13 +18,17 @@ from datetime import date
 from flask import current_app
 
 # homegrown
-from contracts.dbmodel import db, Event, State
+from contracts.dbmodel import db, Event, State, FeeBasedOn
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from loutilities.tables import get_request_data
 from loutilities.timeu import asctime
 
 dt = asctime('%Y-%m-%d')
+
+class ParameterError(Exception): pass
+
+debug = True
 
 ###########################################################################################
 class EventsApi(DbCrudApiRolePermissions):
@@ -55,9 +59,66 @@ class EventsApi(DbCrudApiRolePermissions):
                 # check state to see if we are generating a new version or just sending current version
                 if not eventdb.state or eventdb.state.state not in ['contract-sent', 'committed']:
 
+                    # TODO: calculate service fees
+                    servicefees = []
+
+                    feetotal = 0
+                    for service in eventdb.services:
+                        servicefee = { 'service' : service.serviceLong }
+                        # fixed fee
+                        if service.feeType.feeType =='fixed':
+                            thisfee = service.fee
+                            servicefee['fee'] = thisfee
+                            servicefees.append( servicefee )
+
+                        # fee is based on another field
+                        elif service.feeType.feeType =='basedOnField':
+                            field = service.basedOnField
+                            # not clear why this needs to be converted to int, but otherwise see unicode value
+                            fieldval = int(getattr(eventdb, field))
+
+                            # field not set, then set self._fielderrors appropriately
+                            if not fieldval:
+                                formfield = self.dbmapping[field]   # hopefully not a function
+                                self._fielderrors = [{ 'name' : formfield, 'status' : 'needed to calculate fee' }]
+                                raise ParameterError, 'cannot calculate fee if {} not set'.format(field)
+
+                            feebasedons = FeeBasedOn.query.filter_by(serviceId=service.id).order_by(FeeBasedOn.fieldValue).all()
+                            foundfee = False
+                            for feebasedon in feebasedons:
+                                lastfieldval = feebasedon.fieldValue
+                                if debug: current_app.logger.debug('fieldval={} feebasedon.fieldValue={}'.format(fieldval, feebasedon.fieldValue))
+                                if debug: current_app.logger.debug('type(fieldval)={} type(feebasedon.fieldValue)={}'.format(type(fieldval), type(feebasedon.fieldValue)))
+                                if fieldval <= feebasedon.fieldValue:
+                                    thisfee = feebasedon.fee
+                                    servicefee['fee'] = thisfee
+                                    servicefees.append( servicefee )
+                                    foundfee = True
+                                    break
+
+                            # if fee not found, then set fielderrors appropriately
+                            if not foundfee:
+                                formfield = self.dbmapping[field]   # hopefully not a function
+                                self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
+                                raise ParameterError, 'cannot calculate fee if {} greater than {}'.format(field, lastfieldval)
+                                
+                        # fee is an add on
+                        elif service.feeType.feeType =='addOn':
+                            raise NotImplemented, 'addOn not implemented yet'
+                        
+                        # not sure how we could get here, but best to be defensive
+                        else:
+                            raise ParameterError, 'unknown feeType: {}'.format(service.feeType.feeType)
+
+                        # accumulate total fee
+                        feetotal += thisfee
+                    
                     # generate contract
-                    docid = cm.create('{}-{}.docx'.format(eventdb.client.client, eventdb.date), eventdb, 
-                                      addlfields={'_servicenames_': [s.service for s in eventdb.services]})
+                    docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.event, eventdb.date), eventdb, 
+                                      addlfields={'servicenames': [s.service for s in eventdb.services],
+                                                  'servicefees' : servicefees,
+                                                  'totalfees' : { 'service' : 'TOTAL', 'fee' : feetotal },
+                                                 })
                     
                     # update database to show contract sent
                     eventdb.state = State.query.filter_by(state='contract-sent').one()

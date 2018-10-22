@@ -18,6 +18,7 @@ from tempfile import mkdtemp
 from datetime import date
 from os.path import join as pathjoin
 from copy import deepcopy
+from csv import reader
 
 # pypy
 from docx import Document
@@ -72,15 +73,17 @@ def _evaluate(tree, subtree):
 #####################################################
 class ContractManagerTemplate():
 #####################################################
+    '''
+    parameters:
+
+    * template - jinja2 template of text with replacement fields surrounded by curly braces with fields 
+      like {{ a }, {{ b.c }} and control like {% for xxx %} {% endfor %}, {% if xxx %} {% endif %} 
+      see http://jinja.pocoo.org/docs/2.10/templates/
+    '''
 
     #----------------------------------------------------------------------
     def __init__(self, template):
     #----------------------------------------------------------------------
-        '''
-        * template - jinja2 template of text with replacement fields surrounded by curly braces with fields 
-          like {{ a }, {{ b.c }} and control like {% for xxx %} {% endfor %}, {% if xxx %} {% endif %} 
-          see http://jinja.pocoo.org/docs/2.10/templates/
-        '''
         if debug: current_app.logger.debug('ContractManager.__init__(): template={}'.format(template))
         self.template = template_env.from_string(template)
 
@@ -188,12 +191,15 @@ class ContractManager():
         for blockd in templates:
             # retrieve block type text
             blockType = blockd.contractBlockType.blockType
-            template = ContractManagerTemplate( blockd.block )
 
+            # para is a single paragraph, based on a single template
             if blockType == 'para':
+                template = ContractManagerTemplate( blockd.block )
                 para = docx.add_paragraph( template.render( merge ) )
 
+            # listitem[2] is a list item which may generate multiple lines, based on a single template
             elif blockType in ['listitem', 'listitem2']:
+                template = ContractManagerTemplate( blockd.block )
                 for render in template.generate( merge ):
                     listitem = docx.add_paragraph( render )
                     if blockType == 'listitem':
@@ -201,17 +207,49 @@ class ContractManager():
                     elif blockType == 'listitem2':
                         listitem.style = 'List Bullet 2'
                 
-            elif blockType == 'tablehdr':
-                pass
+            # pagebreak is, well, just a page break
+            elif blockType == 'pagebreak':
+                docx.add_page_break()
                 
-            elif blockType == 'tablerow':
-                pass
+            # tablehdr causes a table to be created with the number of columns depending on how many elements
+            # this is configured as comma separated headings (no template rendering is done)
+            elif blockType == 'tablehdr':
+                # use csv reader to parse quoted fields with commas correctly
+                rdr = reader([blockd.block])
+                headings = rdr.next()
+                table = docx.add_table(rows=1, cols=len(headings))
+                hdr_cells = table.rows[0].cells
+                for c in range(len(headings)):
+                    hdr_cells[c].text = headings[c]
+                    hdr_cells[c].style = 'bold'
+
+            # tablerow and tablerowbold define what some rows of the table look like
+            # this is configured as template with comma separated columns, optional for loop
+            elif blockType in ['tablerow', 'tablerowbold']:
+                # get templated and create generator
+                coltemplate = ContractManagerTemplate( blockd.block )
+                colg = coltemplate.generate( merge )
+
+                # collect the generated raw rows (raw means with commas embedded)
+                rawrows = []
+                for rawrow in colg:
+                    rawrows.append( rawrow )
+
+                # then add row data to table using csv reader 
+                # if there are commas in the data csv reader will parse quoted fields with commas correctly
+                rows = reader( rawrows )
+                for row in rows:
+                    row_cells = table.add_row().cells
+                    for c in range(len(row)):
+                        row_cells[c].text = row[c]
+                        if blockType == 'tablerowbold':
+                            row_cells[c].style = 'bold'
             
             else:
                 raise parameterError, 'unknown block type: {}'.format(blockType)
 
         # save temporary doc file
-        dirpath = mkdtemp()
+        dirpath = mkdtemp(prefix='contracts_')
         path = pathjoin(dirpath, filename)
         docx.save(path)
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))

@@ -63,7 +63,7 @@ SNAILADDR_LEN = 256
 PHONE_LEN = 13
 CONTRACT_TYPE_LEN = 30
 CONTRACK_BLOCK_LEN = 2048
-CONTRACT_BLOCK_TYPE_LEN = 10
+CONTRACT_BLOCK_TYPE_LEN = 20
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -118,7 +118,7 @@ class Service(Base):
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
 
 # for a given service, fieldValues are sorted
-# fee is based on the smallest fieldValue >= basedOnField 
+# fee is based on the largest fieldValue <= basedOnField 
 class FeeBasedOn(Base):
     __tablename__ =  'feebasedon'
     id         = Column( Integer, primary_key=True )
