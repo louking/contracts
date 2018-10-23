@@ -220,8 +220,8 @@ class ContractManager():
                 table = docx.add_table(rows=1, cols=len(headings))
                 hdr_cells = table.rows[0].cells
                 for c in range(len(headings)):
-                    hdr_cells[c].text = headings[c]
-                    hdr_cells[c].style = 'bold'
+                    run = hdr_cells[c].paragraphs[0].add_run( headings[c] )
+                    run.bold = True
 
             # tablerow and tablerowbold define what some rows of the table look like
             # this is configured as template with comma separated columns, optional for loop
@@ -241,9 +241,9 @@ class ContractManager():
                 for row in rows:
                     row_cells = table.add_row().cells
                     for c in range(len(row)):
-                        row_cells[c].text = row[c]
+                        run = row_cells[c].paragraphs[0].add_run( row[c] )
                         if blockType == 'tablerowbold':
-                            row_cells[c].style = 'bold'
+                            run.bold = True
             
             else:
                 raise parameterError, 'unknown block type: {}'.format(blockType)
