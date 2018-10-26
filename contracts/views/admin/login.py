@@ -72,7 +72,7 @@ class Logout(View):
     def logout( self ):
     #----------------------------------------------------------------------
         googleauth.clear_credentials()
-        return redirect('authorize')
+        return redirect(url_for('frontend.index'))
 
 #############################################
 # logout handling
