@@ -24,6 +24,7 @@ from csv import reader
 from docx import Document
 from flask import current_app
 from jinja2 import Environment
+from googleapiclient.discovery import build
 
 # homegrown
 from contracts.dbmodel import db, Contract, ContractType
@@ -255,6 +256,7 @@ class ContractManager():
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
         # upload to google drive
+        # drive = build('drive', 'v3')
 
         # remove temporary folder
 

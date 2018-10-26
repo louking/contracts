@@ -31,8 +31,12 @@ configpath = os.path.join(os.path.dirname(abspath), 'config', configfile)
 app = create_app(Development(configpath), configpath)
 
 from loutilities.flask_helpers.blueprints import list_routes
-# with app.app_context():
-#     list_routes(app)
+
+debug = True
+
+if debug:
+    with app.app_context():
+        list_routes(app)
 
 if __name__ == "__main__":
     if "--setup" in sys.argv:

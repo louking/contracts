@@ -14,7 +14,7 @@
     <div class=pagename>{{self.pagename()}}</div>
     <div class=metanav>
       {% if not session.user_id %}
-        <a href="{{ url_for('google.login') }}">log in</a>
+        <a href="{{ url_for('authorize') }}">log in</a>
       {% else %}
 {#         {{ session.user_name }}
         {% if not inhibityear and session.year %}
@@ -25,7 +25,7 @@
           </select>
         {% endif %}
  #}
-        <a href="{{ url_for('admin.logout') }}">log out</a>
+        <a href="{{ url_for('logout') }}">log out</a>
       {% endif %}
     </div>  
   </div>

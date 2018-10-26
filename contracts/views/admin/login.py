@@ -16,101 +16,64 @@ login - log in / out from admin console
 # pypi
 from flask import flash, session, current_app, redirect, url_for
 from flask_security import current_user, login_user, login_required, logout_user
-from flask_dance.consumer import oauth_authorized
-from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
-from flask_dance.contrib.google import make_google_blueprint, google
-from sqlalchemy.orm.exc import NoResultFound
+from flask.views import View
 
 # homegrown
-from contracts.dbmodel import db, OAuth, User
+from contracts.dbmodel import db, User
+from loutilities.googleauth import GoogleAuth, get_credentials
 
-#----------------------------------------------------
-def init_login(app):
-#----------------------------------------------------
-    blueprint = make_google_blueprint(
-        client_id   = app.config['GOOGLE_OAUTH_CLIENT_ID'],
-        client_secret = app.config['GOOGLE_OAUTH_CLIENT_SECRET'],
-        scope=[
-                'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/drive.file',
-              ]
-    )
-    app.register_blueprint(blueprint, url_prefix="/login")
+# needful constants
+APP_CRED_FOLDER = current_app.config['APP_CRED_FOLDER']
 
-    # setup SQLAlchemy backend
-    blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+#----------------------------------------------------------------------
+def do_login(email):
+#----------------------------------------------------------------------
+    # verify local user account for this user exists. We can log
+    # in that account as well, while we're at it.
+    user = User.query.filter_by(email=email).first()
 
-    # create/login local user on successful OAuth login
-    @oauth_authorized.connect_via(blueprint)
-    def google_logged_in(blueprint, token):
-        if not token:
-            flash("Failed to log in with google.", category="error")
-            return False
+    # if user exists, log them in
+    if user:
+        # Log in the new local user account
+        login_user(user)
+        db.session.commit()
 
-        resp = blueprint.session.get("/oauth2/v2/userinfo")
-        if not resp.ok:
-            msg = "Failed to fetch user info from google."
-            flash(msg, category="error")
-            return False
+    else:
+        flash("Your email {} was not found. If you this this is in error, please contact raceservices@steeplechasers.org".format(email), 'error')
 
-        google_info = resp.json()
-        google_user_id = str(google_info["id"])
-
-        # Find this OAuth token in the database, or create it
-        query = OAuth.query.filter_by(
-            provider=blueprint.name,
-            provider_user_id=google_user_id,
-        )
-        try:
-            oauth = query.one()
-        except NoResultFound:
-            oauth = OAuth(
-                provider=blueprint.name,
-                provider_user_id=google_user_id,
-                token=token,
-            )
-
-        if oauth.user:
-            # If this OAuth token already has an associated local account,
-            # log in that local user account.
-            # Note that if we just created this OAuth token, then it can't
-            # have an associated local account yet.
-            login_user(oauth.user)
-            db.session.commit()
-
-        else:
-            # If this OAuth token doesn't have an associated local account,
-            # verify local user account for this user exists. We can log
-            # in that account as well, while we're at it.
-            user = User.query.filter_by(email=google_info['email']).first()
-
-            # if user exists, log them in
-            if user:
-                oauth.user = user
-
-                # Save and commit our database models
-                db.session.add_all([oauth])
-
-                # Log in the new local user account
-                login_user(user)
-                db.session.commit()
-
-            else:
-                flash("Your email {} was not found. If you this this is in error, please contact raceservices@steeplechasers.org", 'error')
-
-        # Since we're manually creating the OAuth model in the database,
-        # we should return False so that Flask-Dance knows that
-        # it doesn't have to do it. If we don't return False, the OAuth token
-        # could be saved twice, or Flask-Dance could throw an error when
-        # trying to incorrectly save it for us.
-        return False
-
-from . import bp
-@bp.route("/logout")
-@login_required
-def logout():
+#----------------------------------------------------------------------
+def do_logout():
+#----------------------------------------------------------------------
     logout_user()
     db.session.commit()
-    flash("you've been logged out")
-    return redirect(url_for("frontend.index"))
+
+#############################################
+# google auth views
+appscopes = [ 'https://www.googleapis.com/auth/plus.me',
+              'https://www.googleapis.com/auth/userinfo.email',
+              'https://www.googleapis.com/auth/userinfo.profile',
+              'https://www.googleapis.com/auth/drive.file' ]
+googleauth = GoogleAuth(current_app, current_app.config['APP_CLIENT_SECRETS_FILE'], appscopes, 'frontend.index', 
+                        credfolder=APP_CRED_FOLDER, 
+                        logincallback=do_login, logoutcallback=do_logout,
+                        loginfo=current_app.logger.info, logdebug=current_app.logger.debug, logerror=current_app.logger.error)
+
+#######################################################################
+class Logout(View):
+#######################################################################
+
+    #----------------------------------------------------------------------
+    def __init__( self, app ):
+    #----------------------------------------------------------------------
+        self.app = app
+        self.app.add_url_rule('/admin/logout', view_func=self.logout, methods=['GET',])
+
+    #----------------------------------------------------------------------
+    def logout( self ):
+    #----------------------------------------------------------------------
+        googleauth.clear_credentials()
+        return redirect('authorize')
+
+#############################################
+# logout handling
+logout = Logout(current_app)

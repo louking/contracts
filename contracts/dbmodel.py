@@ -17,7 +17,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import current_user, UserMixin, RoleMixin
-from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
 
 # set up database - SQLAlchemy() must be done after app.config SQLALCHEMY_* assignments
 db = SQLAlchemy()
@@ -235,10 +234,3 @@ class User(Base, UserMixin):
     confirmed_at        = Column( DateTime() )
     roles               = relationship('Role', secondary='roles_users',
                           backref=backref('users', lazy='dynamic'))
-
-class OAuth(OAuthConsumerMixin, Base):
-    provider_user_id    = Column( String(EMAIL_LEN), unique=True )
-    user_id             = Column( Integer, ForeignKey(User.id) )
-    user                = relationship(User)
-
-

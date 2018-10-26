@@ -82,9 +82,6 @@ def create_app(config_obj, config_filename=None):
         # admin views need to be defined within app context because of requests.addscripts() using url_for
         from contracts.views.admin import bp as admin
         app.register_blueprint(admin)
-        ## initialize login processing
-        from contracts.views.admin.login import init_login
-        init_login(app)
 
         # import navigation after views created
         import nav
