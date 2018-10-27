@@ -25,10 +25,13 @@ from docx import Document
 from flask import current_app
 from jinja2 import Environment
 from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 # homegrown
 from contracts.dbmodel import db, Contract, ContractType
 from loutilities import timeu
+from loutilities.googleauth import get_credentials
+from contracts.views.admin.login import APP_CRED_FOLDER
 
 class parameterError(Exception): pass
 
@@ -37,6 +40,13 @@ debug2 = False
 
 # templating environment. strip white space. see http://jinja.pocoo.org/docs/2.10/templates/#whitespace-control
 template_env = Environment(trim_blocks=True, lstrip_blocks=True)
+
+# needful constants
+DRIVE_SERVICE = 'drive'
+DRIVE_VERSION = 'v3'
+
+# exceptions
+class PermissionError(Exception): pass
 
 #----------------------------------------------------------------------
 def _evaluate(tree, subtree):
@@ -256,8 +266,60 @@ class ContractManager():
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
         # upload to google drive
-        # drive = build('drive', 'v3')
+        ## load credentials for drive instance
+        credentials = get_credentials(APP_CRED_FOLDER)
+        if not credentials:
+            return redirect('authorize')
+
+        ## set up drive service
+        drive = build(DRIVE_SERVICE, DRIVE_VERSION, credentials=credentials)
+
+        ## upload (adapted from https://developers.google.com/drive/api/v3/manage-uploads)
+        drivename = filename
+        if drivename[-5:] == '.docx': drivename = drivename[:-5]
+        file_metadata = {
+            'name': drivename,
+            # see https://developers.google.com/drive/api/v3/mime-types
+            'mimeType': 'application/vnd.google-apps.document',
+            # see https://developers.google.com/drive/api/v3/folder
+            'parents': [current_app.config['CONTRACTS_DB_FOLDER']],
+        }
+        media = MediaFileUpload(path,
+            # see https://blogs.msdn.microsoft.com/vsofficedeveloper/2008/05/08/office-2007-file-format-mime-types-for-http-content-streaming-2/
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            resumable=True)
+        file = drive.files().create(body=file_metadata,
+                                    media_body=media,
+                                    fields='id').execute()
+        fid = file.get('id')
+        if debug: current_app.logger.debug('uploaded fid={}'.format(fid))
+
+        ## TODO: set file to be publicly readable
+        # see https://developers.google.com/drive/api/v3/manage-sharing
+        def batch_callback(request_id, response, exception):
+            if exception:
+                # Handle error
+                if debug: current_app.logger.error("batch_callback(): permission exception {}".format(exception) )
+                raise PermissionError, exception
+            else:
+                if debug: current_app.logger.debug("batch_callback(): permission id {}".format(response.get('id')) )
+
+        batch = drive.new_batch_http_request(callback=batch_callback)
+        public_permission = {
+            'type': 'anyone',
+            'role': 'reader',
+        }
+        batch.add(drive.permissions().create(
+                fileId=fid,
+                body=public_permission,
+                fields='id',
+        ))
+        batch.execute()
 
         # remove temporary folder
+
+        # send email
+
+        return fid
 
 
