@@ -21,7 +21,7 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType
+from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
 from contracts.contractmanager import ContractManager
@@ -186,6 +186,47 @@ feetype = DbCrudApiRolePermissions(
                         scriptfilter = addscripts,
                     )
 feetype.register()
+
+##########################################################################################
+# feebasedon endpoint
+###########################################################################################
+
+feebasedon_dbattrs = 'id,service,fieldValue,fee'.split(',')
+feebasedon_formfields = 'rowid,service,fieldValue,fee'.split(',')
+feebasedon_dbmapping = dict(zip(feebasedon_dbattrs, feebasedon_formfields))
+feebasedon_formmapping = dict(zip(feebasedon_formfields, feebasedon_dbattrs))
+
+feebasedon = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = FeeBasedOn, 
+                    roles_accepted = ['superadmin', 'admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'Fee Based On', 
+                    endpoint = 'admin.feebasedon', 
+                    rule = '/feebasedon', 
+                    dbmapping = feebasedon_dbmapping, 
+                    formmapping = feebasedon_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'service', 'name': 'service', 'label': 'Service',
+                          '_treatment' : { 'relationship' : { 'model':Service, 'labelfield':'service', 'formfield':'service', 'dbfield':'service', 'uselist':False } },
+                        },
+                        { 'data': 'fieldValue', 'name': 'fieldValue', 'label': 'Field Value' },
+                        { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                        'order': [[1, 'asc'], [2, 'asc']],
+                                  },
+                    scriptfilter = addscripts,
+                    )
+feebasedon.register()
 
 ##########################################################################################
 # addon endpoint

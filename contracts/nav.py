@@ -43,6 +43,7 @@ def nav_menu():
         navbar.items.append(View('Services', 'admin.services'))
         navbar.items.append(View('Add-Ons', 'admin.addon'))
         navbar.items.append(View('Fee Types', 'admin.feetype'))
+        navbar.items.append(View('Fee Based On', 'admin.feebasedon'))
         navbar.items.append(View('Roles', 'admin.roles'))
         navbar.items.append(View('States', 'admin.states'))
         
