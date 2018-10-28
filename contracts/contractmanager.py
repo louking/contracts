@@ -20,6 +20,7 @@ from os.path import join as pathjoin
 from copy import deepcopy
 from csv import reader
 from shutil import rmtree
+from json import loads
 
 # pypy
 from docx import Document
@@ -208,6 +209,20 @@ class ContractManager():
             if blockType == 'para':
                 template = ContractManagerTemplate( blockd.block )
                 para = docx.add_paragraph( template.render( merge ) )
+
+            # sectionprops has json object containing section property assignments (see https://python-docx.readthedocs.io/en/latest/api/section.html)
+            elif blockType == 'sectionprops':
+                props = loads( blockd.block )
+                for prop in props:
+                    # try to convert property value, otherwise leave as string
+                    thisprop = props[prop]
+                    for ttype in [int, float]:
+                        try:
+                            thisprop = ttype(thisprop)
+                            break
+                        except ValueError:
+                            pass
+                    setattr(docx.sections[0], prop, thisprop)
 
             # listitem[2] is a list item which may generate multiple lines, based on a single template
             elif blockType in ['listitem', 'listitem2']:
