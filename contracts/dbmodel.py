@@ -183,9 +183,11 @@ class Event(Base):
     client              = relationship( 'Client', backref='events', lazy=True )
 
     mainStartTime       = Column( String(TIME_LEN) )
+    mainTimeAmPm        = Column( Enum('am', 'pm') )
     mainDistance        = Column( Float )
     mainDistanceUnits   = Column( Enum('M',  'km') )
     funStartTime        = Column( String(TIME_LEN) )
+    funTimeAmPm         = Column( Enum('am', 'pm') )
     funDistance         = Column( Float )
     funDistanceUnits    = Column( Enum('M', 'km') )
 

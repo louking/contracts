@@ -335,8 +335,8 @@ client.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
+event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
+event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -395,10 +395,12 @@ event = EventsApi(
                                                             } 
                                          },
                         },
-                        { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time',
-                            'ed':{'format':'H:mm',
-                                  'label' : 'Start Time (h:mm) h=0-23'
-                            } 
+                        { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time' },
+                        { 'data': 'mainTimeAmPm', 'name': 'mainTimeAmPm', 'label': 'am/pm', 'type': 'select2',
+                          'className': 'inhibitlabel', 
+                          'options':['am', 'pm'], 
+                          'ed':{ 'def':'am' }, 
+                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance' },
                         { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
@@ -407,10 +409,12 @@ event = EventsApi(
                           'ed':{ 'def':'M' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
-                        { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time', 
-                            'ed':{'format':'H:mm',
-                                  'label' : 'Fun Start Time (h:mm) h=0-23'
-                            } 
+                        { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time'},
+                        { 'data': 'funTimeAmPm', 'name': 'funTimeAmPm', 'label': 'am/pm', 'type': 'select2',
+                          'className': 'inhibitlabel', 
+                          'options':['am', 'pm'], 
+                          'ed':{ 'def':'am' }, 
+                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance' },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
