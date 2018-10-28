@@ -19,6 +19,7 @@ from datetime import date
 from os.path import join as pathjoin
 from copy import deepcopy
 from csv import reader
+from shutil import rmtree
 
 # pypy
 from docx import Document
@@ -317,6 +318,8 @@ class ContractManager():
         batch.execute()
 
         # remove temporary folder
+        # NOTE: in windows at least, this gets an error because file is still in use
+        rmtree(dirpath, ignore_errors=True)
 
         # send email
 
