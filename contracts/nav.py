@@ -56,6 +56,7 @@ def nav_menu():
         # navbar.items.append(contracts)
         navbar.items.append(View('Contracts', 'admin.contracts')),
         navbar.items.append(View('Contract Types', 'admin.contracttypes')),
+        navbar.items.append(View('Template Types', 'admin.templatetypes')),
         navbar.items.append(View('Block Types', 'admin.contractblocktypes')),
 
         navbar.items.append(View('Debug', 'admin.debug'))

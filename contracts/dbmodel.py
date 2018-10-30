@@ -61,6 +61,7 @@ FID_LEN = 128   # not taking chance, but 44 per https://stackoverflow.com/questi
 SNAILADDR_LEN = 256
 PHONE_LEN = 13
 CONTRACT_TYPE_LEN = 30
+TEMPLATE_TYPE_LEN = 30
 CONTRACK_BLOCK_LEN = 2048
 CONTRACT_BLOCK_TYPE_LEN = 20
 
@@ -72,10 +73,18 @@ class Lead(Base):
 
 class ContractType(Base):
     __tablename__ = 'contracttype'
-    id              = Column( Integer, primary_key=True )
-    contractType    = Column( String(CONTRACT_TYPE_LEN) )
-    description     = Column( String(DESCR_LEN) )
+    id                 = Column( Integer, primary_key=True )
+    contractType       = Column( String(CONTRACT_TYPE_LEN) )
+    description        = Column( String(DESCR_LEN) )
     
+class TemplateType(Base):
+    __tablename__ = 'templatetype'
+    id              = Column( Integer, primary_key=True )
+    templateType    = Column( String(TEMPLATE_TYPE_LEN) )
+    description     = Column( String(DESCR_LEN) )
+    contractTypeId  = Column( Integer, ForeignKey('contracttype.id' ) )
+    contractType    = relationship( 'ContractType', backref='contracttypes', lazy=True )
+
 class ContractBlockType(Base):
     __tablename__ = 'contractblocktype'
     id              = Column( Integer, primary_key=True )
@@ -90,6 +99,8 @@ class Contract(Base):
     blockPriority       = Column( Integer, nullable=False )
     contractBlockTypeId = Column( Integer, ForeignKey('contractblocktype.id' ) )
     contractBlockType   = relationship( 'ContractBlockType', backref='contracts', lazy=True )
+    templateTypeId      = Column( Integer, ForeignKey('templatetype.id' ) )
+    templateType        = relationship( 'TemplateType', backref='contracts', lazy=True )
     block               = Column( String(CONTRACK_BLOCK_LEN) )
 
 class FeeType(Base):

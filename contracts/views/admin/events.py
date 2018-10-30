@@ -24,7 +24,6 @@ from . import bp
 from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
-from contracts.contractmanager import ContractManager
 from eventscontract import EventsApi
 
 # https://www.regextester.com/93652 - modified to allow upper case

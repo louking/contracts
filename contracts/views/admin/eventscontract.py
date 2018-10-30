@@ -49,7 +49,7 @@ class EventsApi(DbCrudApiRolePermissions):
             folderid = current_app.config['CONTRACTS_DB_FOLDER']
 
             # need an instance of contract manager to take care of saving the contract
-            cm = ContractManager(contractType='race services', driveFolderId=folderid)
+            cm = ContractManager(contractType='race services', templateType='contract', driveFolderId=folderid)
 
             # pull record(s) from database and save as flat dotted record
             data = get_request_data(form)

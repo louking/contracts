@@ -30,7 +30,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 # homegrown
-from contracts.dbmodel import db, Contract, ContractType
+from contracts.dbmodel import db, Contract, ContractType, TemplateType
 from loutilities import timeu
 from loutilities.googleauth import get_credentials
 from contracts.views.admin.login import APP_CRED_FOLDER
@@ -160,6 +160,7 @@ class ContractManager():
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
         args = dict(contractType=None,
+                    templateType=None,
                     driveFolderId=None,
                     )
         args.update(kwargs)
@@ -186,7 +187,14 @@ class ContractManager():
         docx = Document()
 
         # retrieve contract template
-        templates = db.session.query(Contract).filter(Contract.contractTypeId==ContractType.id).filter(ContractType.contractType==self.contractType).order_by(Contract.blockPriority).all()
+        templates = (db.session.query(Contract)
+                     .filter(Contract.contractTypeId==ContractType.id)
+                     .filter(ContractType.contractType==self.contractType)
+                     .filter(Contract.templateTypeId==TemplateType.id)
+                     .filter(TemplateType.templateType==self.templateType)
+                     .order_by(Contract.blockPriority)
+                     .all()
+                    )
 
         # prepare built in fields
         dt = timeu.asctime('%B %d, %Y')

@@ -19,9 +19,49 @@ contract - class and helpers to manage contract
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Contract, ContractType, ContractBlockType
+from contracts.dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship
 from contracts.request import addscripts
+
+##########################################################################################
+# templatetype endpoint
+###########################################################################################
+
+templatetype_dbattrs = 'id,templateType,description,contractType'.split(',')
+templatetype_formfields = 'rowid,templateType,description,contractType'.split(',')
+templatetype_dbmapping = dict(zip(templatetype_dbattrs, templatetype_formfields))
+templatetype_formmapping = dict(zip(templatetype_formfields, templatetype_dbattrs))
+
+templatetype = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = TemplateType, 
+                    roles_accepted = ['superadmin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'Template types', 
+                    endpoint = 'admin.templatetypes', 
+                    rule = '/templatetypes', 
+                    dbmapping = templatetype_dbmapping, 
+                    formmapping = templatetype_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'templateType', 'name': 'templateType', 'label': 'Template Type' },
+                        { 'data': 'description', 'name': 'description', 'label': 'Description' },
+                        { 'data': 'contractType', 'name': 'contractType', 'label': 'Contract Type',
+                                  '_treatment' : { 'relationship' : { 'model':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
+                                                 } },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                  },
+                    scriptfilter = addscripts,
+                    )
+templatetype.register()
 
 ##########################################################################################
 # contracttype endpoint
@@ -101,8 +141,8 @@ contractblocktype.register()
 # contract endpoint
 ###########################################################################################
 
-contract_dbattrs = 'id,contractType,blockPriority,contractBlockType,block'.split(',')
-contract_formfields = 'rowid,contractType,blockPriority,contractBlockType,block'.split(',')
+contract_dbattrs = 'id,contractType,templateType,blockPriority,contractBlockType,block'.split(',')
+contract_formfields = 'rowid,contractType,templateType,blockPriority,contractBlockType,block'.split(',')
 contract_dbmapping = dict(zip(contract_dbattrs, contract_formfields))
 contract_formmapping = dict(zip(contract_formfields, contract_dbattrs))
 
@@ -120,6 +160,9 @@ contract = DbCrudApiRolePermissions(
                     clientcolumns = [
                         { 'data': 'contractType', 'name': 'contractType', 'label': 'Contract Type',
                                   '_treatment' : { 'relationship' : { 'model':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
+                                                 } },
+                        { 'data': 'templateType', 'name': 'templateType', 'label': 'Template Type',
+                                  '_treatment' : { 'relationship' : { 'model':TemplateType, 'labelfield':'templateType', 'formfield':'templateType', 'dbfield':'templateType', 'uselist':False, }
                                                  } },
                         { 'data': 'blockPriority', 'name': 'blockPriority', 'label': 'Priority' },
                         { 'data': 'contractBlockType', 'name': 'contractBlockType', 'label': 'Block Type',
