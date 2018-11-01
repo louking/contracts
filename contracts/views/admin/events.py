@@ -65,7 +65,7 @@ state = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
+                    scriptfilter = addscripts,
                     )
 state.register()
 
