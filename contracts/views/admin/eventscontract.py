@@ -114,6 +114,7 @@ class EventsApi(DbCrudApiRolePermissions):
                         feetotal += thisfee
                     
                     # generate contract
+                    if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
                     docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.event, eventdb.date), eventdb, 
                                       addlfields={'servicenames': [s.service for s in eventdb.services],
                                                   'servicefees' : servicefees,

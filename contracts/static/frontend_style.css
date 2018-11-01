@@ -1,0 +1,4 @@
+.body {
+  left: 0%;
+  width:95%;  /* must equal width of .scrollarea width; left plus width = .heading width */
+}

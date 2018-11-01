@@ -16,3 +16,4 @@ bp = Blueprint('frontend', __name__.split('.')[0], url_prefix='')
 
 # import views
 import frontend
+import contractviews
