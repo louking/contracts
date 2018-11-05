@@ -1,4 +1,19 @@
 .body {
   left: 0%;
-  width:95%;  /* must equal width of .scrollarea width; left plus width = .heading width */
+  width: 95%;  /* must equal width of .scrollarea width; left plus width = .heading width */
+}
+
+/* see https://stackoverflow.com/questions/32899727/how-to-align-input-boxes-in-a-form */
+form label {
+    display: inline-block;
+    font-weight: bold;
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: left; 
+}
+form input.text {
+  display: inline-block;
+  float: left;
+  width: 250px;
 }

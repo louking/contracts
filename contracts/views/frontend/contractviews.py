@@ -15,9 +15,11 @@ contractviews - views for contracts database
 # standard
 import os.path
 from copy import deepcopy
+from json import loads
+from datetime import date
 
 # pypi
-from flask import current_app, render_template_string
+from flask import current_app, render_template_string, request, url_for
 from flask.views import MethodView
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from jinja2 import Environment, FileSystemLoader
@@ -25,7 +27,10 @@ from jinja2 import Environment, FileSystemLoader
 # home grown
 from . import bp
 from loutilities.flask_helpers.blueprints import add_url_rules
-from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType
+from contracts.dbmodel import db, Event, State, Contract, ContractType, TemplateType
+from loutilities.timeu import asctime
+
+dt = asctime('%Y-%m-%d')
 
 debug = True
 
@@ -72,13 +77,68 @@ class AcceptAgreement(MethodView):
 
         if debug: current_app.logger.debug('AcceptAgreement.get(): thisevent.__dict__={}'.format(thisevent.__dict__))
         thisevent.contracts_contact = current_app.config['CONTRACTS_CONTACT']
-        thisevent.pagename = 'Accept Agreement'
+        # thisevent.pagename = 'Race Services Agreement'
         thisevent.pagecssfiles = addscripts(['frontend_style.css'])
 
-        # need to reference client field so that this will be in __dict__
+        # drive urls
+        # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
+        webviewurl = 'https://docs.google.com/document/d/{}/view'.format(docid)
+        thisevent.viewcontracturl = webviewurl
+        pdfurl = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
+        thisevent.downloadcontracturl = pdfurl
+        thisevent.agreeurl = url_for( '.acceptagreement', docid=docid )
+
+        # force load of 'client' field so that it will be in __dict__
         clientgarbage = thisevent.client
 
         return render_template_string( templatestr, **thisevent.__dict__ )
+
+    #----------------------------------------------------------------------
+    def post(self, docid):
+    #----------------------------------------------------------------------
+        from contracts.request import addscripts
+        # this should work because we just did get using same docid
+        thisevent = Event.query.filter_by(contractDocId=docid).one()
+
+        # get form fields and add to database
+        name = request.form['name']
+        email = request.form['email']
+        notes = request.form['notes']
+        thisevent.contractSignedDate = dt.dt2asc( date.today() )
+        thisevent.contractApprover = name
+        thisevent.contractApproverEmail = email
+        thisevent.contractApproverNotes = notes
+        thisevent.state = State.query.filter_by(state='committed').one()
+        # need to get merge fields before commit
+        mergefields = deepcopy(thisevent.__dict__)
+        db.session.commit()
+
+        # send agreement accepted email
+        ## TODO
+
+        # give user agreement accepted view
+        templatestr = (db.session.query(Contract)
+                       .filter(Contract.contractTypeId==ContractType.id)
+                       .filter(ContractType.contractType=='race services')
+                       .filter(Contract.templateTypeId==TemplateType.id)
+                       .filter(TemplateType.templateType=='agreement accepted view')
+                       .one()
+                      ).block
+
+        # add needed fields
+        mergefields['pagecssfiles'] = addscripts(['frontend_style.css'])
+        mergefields['servicenames'] = [s.service for s in thisevent.services] 
+        mergefields['webview'] = True
+
+        # drive urls
+        # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
+        webviewurl = 'https://docs.google.com/document/d/{}/view'.format(docid)
+        mergefields['viewcontracturl'] = webviewurl
+        pdfurl = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
+        mergefields['downloadcontracturl'] = pdfurl
+
+        if debug: current_app.logger.debug('AcceptAgreement.post(): mergefields={}'.format(mergefields))
+        return render_template_string( templatestr, **mergefields )
 
 #----------------------------------------------------------------------
 add_url_rules(bp, AcceptAgreement)

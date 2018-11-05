@@ -38,7 +38,6 @@
         <div data-editor-template="invoiceSentDate"></div>
 
         <div data-editor-template="contractSentDate"></div>
-        <div data-editor-template="contractSignedDate"></div>
         <div data-editor-template="contractDocId"></div>
     </fieldset>
     <fieldset class="management">
@@ -47,5 +46,11 @@
         <div data-editor-template="isOnCalendar"></div>
         <div data-editor-template="notes"></div>
     </fieldset>
-</div>
+    <fieldset class="approval">
+        <legend>Approval</legend>
+        <div data-editor-template="contractSignedDate"></div>
+        <div data-editor-template="contractApprover"></div>
+        <div data-editor-template="contractApproverEmail"></div>
+        <div data-editor-template="contractApproverNotes"></div>
+    </fieldset></div>
 {% endblock editorform %}

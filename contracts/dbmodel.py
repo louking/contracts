@@ -217,6 +217,11 @@ class Event(Base):
     contractDocId       = Column( String(FID_LEN) )
     notes               = Column( String(NOTES_LEN) )
 
+    # added when contract approved
+    contractApprover    = Column( String(NAME_LEN) )
+    contractApproverEmail = Column( String(EMAIL_LEN) )
+    contractApproverNotes = Column( String(NOTES_LEN) )
+
 # adapted from 
 #   http://flask-dance.readthedocs.io/en/latest/backends.html#sqlalchemy
 #   

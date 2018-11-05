@@ -375,8 +375,8 @@ client.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes'.split(',')
+event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -486,8 +486,11 @@ event = EventsApi(
                         },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type': 'textarea' },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },
-                        { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc ID', 'type':'readonly' },
+                        { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },
+                        { 'data': 'contractApprover', 'name': 'contractApprover', 'label': 'Approver', 'type':'readonly' },
+                        { 'data': 'contractApproverEmail', 'name': 'contractApproverEmail', 'label': 'Approver Email', 'type':'readonly' },
+                        { 'data': 'contractApproverNotes', 'name': 'contractApproverNotes', 'label': 'Approver Notes', 'type':'textarea' },
 
                     ], 
                     validate = event_validate,

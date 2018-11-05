@@ -68,6 +68,9 @@ function afterdatatables() {
             this.buttons( 'Delete' );
         }
 
+        // special processing for contractApproverNotes field to make readonly
+        editor.field( 'contractApproverNotes' ).disable();
+        
         return true;
     });
 }
