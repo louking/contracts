@@ -13,14 +13,17 @@ eventscontract - handle contract management for race services contract
 '''
 # standard
 from datetime import date
+from copy import deepcopy
 
 # pypi
-from flask import current_app
+from flask import current_app, url_for, request
+from jinja2 import Template
 
 # homegrown
-from contracts.dbmodel import db, Event, State, FeeBasedOn
+from contracts.dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
+from contracts.mailer import sendmail
 from loutilities.tables import get_request_data
 from loutilities.timeu import asctime
 
@@ -59,7 +62,7 @@ class EventsApi(DbCrudApiRolePermissions):
                 # check state to see if we are generating a new version or just sending current version
                 if not eventdb.state or eventdb.state.state not in ['contract-sent', 'committed']:
 
-                    # TODO: calculate service fees
+                    # calculate service fees
                     servicefees = []
 
                     feetotal = 0
@@ -133,4 +136,25 @@ class EventsApi(DbCrudApiRolePermissions):
                             resprow['contractSentDate'] = eventdb.contractSentDate
                             resprow['contractDocId'] = eventdb.contractDocId
 
-                # TODO: send contract mail to client
+                # send contract mail to client
+                templatestr = (db.session.query(Contract)
+                           .filter(Contract.contractTypeId==ContractType.id)
+                           .filter(ContractType.contractType=='race services')
+                           .filter(Contract.templateTypeId==TemplateType.id)
+                           .filter(TemplateType.templateType=='contract email')
+                           .one()
+                          ).block
+                template = Template( templatestr )
+
+                mergefields = deepcopy(eventdb.__dict__)
+                mergefields['viewcontracturl'] = 'https://docs.google.com/document/d/{}/view'.format(docid)
+                mergefields['downloadcontracturl'] = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
+                # need to bring in full path for email, so use url_root
+                mergefields['acceptcontracturl'] = request.url_root[:-1] + url_for('frontend.acceptagreement', docid=docid)
+
+                html = template.render( mergefields )
+                tolist = eventdb.client.contactEmail
+                cclist = current_app.config['CONTRACTS_CC']
+                fromlist = current_app.config['CONTRACTS_CONTACT']
+                subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
+                sendmail( subject, fromlist, tolist, html, ccaddr=cclist )

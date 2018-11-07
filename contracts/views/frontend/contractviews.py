@@ -22,12 +22,13 @@ from datetime import date
 from flask import current_app, render_template_string, request, url_for
 from flask.views import MethodView
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Template
 
 # home grown
 from . import bp
-from loutilities.flask_helpers.blueprints import add_url_rules
 from contracts.dbmodel import db, Event, State, Contract, ContractType, TemplateType
+from contracts.mailer import sendmail
+from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
 
 dt = asctime('%Y-%m-%d')
@@ -109,14 +110,12 @@ class AcceptAgreement(MethodView):
         thisevent.contractApproverEmail = email
         thisevent.contractApproverNotes = notes
         thisevent.state = State.query.filter_by(state='committed').one()
-        # need to get merge fields before commit
+        # need to get merge fields before commit, first force load of client
+        clientgarbage = thisevent.client
         mergefields = deepcopy(thisevent.__dict__)
         db.session.commit()
 
-        # send agreement accepted email
-        ## TODO
-
-        # give user agreement accepted view
+        # prepare agreement accepted email and view
         templatestr = (db.session.query(Contract)
                        .filter(Contract.contractTypeId==ContractType.id)
                        .filter(ContractType.contractType=='race services')
@@ -128,7 +127,6 @@ class AcceptAgreement(MethodView):
         # add needed fields
         mergefields['pagecssfiles'] = addscripts(['frontend_style.css'])
         mergefields['servicenames'] = [s.service for s in thisevent.services] 
-        mergefields['webview'] = True
 
         # drive urls
         # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
@@ -136,6 +134,18 @@ class AcceptAgreement(MethodView):
         mergefields['viewcontracturl'] = webviewurl
         pdfurl = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
         mergefields['downloadcontracturl'] = pdfurl
+
+        # send agreement accepted email
+        template = Template( templatestr )
+        html = template.render( mergefields )
+        tolist = mergefields['client'].contactEmail
+        cclist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
+        subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        # update for web view
+        mergefields['webview'] = True
 
         if debug: current_app.logger.debug('AcceptAgreement.post(): mergefields={}'.format(mergefields))
         return render_template_string( templatestr, **mergefields )

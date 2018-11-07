@@ -54,7 +54,6 @@ function afterdatatables() {
                         text: 'Update and Send Contract',
                         action: function () {
                             console.log('Update and Send Contract');
-                            this.field( 'contractSentDate' ).set( currentdate() );
                             this.submit(null, null, function(data) {
                                 data.addlaction = 'sendcontract';
                             });
