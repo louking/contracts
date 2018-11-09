@@ -14,7 +14,7 @@ $( function() {
     },
 
     header: {
-      left: 'prev,next today',
+      left: 'prev,next today prevYear,nextYear',
       center: 'title',
       right: 'servicesQuery'
     },
