@@ -1,0 +1,15 @@
+{% extends "frontend_layout.jinja2" %}
+{% block pagename %}
+    {{ pagename }}
+{% endblock pagename %}
+{% block css %}
+{% endblock css %}
+
+{% block scripts %}
+<script>
+  var servicesqueryurl = "{{ servicesqueryurl }}";
+</script>
+{% endblock scripts %}
+{% block body %}
+  <div id='calendar'></div>
+{% endblock body %}

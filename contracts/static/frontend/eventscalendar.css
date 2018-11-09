@@ -1,0 +1,26 @@
+/* override jquery-ui */
+.ui-widget-content {
+    color: black;
+}
+
+.ui-widget-content.fc-mon, 
+.ui-widget-content.fc-tue, 
+.ui-widget-content.fc-wed, 
+.ui-widget-content.fc-thu, 
+.ui-widget-content.fc-fri {
+    background:grey;
+}
+
+.ui-widget-content.fc-sat, 
+.ui-widget-content.fc-sun {
+    background:forestgreen;
+}
+
+/* these have to be after the above, to override */
+.ui-widget-content.contracts-committed {
+    background:deepskyblue;
+}
+
+.ui-widget-content.contracts-tentative {
+    background:yellow;
+}
