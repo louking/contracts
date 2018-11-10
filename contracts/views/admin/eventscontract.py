@@ -29,7 +29,7 @@ from loutilities.timeu import asctime
 
 dt = asctime('%Y-%m-%d')
 
-class ParameterError(Exception): pass
+class parameterError(Exception): pass
 
 debug = True
 
@@ -48,7 +48,7 @@ class EventsApi(DbCrudApiRolePermissions):
         note row has already been committed to the database, so can be retrieved
         '''
         # the following can be true only for put() [edit] method
-        if 'addlaction' in form and form['addlaction'] == 'sendcontract':
+        if 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract']:
             folderid = current_app.config['CONTRACTS_DB_FOLDER']
 
             # need an instance of contract manager to take care of saving the contract
@@ -59,8 +59,8 @@ class EventsApi(DbCrudApiRolePermissions):
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
-                # check state to see if we are generating a new version or just sending current version
-                if not eventdb.state or eventdb.state.state not in ['contract-sent', 'committed']:
+                # if we are generating a new version of the contract
+                if form['addlaction'] == 'sendcontract':
 
                     # calculate service fees
                     servicefees = []
@@ -84,7 +84,7 @@ class EventsApi(DbCrudApiRolePermissions):
                             if not fieldval:
                                 formfield = self.dbmapping[field]   # hopefully not a function
                                 self._fielderrors = [{ 'name' : formfield, 'status' : 'needed to calculate fee' }]
-                                raise ParameterError, 'cannot calculate fee if {} not set'.format(field)
+                                raise parameterError, 'cannot calculate fee if {} not set'.format(field)
 
                             feebasedons = FeeBasedOn.query.filter_by(serviceId=service.id).order_by(FeeBasedOn.fieldValue).all()
                             foundfee = False
@@ -136,25 +136,49 @@ class EventsApi(DbCrudApiRolePermissions):
                             resprow['contractSentDate'] = eventdb.contractSentDate
                             resprow['contractDocId'] = eventdb.contractDocId
 
-                # send contract mail to client
-                templatestr = (db.session.query(Contract)
-                           .filter(Contract.contractTypeId==ContractType.id)
-                           .filter(ContractType.contractType=='race services')
-                           .filter(Contract.templateTypeId==TemplateType.id)
-                           .filter(TemplateType.templateType=='contract email')
-                           .one()
-                          ).block
-                template = Template( templatestr )
+                # if we are just resending current version of the contract
+                else:
+                    docid = eventdb.contractDocId
 
+                # email sent depends on current state as this flows from 'sendcontract' and 'resendcontract'
+                if eventdb.state.state == 'committed':
+                    # prepare agreement accepted email 
+                    templatestr = (db.session.query(Contract)
+                                   .filter(Contract.contractTypeId==ContractType.id)
+                                   .filter(ContractType.contractType=='race services')
+                                   .filter(Contract.templateTypeId==TemplateType.id)
+                                   .filter(TemplateType.templateType=='agreement accepted view')
+                                   .one()
+                                  ).block
+                    template = Template( templatestr )
+                    subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
+
+                elif eventdb.state.state == 'contract-sent':
+                    # send contract mail to client
+                    templatestr = (db.session.query(Contract)
+                               .filter(Contract.contractTypeId==ContractType.id)
+                               .filter(ContractType.contractType=='race services')
+                               .filter(Contract.templateTypeId==TemplateType.id)
+                               .filter(TemplateType.templateType=='contract email')
+                               .one()
+                              ).block
+                    template = Template( templatestr )
+                    subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
+
+                # state must be 'committed' or 'contract-sent', else logic error
+                else:
+                    raise parameterError, 'editor_method_posthook(): bad state seen for {}: {}'.format(form['addlaction'], eventdb.state.state)
+
+                # merge database fields into template and send email
                 mergefields = deepcopy(eventdb.__dict__)
                 mergefields['viewcontracturl'] = 'https://docs.google.com/document/d/{}/view'.format(docid)
                 mergefields['downloadcontracturl'] = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
                 # need to bring in full path for email, so use url_root
                 mergefields['acceptcontracturl'] = request.url_root[:-1] + url_for('frontend.acceptagreement', docid=docid)
+                mergefields['servicenames'] = [s.service for s in eventdb.services] 
 
                 html = template.render( mergefields )
                 tolist = eventdb.client.contactEmail
                 cclist = current_app.config['CONTRACTS_CC']
                 fromlist = current_app.config['CONTRACTS_CONTACT']
-                subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )

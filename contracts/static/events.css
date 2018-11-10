@@ -1,0 +1,7 @@
+.ui-widget.disabled {
+    color: lightgrey;
+}
+
+.ui-widget.disabled:hover {
+    border: 1px solid #d3d3d3;
+}

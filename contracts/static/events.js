@@ -14,63 +14,92 @@ function currentdate() {
     return year + '-' + mon + '-' + day;
 }
 
-// set up buttons for edit form after datatables has been initialized
-function afterdatatables() {
-    editor.on('open', function( e, mode, action ) {
-        // set buttons for create
-        if ( action == 'create' ) {
-            this.buttons( 'Create' );
+// configure form buttons
+function configurebuttons( that, action ) {
+    // set buttons for create
+    if ( action == 'create' ) {
+        that.buttons( 'Create' );
 
-        // set buttons for edit
-        } else if ( action == 'edit' ) {
-            this.buttons([
-                    {
-                        text: 'Resend Contract',
-                        action: function () {
-                            console.log('Resend Contract');
+    // set buttons for edit
+    } else if ( action == 'edit' ) {
+        // is current state selection in ['committed', 'contract-sent']?
+        var contractsent = ['committed', 'contract-sent'].includes( that.field( 'state.id' ).inst('data')[0].text );
+        that.buttons([
+                {
+                    text: 'Resend Contract',
+                    className: ( that.field( 'contractDocId' ).get() ) ? 'enabled' : 'disabled',
+                    action: function () {
+                        if ( that.field( 'contractDocId' ).get() ) {
+                            that.submit(null, null, function(data) {
+                                data.addlaction = 'resendcontract';
+                            });
                         }
-                    },
-                    {
-                        text: 'Mark Invoice Sent',
-                        action: function () {
-                            this.field( 'invoiceSentDate' ).set( currentdate() );
-                            this.submit();
+                    }
+                },
+                {
+                    text: 'Mark Invoice Sent',
+                    className: ( that.field( 'invoiceSentDate' ).get() ) ? 'disabled' : 'enabled',
+                    action: function () {
+                        if ( ! that.field( 'invoiceSentDate' ).get() ) {                 
+                            that.field( 'invoiceSentDate' ).set( currentdate() );
+                            that.submit();
+                        }                    
+                    }
+                },
+                {
+                    text: 'Mark as Paid',
+                    className: ( that.field( 'paymentRecdDate' ).get() ) ? 'disabled' : 'enabled',
+                    action: function () {
+                        if ( ! that.field( 'paymentRecdDate' ).get() ) {                 
+                            that.field( 'paymentRecdDate' ).set( currentdate() );
+                            that.submit();
                         }
-                    },
-                    {
-                        text: 'Mark as Paid',
-                        action: function () {
-                            this.field( 'paymentRecdDate' ).set( currentdate() );
-                            this.submit();
-                        }
-                    },
-                    {
-                        text: 'Update',
-                        action: function () {
-                            this.submit();
-                        }
-                    },
-                    {
-                        text: 'Update and Send Contract',
-                        action: function () {
-                            console.log('Update and Send Contract');
-                            this.submit(null, null, function(data) {
+                    }
+                },
+                {
+                    text: 'Update',
+                    action: function () {
+                        that.submit();
+                    }
+                },
+                {
+                    text: 'Update and Send Contract',
+                    className: ( contractsent ) ? 'disabled' : 'enabled',
+                    action: function () {
+                        if ( ! contractsent ) {
+                            that.submit(null, null, function(data) {
                                 data.addlaction = 'sendcontract';
                             });
                         }
-                    },
+                    }
+                },
 
-                ]);
+            ]);
 
-        // set buttons for remove (only other choice)
-        } else {
-            this.buttons( 'Delete' );
-        }
+    // set buttons for remove (only other choice)
+    } else {
+        that.buttons( 'Delete' );
+    }
+}
+
+// set up buttons for edit form after datatables has been initialized
+function afterdatatables() {
+    editor.on('open', function( e, mode, action ) {
+        // set up the buttons
+        configurebuttons( this, action );
 
         // special processing for contractApproverNotes field to make readonly
         editor.field( 'contractApproverNotes' ).disable();
         
         return true;
+    });
+
+    // regenerate the edit buttons if certain fields change
+    editor.dependent([ 'state.id', 'contractDocId', 'invoiceSentDate', 'paymentRecdDate' ], function( val, data, callback ) {
+        // TODO: how to determine action?
+        console.log('dependent fired');
+        configurebuttons( editor, editor.mode() );
+        return {};
     });
 }
 
