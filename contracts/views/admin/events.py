@@ -410,10 +410,10 @@ event = EventsApi(
                     dbmapping = event_dbmapping, 
                     formmapping = event_formmapping, 
                     clientcolumns = [
+                        { 'data': 'event', 'name': 'event', 'label': 'Event' },
                         { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'date', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Date (yyyy-mm-dd)' }
                         },
-                        { 'data': 'event', 'name': 'event', 'label': 'Event' },
                         # TODO: why did the following display a time widget?
                         # { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 'ed':{'format':'yyyy-mm-dd'} },
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
@@ -505,12 +505,13 @@ event = EventsApi(
                                         'fixedColumns': {
                                                           'leftColumns': 3
                                                         },
+                                        'order': [[2, 'asc']],
                                 },
                     edoptions = {
                                         'template':'#customForm',
                                 },
                     pagejsfiles = ['events.js'],
-                    pagecssfiles = ['editor-forms.css'],
+                    pagecssfiles = ['editor-forms.css', 'events.css'],
                     scriptfilter = addscripts,
                     )
 event.register()
