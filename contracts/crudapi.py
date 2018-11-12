@@ -29,6 +29,8 @@ class parameterError(Exception): pass
 # separator for select2 tag list
 SEPARATOR = ', '
 
+debug = True
+
 #####################################################
 class DteDbRelationship():
 #####################################################
@@ -111,7 +113,7 @@ class DteDbRelationship():
                         itemvalues.append({key:vallist[ndx]})
                     else:
                         itemvalues[ndx].update({key:vallist[ndx]})
-            current_app.logger.debug( 'itemvalues={}'.format(itemvalues) )
+            if debug: current_app.logger.debug( 'itemvalues={}'.format(itemvalues) )
             for itemvalue in itemvalues:
                 queryfilter = itemvalue
                 # queryfilter = {self.valuefield : itemvalue}
@@ -280,7 +282,7 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
     #----------------------------------------------------------------------
-        current_app.logger.debug('DbCrudApi.__init__()')
+        if debug: current_app.logger.debug('DbCrudApi.__init__()')
 
         # the args dict has default values for arguments added by this derived class
         # caller supplied keyword args are used to update these
@@ -313,7 +315,7 @@ class DbCrudApi(CrudApi):
         booleanform = {}
         saforms = []
         for col in args['clientcolumns']:
-            current_app.logger.debug('__init__(): col = {}'.format(col))
+            if debug: current_app.logger.debug('__init__(): col = {}'.format(col))
             # remove readonly fields from dbmapping
             if col.get('type',None) == 'readonly':
                 self.dbmapping.pop(col['name'], None)
@@ -327,7 +329,7 @@ class DbCrudApi(CrudApi):
 
             # handle special treatment for column
             treatment = col.get('_treatment', None)
-            current_app.logger.debug('__init__(): treatment = {}'.format(treatment))
+            if debug: current_app.logger.debug('__init__(): treatment = {}'.format(treatment))
             if treatment:
                 if type(treatment) != dict or len(treatment) != 1 or treatment.keys()[0] not in ['boolean', 'relationship']:
                     raise parameterError, 'invalid treatment: {}'.format(treatment)
@@ -374,7 +376,7 @@ class DbCrudApi(CrudApi):
                     ## if this field needs form for editing the record it points at, remember information
                     ## also add <new> option
                     editable = treatment['relationship'].get('editable', {})
-                    current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
+                    if debug: current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
                     valuefield = 'id' if 'valuefield' not in treatment['relationship'] else treatment['relationship']['valuefield']
                     if editable:
                         saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'valuefield':valuefield } })
@@ -395,7 +397,7 @@ class DbCrudApi(CrudApi):
 
         # from pprint import PrettyPrinter
         # pp = PrettyPrinter()
-        # current_app.logger.debug('args["columns"]={}'.format(pp.pformat(args['clientcolumns'])))
+        # if debug: current_app.logger.debug('args["columns"]={}'.format(pp.pformat(args['clientcolumns'])))
 
         # set up mapping between database and editor form
         # Note: translate '' to None and visa versa
@@ -414,7 +416,7 @@ class DbCrudApi(CrudApi):
         # save caller's validation method and update validation to local version
         self.callervalidate = self.validate
         self.validate = self.validatedb
-        current_app.logger.debug('updated validate() to validatedb()')
+        if debug: current_app.logger.debug('updated validate() to validatedb()')
 
     #----------------------------------------------------------------------
     def get(self):
@@ -509,6 +511,9 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
     def saformurl(self, **kwargs):
     #----------------------------------------------------------------------
+        '''
+        standalone form url
+        '''
         # NOTE: keyword arguments need to match request.args access in self.get()
         args = urlencode(kwargs)
         # self.__name__ is endpoint -- see https://github.com/pallets/flask/blob/master/flask/views.py View.as_view method
@@ -531,8 +536,8 @@ class DbCrudApi(CrudApi):
         '''
         retrieve all the data in the indicated table
         '''
-        current_app.logger.debug('DbCrudApi.open()')
-        current_app.logger.debug('DbCrudApi.open: self.db = {}, self.model = {}'.format(self.db, self.model))
+        if debug: current_app.logger.debug('DbCrudApi.open()')
+        if debug: current_app.logger.debug('DbCrudApi.open: self.db = {}, self.model = {}'.format(self.db, self.model))
 
         # pull in the data
         query = self.model.query.filter_by(**self.queryparams)
@@ -546,7 +551,7 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
     def validatedb(self, action, formdata):
     #----------------------------------------------------------------------
-        current_app.logger.debug('DbCrudApi.validatedb({})'.format(action))
+        if debug: current_app.logger.debug('DbCrudApi.validatedb({})'.format(action))
 
         # check results of caller's validation
         results = self.callervalidate( action, formdata )
@@ -556,7 +561,7 @@ class DbCrudApi(CrudApi):
             dbrow = self.model()
             self.dte.set_dbrow(formdata, dbrow)
             for field in self.uniquecols:
-                # current_app.logger.debug('DbCrudApi.validatedb(): checking field "{}":"{}"'.format(field,getattr(dbrow,field)))
+                # if debug: current_app.logger.debug('DbCrudApi.validatedb(): checking field "{}":"{}"'.format(field,getattr(dbrow,field)))
                 row = self.model.query.filter_by(**{field:getattr(dbrow,field)}).one_or_none()
                 # if we found a row that matches, flag error
 
@@ -571,7 +576,7 @@ class DbCrudApi(CrudApi):
         '''
         since open has done all the work, tell the caller we're done
         '''
-        current_app.logger.debug('DbCrudApi.nexttablerow()')
+        if debug: current_app.logger.debug('DbCrudApi.nexttablerow()')
 
         dbrecord = self.rows.next()
         return self.dte.get_response_data(dbrecord)
@@ -579,7 +584,7 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
     def close(self):
     #----------------------------------------------------------------------
-        current_app.logger.debug('DbCrudApi.close()')
+        if debug: current_app.logger.debug('DbCrudApi.close()')
         pass
 
     #----------------------------------------------------------------------
@@ -593,8 +598,9 @@ class DbCrudApi(CrudApi):
         '''
         # create item
         dbrow = self.model()
+        if debug: current_app.logger.debug('createrow(): self.dbmapping = {}'.format(self.dbmapping))
         self.dte.set_dbrow(formdata, dbrow)
-        current_app.logger.debug('creating dbrow={}'.format(dbrow.__dict__))
+        if debug: current_app.logger.debug('createrow(): creating dbrow={}'.format(dbrow.__dict__))
         self.db.session.add(dbrow)
         self.db.session.flush()
 
@@ -612,13 +618,13 @@ class DbCrudApi(CrudApi):
         :param formdata: data from create form
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
-        current_app.logger.debug('updaterow({},{})'.format(thisid, formdata))
+        if debug: current_app.logger.debug('updaterow({},{})'.format(thisid, formdata))
 
         # edit item
         dbrow = self.model.query.filter_by(id=thisid).one()
-        current_app.logger.debug('editing id={} dbrow={}'.format(thisid, dbrow.__dict__))
+        if debug: current_app.logger.debug('editing id={} dbrow={}'.format(thisid, dbrow.__dict__))
         self.dte.set_dbrow(formdata, dbrow)
-        current_app.logger.debug('after edit id={} dbrow={}'.format(thisid, dbrow.__dict__))
+        if debug: current_app.logger.debug('after edit id={} dbrow={}'.format(thisid, dbrow.__dict__))
 
         # prepare response
         thisrow = self.dte.get_response_data(dbrow)
@@ -634,7 +640,7 @@ class DbCrudApi(CrudApi):
         :rtype: returned row for rendering, e.g., from DataTablesEditor.get_response_data()
         '''
         dbrow = self.model.query.filter_by(id=thisid).one()
-        current_app.logger.debug('deleting id={} dbrow={}'.format(thisid, dbrow.__dict__))
+        if debug: current_app.logger.debug('deleting id={} dbrow={}'.format(thisid, dbrow.__dict__))
         self.db.session.delete(dbrow)
 
         return []
@@ -668,7 +674,7 @@ class DbCrudApiRolePermissions(DbCrudApi):
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
     #----------------------------------------------------------------------
-        current_app.logger.debug('DbCrudApiRolePermissions.__init__()')
+        if debug: current_app.logger.debug('DbCrudApiRolePermissions.__init__()')
 
         # the args dict has default values for arguments added by this derived class
         # caller supplied keyword args are used to update these
@@ -695,8 +701,8 @@ class DbCrudApiRolePermissions(DbCrudApi):
         '''
         determine if current user is permitted to use the view
         '''
-        current_app.logger.debug('DbCrudApiRolePermissions.permission()')
-        current_app.logger.debug('permission: roles_accepted = {} roles_required = {}'.format(self.roles_accepted, self.roles_required))
+        if debug: current_app.logger.debug('DbCrudApiRolePermissions.permission()')
+        if debug: current_app.logger.debug('permission: roles_accepted = {} roles_required = {}'.format(self.roles_accepted, self.roles_required))
 
         # if no roles are asked for, permission granted
         if not self.roles_accepted and not self.roles_required:
