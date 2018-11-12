@@ -36,6 +36,8 @@ def nav_menu():
         navbar.items.append(View('Clients', 'admin.clients-admin'))
         navbar.items.append(View('Leads', 'admin.leads'))
         navbar.items.append(View('Courses', 'admin.courses'))
+        navbar.items.append(View('Date Rules', 'admin.daterules'))
+        navbar.items.append(View('Exceptions', 'admin.eventexceptions'))
 
     # superadmin stuff
     if current_user.has_role('superadmin'):

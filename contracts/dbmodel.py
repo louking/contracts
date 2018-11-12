@@ -15,6 +15,7 @@ from ConfigParser import SafeConfigParser
 # pypi
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import current_user, UserMixin, RoleMixin
 
@@ -64,6 +65,8 @@ CONTRACT_TYPE_LEN = 30
 TEMPLATE_TYPE_LEN = 30
 CONTRACK_BLOCK_LEN = 2048
 CONTRACT_BLOCK_TYPE_LEN = 20
+EXCEPTION_LEN = 30
+RULENAME_LEN = 20
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -221,6 +224,46 @@ class Event(Base):
     contractApprover    = Column( String(NAME_LEN) )
     contractApproverEmail = Column( String(EMAIL_LEN) )
     contractApproverNotes = Column( String(NOTES_LEN) )
+
+class EventAvailabilityException(Base):
+    __tablename__ = 'eventavailabilityexception'
+    id            = Column( Integer, primary_key=True )
+    shortDescr    = Column( String(EXCEPTION_LEN) )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html One To One
+    daterule_id   = Column( Integer, ForeignKey('daterule.id') )
+    daterule      = relationship( 'DateRule', backref='eventexception', uselist=False, lazy=True )
+    exception     = Column( Enum( 'available',  'unavailable' ) )
+    notes         = Column( String(NOTES_LEN) )
+
+class DateRule(Base):
+    __tablename__ = 'daterule'
+    id          = Column( Integer, primary_key=True )
+    rulename    = Column( String(RULENAME_LEN), unique=True )
+    rule        = Column( Enum('First',  'Second', 'Third', 'Fourth', 'Fifth', 'Last', 'Date', 'Easter') )
+    day         = Column( Enum('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'))
+    month       = Column( Enum('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+    date        = Column( Integer )
+    deltadays   = Column( Integer, default=0 )  # 0 this day
+                                                # positive # days after this day
+                                                # negative # days before this day
+    addldays    = Column( Integer, default=0 )  # 0 just this day
+                                                # positive if the next days are included 
+                                                # negative if previous days are included
+    year        = Column( Integer ) # 0/null means yearly; specified for specific year applicability
+
+    # build rulename automatically unless overridden
+    def __init__(self, **kwargs):
+        super(DateRule, self).__init__(**kwargs)
+        if not self.rulename:
+            if self.rule == 'Easter':
+                self.rulename = 'Easter'
+            elif self.rule == 'date':
+                if not self.year:
+                    self.rulename = '{} {}'.format(self.month, self.date)
+                else:
+                    self.rulename = '{} {}, {}'.format(self.month, self.date, self.year)
+            else:
+                self.rulename = '{} {} {}'.format(self.rule, self.day, self.month)
 
 # adapted from 
 #   http://flask-dance.readthedocs.io/en/latest/backends.html#sqlalchemy

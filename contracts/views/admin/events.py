@@ -21,7 +21,8 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn
+from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn, EventAvailabilityException
+from contracts.dbmodel import DateRule
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
 from contracts.request import addscripts
 from eventscontract import EventsApi
@@ -312,6 +313,50 @@ service = DbCrudApiRolePermissions(
                     )
 service.register()
 
+###########################################################################################
+# eventexceptions endpoint
+###########################################################################################
+
+eventexception_dbattrs = 'id,shortDescr,exception,daterule,notes'.split(',')
+eventexception_formfields = 'rowid,shortDescr,exception,daterule,notes'.split(',')
+eventexception_dbmapping = dict(zip(eventexception_dbattrs, eventexception_formfields))
+eventexception_formmapping = dict(zip(eventexception_formfields, eventexception_dbattrs))
+
+eventexception = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = EventAvailabilityException, 
+                    roles_accepted = ['superadmin', 'admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'eventexceptions', 
+                    endpoint = 'admin.eventexceptions', 
+                    rule = '/eventexceptions', 
+                    dbmapping = eventexception_dbmapping, 
+                    formmapping = eventexception_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Name', '_unique': True },
+                        { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
+                          '_treatment' : { 'relationship' : { 'model':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
+                        },
+                        { 'data': 'exception', 'name': 'exception', 'label': 'Exception', 'type': 'select2',
+                          'options':['available', 'unavailable'], 
+                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
+                        },
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                  },
+                        scriptfilter = addscripts,
+                    )
+eventexception.register()
+
 ##########################################################################################
 # clients endpoint
 ###########################################################################################
@@ -365,8 +410,6 @@ client = DbCrudApiRolePermissions(
                                 'scrollXInner': "100%",
                                 'scrollY': True,
                                 },
-                    # pagejsfiles = ['events.js'],
-                    # pagecssfiles = ['editor-forms.css'],
                     scriptfilter = addscripts,
                     )
 client.register()
