@@ -422,7 +422,7 @@ event = EventsApi(
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
                           '_treatment' : { 'relationship' : { 'model':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
-                                                              'editable' : { 'api':client, 'id':'eventclient' },
+                                                              'editable' : { 'api':client },
                            } },
                         },
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
@@ -431,7 +431,7 @@ event = EventsApi(
                           '_treatment' : { 'relationship' : { 
                                                              'model':Course, 'labelfield':'course', 'formfield':'course', 
                                                              'dbfield':'course', 'uselist':False, 'searchbox':True,
-                                                             'editable' : { 'api':course, 'id':'eventcourse' },
+                                                             'editable' : { 'api':course },
                                                             } 
                                          },
                         },

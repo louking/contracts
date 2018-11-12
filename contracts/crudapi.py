@@ -268,7 +268,7 @@ class DbCrudApi(CrudApi):
         
             * _treatment - dict with (only) one of following keys - note this causes override of dbmapping and formmapping configuration
                 * boolean - {DteDbBool keyword parameters}
-                * relationship - {DteDbRelationship keyword parameters, 'editable' : { 'api':<DbCrudApi()>, 'id':<id of control> }}
+                * relationship - {DteDbRelationship keyword parameters, 'editable' : { 'api':<DbCrudApi()> }}
                     'editable' is set only if it is desired to bring up a form to edit the underlying model row
 
         **servercolumns** - if present table will be displayed through ajax get calls
@@ -377,7 +377,7 @@ class DbCrudApi(CrudApi):
                     current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
                     valuefield = 'id' if 'valuefield' not in treatment['relationship'] else treatment['relationship']['valuefield']
                     if editable:
-                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'id':editable['id'], 'valuefield':valuefield } })
+                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'valuefield':valuefield } })
                         col['options'] = thisreln.new_plus_options
                     else:
                         col['options'] = thisreln.options
