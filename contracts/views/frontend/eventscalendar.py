@@ -48,13 +48,16 @@ calendar_scripts_css = [
 ]
 
 #----------------------------------------------------------------------
-def time24(time, ampm):
+def time24(time):
 #----------------------------------------------------------------------
     # handle case of no time supplied
     if not time: return '00:00'
 
+    # split out ampm (see events.py datetime format 'h:mm a')
+    thetime, ampm = time.split(' ')
+
     # split time into fields h:m[:s]
-    fields = [int(t) for t in time.split(':')]
+    fields = [int(t) for t in thetime.split(':')]
 
     # hopefully this error was detected before time was put into database
     if len(fields) < 2 or len(fields) > 3:
@@ -104,7 +107,7 @@ class EventsCalendarApi(MethodView):
                 'id'    : event.id,
                 'title' : event.event,
                 'state' : event.state.state,
-                'start' : event.date + 'T' + time24( event.mainStartTime, event.mainTimeAmPm ),
+                'start' : event.date + 'T' + time24(event.mainStartTime),
             }
             eventobjects.append( eventobject )
 

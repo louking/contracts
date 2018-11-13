@@ -418,8 +418,8 @@ client.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainTimeAmPm,mainDistance,mainDistanceUnits,funStartTime,funTimeAmPm,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -427,12 +427,12 @@ def event_validate(action, formdata):
     results = []
 
     for field in ['date', 'paymentRecdDate', 'invoiceSentDate']:
-        if formdata[field] and not match(r"(20|21)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])", formdata[field]):
+        if formdata[field] and not match(r"^(20|21)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid date: correct format is yyyy-mm-dd' })
 
     for field in ['mainStartTime', 'funStartTime']:
-        if formdata[field] and not match(r"([01]?[0-9]|2[0-3]):[0-5][0-9]", formdata[field]):
-            results.append({ 'name' : field, 'status' : 'invalid time: correct format is h:mm' })
+        if formdata[field] and not match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9] [ap]m$", formdata[field]):
+            results.append({ 'name' : field, 'status' : 'invalid time: correct format is h:mm [am/pm]' })
 
     # regex patterns from http://www.noah.org/wiki/RegEx_Python#URL_regex_pattern
     for field in ['eventUrl', 'registrationUrl']:
@@ -454,14 +454,14 @@ event = EventsApi(
                     formmapping = event_formmapping, 
                     clientcolumns = [
                         { 'data': 'event', 'name': 'event', 'label': 'Event' },
-                        { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'date', 'dateFormat': 'yy-mm-dd',
-                            'ed':{ 'label': 'Date (yyyy-mm-dd)' }
+                        { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 
+                            'ed':{ 'label': 'Date (yyyy-mm-dd)', 'format':'YYYY-MM-DD', 
+                            # first day of week for date picker is Sunday, strict date format required
+                            'opts':{ 'momentStrict':True, 'firstDay':0 } },
                         },
-                        # TODO: why did the following display a time widget?
-                        # { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 'ed':{'format':'yyyy-mm-dd'} },
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
                           '_treatment' : { 'relationship' : { 'model':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
-                          'ed':{ 'def':'pending' }, 
+                          # 'ed':{ 'def':State.query.filter_by(state='pending').one().id }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
                           '_treatment' : { 'relationship' : { 'model':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
@@ -478,12 +478,8 @@ event = EventsApi(
                                                             } 
                                          },
                         },
-                        { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time' },
-                        { 'data': 'mainTimeAmPm', 'name': 'mainTimeAmPm', 'label': 'am/pm', 'type': 'select2',
-                          'className': 'inhibitlabel', 
-                          'options':['am', 'pm'], 
-                          'ed':{ 'def':'am' }, 
-                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
+                        { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time', 
+                          'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance' },
                         { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
@@ -492,12 +488,8 @@ event = EventsApi(
                           'ed':{ 'def':'M' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
-                        { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time'},
-                        { 'data': 'funTimeAmPm', 'name': 'funTimeAmPm', 'label': 'am/pm', 'type': 'select2',
-                          'className': 'inhibitlabel', 
-                          'options':['am', 'pm'], 
-                          'ed':{ 'def':'am' }, 
-                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
+                        { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time', 
+                          'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance' },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
@@ -517,10 +509,10 @@ event = EventsApi(
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
                           '_treatment' : { 'relationship' : { 'model':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
                         },
-                        { 'data': 'paymentRecdDate', 'name': 'paymentRecdDate', 'label': 'Pymt Recd Date', 'type':'date', 'dateFormat': 'yy-mm-dd',
+                        { 'data': 'paymentRecdDate', 'name': 'paymentRecdDate', 'label': 'Pymt Recd Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Pymt Recd Date (yyyy-mm-dd)' }
                         },
-                        { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'date', 'dateFormat': 'yy-mm-dd',
+                        { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
                         },
                         { 'data': 'isOnCalendar', 'name': 'isOnCalendar', 'label': 'On Calendar', 
