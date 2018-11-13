@@ -43,7 +43,7 @@ Base = db.Model
 URL_LEN = 2047      # https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
 EVENT_LEN = 256
 DATE_LEN = 10
-TIME_LEN = 5
+TIME_LEN = 8
 DATETIME_LEN = DATE_LEN + 1 + TIME_LEN
 STATE_LEN = 16
 NAME_LEN = 256
@@ -197,11 +197,9 @@ class Event(Base):
     client              = relationship( 'Client', backref='events', lazy=True )
 
     mainStartTime       = Column( String(TIME_LEN) )
-    mainTimeAmPm        = Column( Enum('am', 'pm') )
     mainDistance        = Column( Float )
     mainDistanceUnits   = Column( Enum('M',  'km') )
     funStartTime        = Column( String(TIME_LEN) )
-    funTimeAmPm         = Column( Enum('am', 'pm') )
     funDistance         = Column( Float )
     funDistanceUnits    = Column( Enum('M', 'km') )
 
