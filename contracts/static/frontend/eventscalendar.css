@@ -16,7 +16,16 @@
     background:forestgreen;
 }
 
-/* these have to be after the above, to override */
+/* availability exceptions need to be between day and state styling */
+.ui-widget-content.contracts-available {
+    background:forestgreen;
+}
+
+.ui-widget-content.contracts-unavailable {
+    background:grey;
+}
+
+/* state stylings need to be after day and exception styling, to override */
 .ui-widget-content.contracts-committed {
     background:deepskyblue;
 }
@@ -24,3 +33,4 @@
 .ui-widget-content.contracts-tentative {
     background:yellow;
 }
+
