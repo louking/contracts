@@ -461,6 +461,7 @@ event = EventsApi(
                         },
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
                           '_treatment' : { 'relationship' : { 'model':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
+                          # can't do this because it's done at initialization so if database not filled yet this raises exception
                           # 'ed':{ 'def':State.query.filter_by(state='pending').one().id }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
