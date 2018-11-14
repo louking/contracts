@@ -241,7 +241,7 @@ class DateRule(Base):
     day         = Column( Enum('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'))
     month       = Column( Enum('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
     date        = Column( Integer )
-    deltadays   = Column( Integer, default=0 )  # 0 this day
+    deltaday    = Column( Integer, default=0 )  # 0 this day
                                                 # positive # days after this day
                                                 # negative # days before this day
     addldays    = Column( Integer, default=0 )  # 0 just this day
