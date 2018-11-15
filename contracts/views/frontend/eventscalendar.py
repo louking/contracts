@@ -240,7 +240,7 @@ class EventsCalendar(MethodView):
                    'pagecssfiles'      : annotatescripts( calendar_scripts_css ),
                    'servicesqueryurl'  : request.url_root[0:-1] + url_for('.servicesquery')
                   }
-        return render_template( 'frontend/eventscalendar.jinja2', **context )
+        return render_template( 'eventscalendar.jinja2', **context )
 
 #----------------------------------------------------------------------
 add_url_rules(bp, EventsCalendar)
@@ -262,7 +262,7 @@ class ServicesQuery(MethodView):
         context = {
                    'pagename'          : 'request race services',
                   }
-        return render_template( 'frontend/servicesquery.jinja2', **context )
+        return render_template( 'servicesquery.jinja2', **context )
 
 #----------------------------------------------------------------------
 add_url_rules(bp, ServicesQuery)
