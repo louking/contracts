@@ -81,10 +81,9 @@ moment_cdn = 'https://cdnjs.cloudflare.com/ajax/libs'
 moment_ver = '2.22.2'
 
 SCRIPTS = [
-    ('jquery-{ver}{min}.js', jq_ver, jq_cdn),
+    (
+    'jquery-{ver}{min}.js', jq_ver, jq_cdn),
 
-    # ('{ver}/jquery-ui{min}.js', jq_ui_ver, jq_ui_cdn),
-    # ('{ver}/themes/smoothness/jquery-ui{min}.css', jq_ui_ver, jq_ui_cdn),
     'js/jquery-ui-1.12.1.custom/jquery-ui{min}.js',
     'js/jquery-ui-1.12.1.custom/jquery-ui{min}.css', 
     'js/jquery-ui-1.12.1.custom/jquery-ui.structure{min}.css', 
@@ -125,8 +124,6 @@ SCRIPTS = [
 
     ('yadcf/{ver}/jquery.dataTables.yadcf{min}.js', yadcf_ver, yadcf_cdn),
     ('yadcf/{ver}/jquery.dataTables.yadcf{min}.css', yadcf_ver, yadcf_cdn),
-
-    # 'js/jquery.ui.dialog-clickoutside.js', # from https://github.com/coheractio/jQuery-UI-Dialog-ClickOutside
 
     'layout.js',
     'style.css',
@@ -180,9 +177,16 @@ def annotatescripts(scripts):
         # handle static file items
         else:
             thisfile = scriptitem.format(min=cdnmin)
-            filepath = os.path.join(current_app.static_folder,thisfile)
-            version = os.stat(filepath)[stat.ST_MTIME]
             fileurl = url_for('static', filename=thisfile)
+            # remove leading '/' from fileurl else os.path.join gets confused
+            filepath = os.path.join( current_app.root_path, fileurl[1:] )
+            # TODO: debug stuff below
+            therootpath = current_app.root_path
+            theurlroot = current_app.root_path
+            thestaticfolder = current_app.static_folder
+            # TODO: this doesn' twork because static_folder is ambiguous, see https://github.com/louking/contracts/issues/46 to resolve
+            # version = os.stat(filepath)[stat.ST_MTIME]
+            version = 1 # cache busted through SEND_FILE_MAX_AGE_DEFAULT configuration
             fileref = '{}?v={}'.format(fileurl, version)
         
         annotated.append(fileref)
@@ -190,6 +194,7 @@ def annotatescripts(scripts):
     return annotated
     
 #----------------------------------------------------------------------
+@current_app.before_request
 def setscripts():
 #----------------------------------------------------------------------
     '''
