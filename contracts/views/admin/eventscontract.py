@@ -56,11 +56,27 @@ class EventsApi(DbCrudApiRolePermissions):
 
             # pull record(s) from database and save as flat dotted record
             data = get_request_data(form)
+            print 'data={}'.format(data)
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
+
+                    # check appropriate fields are present for certain services
+                    servicenames = set([s.service for s in eventdb.services])
+                    if servicenames & {'coursemarking', 'finishline'}:
+                        self._fielderrors = []
+                        for field in ['event', 'date', 'mainStartTime', 'mainDistance' ]:
+                            if not data[thisid][field]:
+                                self._fielderrors.append({ 'name' : field, 'status' : 'please supply'})
+                        ## handle select fields
+                        for field in ['state', 'services', 'client', 'course']:
+                            if not data[thisid][field]['id']:
+                                self._fielderrors.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
+                        if self._fielderrors:
+                            raise parameterError, 'missing fields'
+
 
                     # calculate service fees
                     servicefees = []
@@ -78,7 +94,11 @@ class EventsApi(DbCrudApiRolePermissions):
                         elif service.feeType.feeType =='basedOnField':
                             field = service.basedOnField
                             # not clear why this needs to be converted to int, but otherwise see unicode value
-                            fieldval = int(getattr(eventdb, field))
+                            # if can't be converted, then invalid format
+                            try:
+                                fieldval = int(getattr(eventdb, field))
+                            except (TypeError, ValueError) as e:
+                                fieldval = None
 
                             # field not set, then set self._fielderrors appropriately
                             if not fieldval:

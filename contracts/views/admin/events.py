@@ -445,7 +445,6 @@ def event_validate(action, formdata):
             results.append({ 'name' : field, 'status' : 'please supply'})
     ## handle select fields
     for field in ['state', 'services', 'client']:
-        print "formdata[{}]['id']={}".format(field, formdata[field]['id'])
         if not formdata[field]['id']:
             results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
 
