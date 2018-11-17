@@ -90,10 +90,6 @@ def create_app(config_obj, config_filename=None):
         from applogging import setlogging
         setlogging()
 
-        # initialize versions for scripts
-        from request import setscripts
-        setscripts()
-
         # set up scoped session
         from sqlalchemy.orm import scoped_session, sessionmaker
         db.session = scoped_session(sessionmaker(autocommit=False,
