@@ -439,6 +439,16 @@ def event_validate(action, formdata):
         if formdata[field] and not match(REGEX_URL, formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
+    # verify some fields were supplied
+    for field in ['event', 'date']:
+        if not formdata[field]:
+            results.append({ 'name' : field, 'status' : 'please supply'})
+    ## handle select fields
+    for field in ['state', 'services', 'client']:
+        print "formdata[{}]['id']={}".format(field, formdata[field]['id'])
+        if not formdata[field]['id']:
+            results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
+
     return results
 
 event = EventsApi(
