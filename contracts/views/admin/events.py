@@ -531,7 +531,10 @@ event = EventsApi(
                     validate = event_validate,
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'edit', 'remove', 
+                               # would use url_for('.calendar'), but this can't be done at until bp created
+                               {'name':'calendar', 'text':'Calendar', 'url':'/admin/calendar'},
+                    ],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,

@@ -185,6 +185,7 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
         context = {
                    'pagename'          : 'events calendar administration',
+                   'tableurl'          : url_for( '.events-superadmin' )
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )
 

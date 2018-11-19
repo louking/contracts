@@ -14,9 +14,9 @@ $( function() {
     },
 
     header: {
-      left: 'prev,next today prevYear,nextYear',
+      left: 'prev,next today prevYear,nextYear tableNav',
       center: 'title',
-      right: 'tableNav'
+      right: ''
     },
     // aspectRatio: 2,
     height: 450,

@@ -14,8 +14,16 @@ function currentdate() {
     return year + '-' + mon + '-' + day;
 }
 
+// configure table buttons
+function configuretablebuttons( table ) {
+    btn = table.button( 'calendar:name' );
+    btn.action( function( object, dtapi, button, cnf ){ 
+        window.location.href = cnf.url; 
+    } );
+}
+
 // configure form buttons
-function configurebuttons( that, action ) {
+function configureformbuttons( that, action ) {
     // set buttons for create
     if ( action == 'create' ) {
         that.buttons( 'Create' );
@@ -86,9 +94,11 @@ function configurebuttons( that, action ) {
 if ( ['/admin/events'].includes(location.pathname) ) {
 // set up buttons for edit form after datatables has been initialized
 function afterdatatables() {
+    configuretablebuttons( _dt_table );
+
     editor.on('open', function( e, mode, action ) {
         // set up the buttons
-        configurebuttons( this, action );
+        configureformbuttons( this, action );
 
         // special processing for contractApproverNotes field to make readonly
         editor.field( 'contractApproverNotes' ).disable();
@@ -100,11 +110,11 @@ function afterdatatables() {
     editor.dependent([ 'state.id', 'contractDocId', 'invoiceSentDate', 'paymentRecdDate' ], function( val, data, callback ) {
         // TODO: how to determine action?
         console.log('dependent fired');
-        configurebuttons( editor, editor.mode() );
+        configureformbuttons( editor, editor.mode() );
         return {};
     });
 }
-} // if $ENDPOINT
+} // if [].includes(location.pathname)
 
 
 // TODO: below needs work -- make import scheme for events and clients tables
