@@ -1,5 +1,5 @@
 ###########################################################################################
-# calendar - frontend events api for contracts database
+# calendar - admin events api for contracts database
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -8,7 +8,7 @@
 #   Copyright 2018 Lou King.  All rights reserved
 ###########################################################################################
 '''
-calendar - frontend events api for contracts database
+calendar - admin events api for contracts database
 =======================================================================
 
 Supports API for fullcalendar javascript client
@@ -53,8 +53,6 @@ class EventsCalendarApi(MethodView):
         for event in events:
             # don't supply trivial events
             if len(event.services) == 0: continue
-            # don't supply events which are only premium promotion
-            if len(event.services) == 1 and event.services[0].service == 'premiumpromotion': continue
 
             # send event to client
             eventobject = {
@@ -186,31 +184,10 @@ class EventsCalendar(MethodView):
     def get(self):
     #----------------------------------------------------------------------
         context = {
-                   'pagename'          : 'events calendar',
-                   'servicesqueryurl'  : request.url_root[0:-1] + url_for('.servicesquery')
+                   'pagename'          : 'events calendar administration',
                   }
-        return render_template( 'eventscalendar.jinja2', **context )
+        return render_template( 'admin_eventscalendar.jinja2', **context )
 
 #----------------------------------------------------------------------
 add_url_rules(bp, EventsCalendar)
-#----------------------------------------------------------------------
-
-
-#######################################################################
-class ServicesQuery(MethodView):
-#######################################################################
-    url_rules = {
-                'servicesquery': ['/servicesquery',('GET',)],
-                }
-
-    #----------------------------------------------------------------------
-    def get(self):
-    #----------------------------------------------------------------------
-        context = {
-                   'pagename'          : 'request race services',
-                  }
-        return render_template( 'servicesquery.jinja2', **context )
-
-#----------------------------------------------------------------------
-add_url_rules(bp, ServicesQuery)
 #----------------------------------------------------------------------

@@ -1,5 +1,50 @@
 /* common styling admin & frontend */
 
+/*body            { font-family: sans-serif; background: #eee; } */
+.body {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  margin: 5px;
+  padding: 0;
+  position: absolute;
+  left: 10%;
+  padding-left:15px;
+  padding-right:15px;
+  width:85%;  /* must equal width of .scrollarea width; left plus width = .heading width */
+  float:left;
+  font-size: 0.8em;
+}
+
+.body-printerfriendly {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  margin: 5px;
+  padding: 0;
+  position: absolute;
+/*  left: 10%; */
+  padding-left:15px;
+  padding-right:15px;
+/*  width:85%;  */
+  float:left;
+  font-size: 0.8em;
+}
+
+.noPrint {
+  display: none;
+}
+
+.scrollarea {
+  height:550px;
+  width: 90%;
+  overflow: auto; /* scroll */
+}
+
+
+a, h1, h2       { color: #377ba8; }
+h1, h2          { font-family: Georgia, serif; margin: 0; }
+h1              { border-bottom: 2px solid #eee; }
+h2              { font-size: 1.2em; }
+
 .pagename       { text-align: center; 
                   margin-bottom: 1em; background: #fafafa;
                   text-transform: uppercase;

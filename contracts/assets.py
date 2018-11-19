@@ -70,7 +70,7 @@ asset_bundles = {
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
         'style.css',
         'frontend/style.css',
-        'frontend/eventscalendar.css',
+        'eventscalendar.css',
 
         filters=['cssrewrite', 'cssmin'],
         output='gen/frontend.css',
@@ -106,11 +106,14 @@ asset_bundles = {
 
         'js/yadcf-{ver}/jquery.dataTables.yadcf.js'.format(ver=yadcf_ver),
 
+        'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
+
         'admin/layout.js',
         'admin/datatables.js',
         'admin/events.js',
         'admin/daterules.js',
         'admin/editor.select2.mymethods.js',
+        'admin/admin_eventscalendar.js',
 
         output='gen/admin.js',
         filters='jsmin',
@@ -127,10 +130,13 @@ asset_bundles = {
         'js/Select-{ver}/css/select.jqueryui.css'.format(ver=dt_select_ver),
         'js/select2-{ver}/css/select2.css'.format(ver=s2_ver),
         'js/yadcf-{ver}/jquery.dataTables.yadcf.css'.format(ver=yadcf_ver),
+        'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
+
         'style.css',
         'admin/style.css',
         'admin/editor-forms.css', 
         'admin/events.css',
+        'eventscalendar.css',
 
         output='gen/admin.css',
         # cssrewrite helps find image files when ASSETS_DEBUG = False
