@@ -69,7 +69,7 @@ asset_bundles = {
         # this causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
         'style.css',
-        'frontend/frontend_style.css',
+        'frontend/style.css',
         'frontend/eventscalendar.css',
 
         filters=['cssrewrite', 'cssmin'],
