@@ -53,8 +53,6 @@ asset_bundles = {
         # date time formatting 
         'js/moment-{ver}/moment.js'.format(ver=moment_ver),
 
-        'layout.js',
-
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
         'frontend/eventscalendar.js',
 
@@ -66,12 +64,12 @@ asset_bundles = {
         'js/jquery-ui-{ver}.custom/jquery-ui.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
-        'style.css',
 
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
         # this causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
-        'frontend_style.css',
+        'style.css',
+        'frontend/frontend_style.css',
         'frontend/eventscalendar.css',
 
         filters=['cssrewrite', 'cssmin'],
@@ -102,17 +100,17 @@ asset_bundles = {
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
         # the order here is important
         'js/FieldType-Select2/editor.select2.js',
-        'editor.select2.mymethods.js',
 
         # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
         'js/moment-{ver}/moment.js'.format(ver=moment_ver),
 
         'js/yadcf-{ver}/jquery.dataTables.yadcf.js'.format(ver=yadcf_ver),
 
-        'layout.js',
-        'datatables.js',
-        'events.js',
-        'daterules.js',
+        'admin/layout.js',
+        'admin/datatables.js',
+        'admin/events.js',
+        'admin/daterules.js',
+        'admin/editor.select2.mymethods.js',
 
         output='gen/admin.js',
         filters='jsmin',
@@ -130,8 +128,9 @@ asset_bundles = {
         'js/select2-{ver}/css/select2.css'.format(ver=s2_ver),
         'js/yadcf-{ver}/jquery.dataTables.yadcf.css'.format(ver=yadcf_ver),
         'style.css',
-        'editor-forms.css', 
-        'events.css',
+        'admin/style.css',
+        'admin/editor-forms.css', 
+        'admin/events.css',
 
         output='gen/admin.css',
         # cssrewrite helps find image files when ASSETS_DEBUG = False
