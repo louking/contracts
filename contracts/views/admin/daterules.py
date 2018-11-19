@@ -20,15 +20,14 @@ from flask import current_app
 from . import bp
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship
 from contracts.dbmodel import db, DateRule
-from contracts.request import addscripts
 from loutilities.tables import DataTablesEditor
 
 ##########################################################################################
 # daterules endpoint
 ###########################################################################################
 
-daterule_dbattrs = 'id,rulename,rule,day,month,date,year,deltadays,addldays'.split(',')
-daterule_formfields = 'rowid,rulename,rule,day,month,date,year,deltadays,addldays'.split(',')
+daterule_dbattrs = 'id,rulename,rule,day,month,date,year,deltaday,addldays'.split(',')
+daterule_formfields = 'rowid,rulename,rule,day,month,date,year,deltaday,addldays'.split(',')
 daterule_dbmapping = dict(zip(daterule_dbattrs, daterule_formfields))
 daterule_formmapping = dict(zip(daterule_formfields, daterule_dbattrs))
 
@@ -68,7 +67,7 @@ daterule = DbCrudApiRolePermissions(
                     model = DateRule, 
                     roles_accepted = ['superadmin', 'admin'],
                     template = 'datatables.jinja2',
-                    pagename = 'daterules', 
+                    pagename = 'Date Rules', 
                     endpoint = 'admin.daterules', 
                     rule = '/daterules', 
                     dbmapping = daterule_dbmapping, 
@@ -85,7 +84,7 @@ daterule = DbCrudApiRolePermissions(
                         { 'data': 'month', 'name': 'month', 'label': 'Month', 'type': 'select2',
                           'options': DateRule.__table__.columns['month'].type.enums, 
                         },
-                        { 'data': 'deltadays', 'name': 'deltadays', 'label': 'Offset Days', 'message':'number of days before (negative) or after (positive)' },
+                        { 'data': 'deltaday', 'name': 'deltaday', 'label': 'Offset Days', 'message':'number of days before (negative) or after (positive)' },
                         { 'data': 'addldays', 'name': 'addldays', 'label': 'Additional Days', 'message':'include days before (negative) or after (positive)' },
                         { 'data': 'date', 'name': 'date', 'label': 'Date' },
                         { 'data': 'year', 'name': 'year', 'label': 'Year' },
@@ -100,8 +99,6 @@ daterule = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                    pagejsfiles = ['daterules.js'],
-                    scriptfilter = addscripts,
                     )
 daterule.register()
 

@@ -17,13 +17,6 @@
         <a href="{{ url_for('authorize') }}">log in</a>
       {% else %}
 {#         {{ session.user_name }}
-        {% if not inhibityear and session.year %}
-          <select id="year_select" class=sessionoption sessionoptionapi="/_useryear">
-            {% for year in session.year_choices %}
-              <option value={{ year[0] }} {% if year[0] == session.year %}selected{% endif %}>{{ year[1] }}</option>
-            {% endfor %}
-          </select>
-        {% endif %}
  #}
         <a href="{{ url_for('logout') }}">log out</a>
       {% endif %}
@@ -63,9 +56,9 @@
 </script>
   
 {# see request.py for list of css, js files #}
-{% for css in _cssfiles %}
-  <link rel=stylesheet type=text/css href="{{ css }}">
-{% endfor %}
+{% assets "admin_css" %}
+  <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+{% endassets %}
 {% for css in pagecssfiles %}
   <link rel=stylesheet type=text/css href="{{ css }}">
 {% endfor %}
@@ -81,14 +74,12 @@
 {% endblock %}
 
 <script>var _productname = "{{ _productname_text|safe }}";</script>
-{% for js in _jsfiles %}
+{% assets "admin_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% for js in pagejsfiles %}
   <script type="text/javascript" src="{{ js }}"></script>
 {% endfor %}
-{% if pagejsfiles %}
-  {% for js in pagejsfiles %}
-    <script type="text/javascript" src="{{ js }}"></script>
-  {% endfor %}
-{% endif %}
 {% block scripts %}
 {% endblock %}
 </body>

@@ -31,6 +31,10 @@ from flask_security import Security, SQLAlchemyUserDatastore
 # homegrown
 from loutilities.configparser import getitems
 
+# bring in js, css assets
+import assets
+from assets import asset_env, asset_bundles
+
 # get configuration
 # configfile = "contracts.cfg"
 # configpath = os.path.join(os.path.sep.join(os.path.dirname(__file__).split(os.path.sep)[:-1]), configfile)
@@ -63,6 +67,10 @@ def create_app(config_obj, config_filename=None):
     # initialize database
     from contracts.dbmodel import db
     db.init_app(app)
+
+    # initialize assets
+    asset_env.init_app(app)
+    asset_env.register(asset_bundles)
 
     # Set up Flask-Security
     from contracts.dbmodel import User, Role

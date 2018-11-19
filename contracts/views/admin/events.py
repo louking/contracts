@@ -24,7 +24,6 @@ from . import bp
 from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
-from contracts.request import addscripts
 from eventscontract import EventsApi
 
 # https://www.regextester.com/93652 - modified to allow upper case
@@ -66,7 +65,6 @@ state = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                    scriptfilter = addscripts,
                     )
 state.register()
 
@@ -103,7 +101,6 @@ lead = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 lead.register()
 
@@ -146,7 +143,6 @@ course = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 course.register()
 
@@ -183,7 +179,6 @@ feetype = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 feetype.register()
 
@@ -224,7 +219,6 @@ feebasedon = DbCrudApiRolePermissions(
                                         'scrollY': True,
                                         'order': [[1, 'asc'], [2, 'asc']],
                                   },
-                    scriptfilter = addscripts,
                     )
 feebasedon.register()
 
@@ -262,7 +256,6 @@ addon = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 addon.register()
 
@@ -309,7 +302,6 @@ service = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 service.register()
 
@@ -353,7 +345,6 @@ eventexception = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 eventexception.register()
 
@@ -410,7 +401,6 @@ client = DbCrudApiRolePermissions(
                                 'scrollXInner': "100%",
                                 'scrollY': True,
                                 },
-                    scriptfilter = addscripts,
                     )
 client.register()
 
@@ -555,9 +545,6 @@ event = EventsApi(
                     edoptions = {
                                         'template':'#customForm',
                                 },
-                    pagejsfiles = ['events.js'],
-                    pagecssfiles = ['editor-forms.css', 'events.css'],
-                    scriptfilter = addscripts,
                     )
 event.register()
 

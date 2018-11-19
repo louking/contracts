@@ -406,9 +406,6 @@ class DbCrudApi(CrudApi):
         # initialize inherited class, and a couple of attributes
         super(DbCrudApi, self).__init__(**args)
 
-        # make sure we load datatables.js
-        self.pagejsfiles = ['datatables.js'] + self.pagejsfiles
-
         # if any standalone forms required, add to templateargs
         if saforms:
             self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]

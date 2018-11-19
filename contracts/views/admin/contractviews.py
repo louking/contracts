@@ -21,7 +21,6 @@ contract - class and helpers to manage contract
 from . import bp
 from contracts.dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship
-from contracts.request import addscripts
 
 ##########################################################################################
 # templatetype endpoint
@@ -59,7 +58,6 @@ templatetype = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                    scriptfilter = addscripts,
                     )
 templatetype.register()
 
@@ -96,7 +94,6 @@ contracttype = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                    scriptfilter = addscripts,
                     )
 contracttype.register()
 
@@ -133,7 +130,6 @@ contractblocktype = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                    scriptfilter = addscripts,
                     )
 contractblocktype.register()
 
@@ -180,6 +176,5 @@ contract = DbCrudApiRolePermissions(
                                         'scrollY': True,
                                         'order': [[1, 'asc'], [2, 'asc']],
                                   },
-                    scriptfilter = addscripts,
                     )
 contract.register()

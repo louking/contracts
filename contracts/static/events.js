@@ -82,6 +82,8 @@ function configurebuttons( that, action ) {
     }
 }
 
+// only define afterdatatables if needed
+if ( ['/admin/events'].includes(location.pathname) ) {
 // set up buttons for edit form after datatables has been initialized
 function afterdatatables() {
     editor.on('open', function( e, mode, action ) {
@@ -102,6 +104,7 @@ function afterdatatables() {
         return {};
     });
 }
+} // if $ENDPOINT
 
 
 // TODO: below needs work -- make import scheme for events and clients tables

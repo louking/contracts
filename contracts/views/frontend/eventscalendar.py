@@ -26,28 +26,6 @@ from loutilities.flask_helpers.blueprints import add_url_rules
 
 class parameterError(Exception): pass
 
-# jquery ui theme
-jqueryui_cdn = 'https://code.jquery.com'
-jqueryui_ver = '1.12.1'
-
-# fullcalendar.js (see https://fullcalendar.io)
-fullcalendar_cdn = 'https://cdnjs.cloudflare.com/ajax/libs'
-fullcalendar_ver = '3.9.0'
-
-calendar_scripts_js = [
-    # calendar handling - see https://fullcalendar.io/download
-    ('fullcalendar/{ver}/fullcalendar{min}.js', fullcalendar_ver, fullcalendar_cdn),
-    'frontend/eventscalendar.js',
-]
-calendar_scripts_css = [
-    ('fullcalendar/{ver}/fullcalendar{min}.css', fullcalendar_ver, fullcalendar_cdn),
-    # this causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
-    # ('fullcalendar/{ver}/fullcalendar.print.css', fullcalendar_ver, fullcalendar_cdn),
-    ('ui/{ver}/themes/cupertino/jquery-ui.css', jqueryui_ver, jqueryui_cdn),
-    'frontend_style.css',
-    'frontend/eventscalendar.css',
-]
-
 #----------------------------------------------------------------------
 def time24(time):
 #----------------------------------------------------------------------
@@ -232,12 +210,8 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
-        from contracts.request import annotatescripts
-
         context = {
                    'pagename'          : 'events calendar',
-                   'pagejsfiles'       : annotatescripts( calendar_scripts_js ),
-                   'pagecssfiles'      : annotatescripts( calendar_scripts_css ),
                    'servicesqueryurl'  : request.url_root[0:-1] + url_for('.servicesquery')
                   }
         return render_template( 'eventscalendar.jinja2', **context )
@@ -257,8 +231,6 @@ class ServicesQuery(MethodView):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
-        from contracts.request import annotatescripts
-
         context = {
                    'pagename'          : 'request race services',
                   }

@@ -22,7 +22,6 @@ from flask_security import roles_accepted, current_user
 from . import bp
 from contracts.dbmodel import db, User, Role
 from contracts.crudapi import DbCrudApiRolePermissions
-from contracts.request import addscripts
 
 ##########################################################################################
 # users endpoint
@@ -70,7 +69,6 @@ user = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 user.register()
 
@@ -107,7 +105,6 @@ role = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'scrollY': True,
                                   },
-                        scriptfilter = addscripts,
                     )
 role.register()
 

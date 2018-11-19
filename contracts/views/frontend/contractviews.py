@@ -45,7 +45,6 @@ class AcceptAgreement(MethodView):
     #----------------------------------------------------------------------
     def get(self, docid):
     #----------------------------------------------------------------------
-        from contracts.request import addscripts
         try:
             thisevent = Event.query.filter_by(contractDocId=docid).one()
 
@@ -62,7 +61,6 @@ class AcceptAgreement(MethodView):
             context = {
                        'pagename'          : 'contract not found',
                        'contracts_contact' : current_app.config['CONTRACTS_CONTACT'],
-                       'pagecssfiles'      : addscripts(['frontend_style.css']),
                       }
             return render_template_string( templatestr, **context )
 
@@ -79,7 +77,6 @@ class AcceptAgreement(MethodView):
         if debug: current_app.logger.debug('AcceptAgreement.get(): thisevent.__dict__={}'.format(thisevent.__dict__))
         thisevent.contracts_contact = current_app.config['CONTRACTS_CONTACT']
         # thisevent.pagename = 'Race Services Agreement'
-        thisevent.pagecssfiles = addscripts(['frontend_style.css'])
 
         # drive urls
         # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
@@ -97,7 +94,6 @@ class AcceptAgreement(MethodView):
     #----------------------------------------------------------------------
     def post(self, docid):
     #----------------------------------------------------------------------
-        from contracts.request import addscripts
         # this should work because we just did get using same docid
         thisevent = Event.query.filter_by(contractDocId=docid).one()
 
@@ -125,7 +121,6 @@ class AcceptAgreement(MethodView):
                       ).block
 
         # add needed fields
-        mergefields['pagecssfiles'] = addscripts(['frontend_style.css'])
         mergefields['servicenames'] = [s.service for s in thisevent.services] 
 
         # drive urls
