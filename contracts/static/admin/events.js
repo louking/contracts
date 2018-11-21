@@ -126,7 +126,7 @@ function afterdatatables() {
         return true;
     });
 
-    events_settriggers( editor );
+    event_settriggers( editor );
 }
 } // if [].includes(location.pathname)
 
