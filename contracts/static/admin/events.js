@@ -30,6 +30,9 @@ function configureformbuttons( that, action ) {
 
     // set buttons for edit
     } else if ( action == 'edit' ) {
+        // this can happen from the calendar view, we need to abort to avoid exception
+        if ( that.field( 'state.id' ).inst('data').length == 0 ) return;
+
         // is current state selection in ['committed', 'contract-sent']?
         var contractsent = ['committed', 'contract-sent'].includes( that.field( 'state.id' ).inst('data')[0].text );
         that.buttons([
@@ -90,6 +93,23 @@ function configureformbuttons( that, action ) {
     }
 }
 
+// set up triggers for configuring event buttons
+var event_trigger_fields = [ 'state.id', 'contractDocId', 'invoiceSentDate', 'paymentRecdDate' ];
+function event_settriggers( editor ) {
+    // regenerate the edit buttons if certain fields change
+    editor.dependent( event_trigger_fields, function( val, data, callback ) {
+        configureformbuttons( editor, editor.mode() );
+        return {};
+    });
+}
+
+function event_cleartriggers( editor ) {
+    $.each( event_trigger_fields, function(i, field) {
+        // $( editor.field( field ).input() ).off( 'change keyup' );
+        editor.off( 'change keyup' );
+    })
+}
+
 // only define afterdatatables if needed
 if ( ['/admin/events'].includes(location.pathname) ) {
 // set up buttons for edit form after datatables has been initialized
@@ -106,13 +126,7 @@ function afterdatatables() {
         return true;
     });
 
-    // regenerate the edit buttons if certain fields change
-    editor.dependent([ 'state.id', 'contractDocId', 'invoiceSentDate', 'paymentRecdDate' ], function( val, data, callback ) {
-        // TODO: how to determine action?
-        console.log('dependent fired');
-        configureformbuttons( editor, editor.mode() );
-        return {};
-    });
+    events_settriggers( editor );
 }
 } // if [].includes(location.pathname)
 

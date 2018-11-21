@@ -7,9 +7,12 @@
 
 {% block scripts %}
 <script>
-  var tableurl = "{{ tableurl }}";
+{# these are needed by admin_eventscalendar.js #}
+    var tableurl = "{{ tableurl }}";
+    var saformurl = "{{ saformurl }}";
 </script>
 {% endblock scripts %}
 {% block body %}
+{% include "event.editorform.html" %}
   <div id='calendar'></div>
 {% endblock body %}

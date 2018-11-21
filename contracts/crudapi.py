@@ -19,7 +19,7 @@ from json import dumps
 from copy import deepcopy
 
 # pypi
-from flask import request, current_app, make_response, url_for
+from flask import request, current_app, make_response, url_for, jsonify
 
 # home grown
 from loutilities.tables import CrudApi, DataTablesEditor
@@ -418,13 +418,20 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
-        # this allows standalone editor form to be created for this model class from another model class
-        # NOTE: request.args need to match keyword args in self.saformurl()
+        
+        # this returns editor options for this model class
+        # this can be used to have a create or edit form accessed from any type of view
+        if request.path[-7:] == '/saform':
+            edoptions = self.getedoptions()
+            return jsonify( { 'edoptions' : edoptions } )
 
-        if request.path[-9:] == '/saformjs':
+        # this allows standalone editor form to be created for this model class from another model class
+        # through a select2 control on a datatables view
+        # NOTE: request.args need to match keyword args in self.saformurl()
+        elif request.path[-9:] == '/saformjs':
             ed_options = self.getedoptions()
 
-            # TODO: indent all by 4 and use indent=2 for testing
+            # indent all by 4 and use indent=2 to make debugging easy
             edoptsjson = ['    {}'.format(l) for l in dumps(ed_options, indent=2).split('\n')]
 
             labelfield = request.args['name']
@@ -526,6 +533,7 @@ class DbCrudApi(CrudApi):
         # create the inherited class endpoints, as by product my_view attribute is initialized
         super(DbCrudApi, self).register()
         self.app.add_url_rule('{}/saformjs'.format(self.rule),view_func=self.my_view,methods=['GET',])
+        self.app.add_url_rule('{}/saform'.format(self.rule),view_func=self.my_view,methods=['GET',])
 
     #----------------------------------------------------------------------
     def open(self):

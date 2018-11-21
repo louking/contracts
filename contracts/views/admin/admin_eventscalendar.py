@@ -25,6 +25,9 @@ from contracts.daterule import daterule2dates
 from contracts.utils import time24
 from loutilities.flask_helpers.blueprints import add_url_rules
 
+from events import event
+event_dte = event.dte
+
 class parameterError(Exception): pass
 
 #######################################################################
@@ -51,15 +54,20 @@ class EventsCalendarApi(MethodView):
         # build Event Objects per https://fullcalendar.io/docs/event-object
         eventobjects = []
         for event in events:
-            # don't supply trivial events
-            if len(event.services) == 0: continue
+            # some services should cause the day to show it is blocked
+            # TODO: make this table driven
+            blocked = False
+            if { 'coursemarking', 'finishline' } & { s.service for s in event.services}:
+                blocked = True
 
             # send event to client
             eventobject = {
-                'id'    : event.id,
-                'title' : event.event,
-                'state' : event.state.state,
-                'start' : event.date + 'T' + time24(event.mainStartTime),
+                'id'      : event.id,
+                'title'   : event.event,
+                'state'   : event.state.state,
+                'start'   : event.date + 'T' + time24( event.mainStartTime ),
+                'blocked' : blocked,
+                'data'    : event_dte.get_response_data( event ),
             }
             eventobjects.append( eventobject )
 
@@ -184,8 +192,9 @@ class EventsCalendar(MethodView):
     def get(self):
     #----------------------------------------------------------------------
         context = {
-                   'pagename'          : 'events',
-                   'tableurl'          : url_for( '.events-superadmin' )
+                   'pagename'   : 'events',
+                   'tableurl'   : url_for( '.events-superadmin' ),
+                   'saformurl'  : '{}/saform'.format( url_for( '.events-superadmin' ) ),
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )
 

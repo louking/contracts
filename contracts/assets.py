@@ -41,6 +41,9 @@ yadcf_ver = '0.9.3'
 # moment.js (see https://momentjs.com/)
 moment_ver = '2.22.2'
 
+# lodash.js (see https://lodash.com)
+lodash_ver = '4.17.11'
+
 # fullcalendar.io
 fullcalendar_ver = '3.9.0'
 
@@ -78,8 +81,9 @@ asset_bundles = {
 
     'admin_js': Bundle(
         'js/jQuery-{ver}/jquery-{ver}.js'.format(ver=jq_ver),
-
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
+
+        'js/lodash-{ver}/lodash.js'.format(ver=lodash_ver),
 
         'js/DataTables-{ver}/js/jquery.dataTables.js'.format(ver=dt_datatables_ver),
         'js/DataTables-{ver}/js/dataTables.jqueryui.js'.format(ver=dt_datatables_ver),
