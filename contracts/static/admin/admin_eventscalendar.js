@@ -21,6 +21,9 @@ $( function() {
     themeSystem: 'jquery-ui',
     contentHeight: 'auto',
 
+    // start week on Sunday
+    firstDay: 0, 
+
     customButtons: {
       tableNav: {
         text: 'Table',

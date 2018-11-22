@@ -60,14 +60,31 @@ class EventsCalendarApi(MethodView):
             if { 'coursemarking', 'finishline' } & { s.service for s in event.services}:
                 blocked = True
 
+            # set color class for event
+            # TODO: make this table driven
+            # not committed
+            if event.state.state != 'committed':
+                className = 'contracts-event-committed'
+            
+            # committed
+            else:
+                # finish line
+                if blocked:
+                    className = 'contracts-event-blocked'
+                
+                # not finish line
+                else:
+                    className = 'contracts-event-unblocked'
+
             # send event to client
             eventobject = {
-                'id'      : event.id,
-                'title'   : event.event,
-                'state'   : event.state.state,
-                'start'   : event.date + 'T' + time24( event.mainStartTime ),
-                'blocked' : blocked,
-                'data'    : event_dte.get_response_data( event ),
+                'id'        : event.id,
+                'title'     : event.event,
+                'state'     : event.state.state,
+                'start'     : event.date + 'T' + time24( event.mainStartTime ),
+                'blocked'   : blocked,
+                'className' : className,
+                'data'      : event_dte.get_response_data( event ),
             }
             eventobjects.append( eventobject )
 

@@ -34,3 +34,17 @@
     background:yellow;
 }
 
+.fc-event.contracts-event-committed {
+    background-color: #d83abe;
+    border-color: #d83abe;
+}
+
+.fc-event.contracts-event-blocked {
+    background-color: #3a87ad;
+    border-color: #3a87ad;   
+}
+
+.fc-event.contracts-event-unblocked {
+    background-color: #ba6d10;
+    border-color: #ba6d10;
+}
