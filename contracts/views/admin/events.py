@@ -521,7 +521,7 @@ event = EventsApi(
                         },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type': 'textarea' },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },
-                        { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc ID', 'type':'readonly' },
+                        { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc' },
                         { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },
                         { 'data': 'contractApprover', 'name': 'contractApprover', 'label': 'Approver', 'type':'readonly' },
                         { 'data': 'contractApproverEmail', 'name': 'contractApproverEmail', 'label': 'Approver Email', 'type':'readonly' },

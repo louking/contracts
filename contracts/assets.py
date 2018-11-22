@@ -112,6 +112,7 @@ asset_bundles = {
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
 
+        'admin/editor.googledoc.js',
         'admin/layout.js',
         'admin/datatables.js',
         'admin/events.js',
