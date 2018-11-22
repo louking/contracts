@@ -20,10 +20,14 @@
     padding: 5px;
 }
 
-.DTE_FieldType_googledoc {
+#customForm .DTE_FieldType_googledoc {
     padding: 5px 4px;
     width: 100%;
     display: block;
+}
+
+.ui-widget h2 {
+    font-family: Verdana,Arial,sans-serif;
 }
 
 /*
