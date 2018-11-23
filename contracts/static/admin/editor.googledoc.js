@@ -19,6 +19,12 @@ _fieldTypes.googledoc = {
             '<div id="'+Editor.safeId( conf.id )+'">'+
             '</div>');
  
+        var atext = 'use opts:{text:"text for link"}';
+        if ( conf.hasOwnProperty( 'opts' ) && conf.opts.hasOwnProperty( 'text' )) {
+            atext = conf.opts.text;
+        }
+        $(conf._input).attr('atext', atext)
+
         return conf._input;
     },
  
@@ -27,10 +33,12 @@ _fieldTypes.googledoc = {
     },
  
     set: function ( conf, val ) {
+        // remove any links present
         $('.'+Editor.safeId( conf.id )+'.DTE_FieldType_googledoc').remove();
         $(conf._input).attr( 'value', val );
+        // add link to google doc if val present
         if (val != "") {
-            $(conf._input).append('<a class="'+Editor.safeId( conf.id )+' DTE_FieldType_googledoc" target=_blank href="https://docs.google.com/document/d/' + $(conf._input).attr( 'value' ) + '/view">contract</a>')
+            $(conf._input).append('<a class="'+Editor.safeId( conf.id )+' DTE_FieldType_googledoc" target=_blank href="https://docs.google.com/document/d/' + $(conf._input).attr( 'value' ) + '/view">'+$(conf._input).attr( 'atext' )+'</a>')
         }
     },
  
