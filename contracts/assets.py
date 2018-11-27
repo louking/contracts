@@ -38,14 +38,24 @@ s2_ver = '4.0.5'
 # yadcf
 yadcf_ver = '0.9.3'
 
-# moment.js (see https://momentjs.com/)
-moment_ver = '2.22.2'
+moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
+lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
+fullcalendar_ver = '3.9.0'  # fullcalendar.io
+materialize_ver = '1.0.0'   # materializecss.com
 
-# lodash.js (see https://lodash.com)
-lodash_ver = '4.17.11'
+materialize_bundle_js = Bundle(
+        'js/materialize-v{ver}/materialize/js/materialize.js'.format(ver=materialize_ver),
 
-# fullcalendar.io
-fullcalendar_ver = '3.9.0'
+        filters='jsmin',
+        output='gen/materialize.js',
+        )
+materialize_bundle_css = Bundle(
+        'js/materialize-v{ver}/materialize/css/materialize.css'.format(ver=materialize_ver),
+        'materialize-override.css',
+
+        filters=['cssrewrite', 'cssmin'],
+        output='gen/materialize.css',
+        )
 
 asset_bundles = {
 
@@ -67,16 +77,27 @@ asset_bundles = {
         'js/jquery-ui-{ver}.custom/jquery-ui.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
-
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
-        # this causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
+        # next line causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
+
         'style.css',
         'frontend/style.css',
         'eventscalendar.css',
 
         filters=['cssrewrite', 'cssmin'],
         output='gen/frontend.css',
+        ),
+
+    'materialize-js': materialize_bundle_js,
+
+    'materialize-css': materialize_bundle_css,
+
+    'page-events-servicesquery-js' : Bundle(
+        materialize_bundle_js,
+        'frontend/events-servicesquery.js',
+        filters='jsmin',
+        output='gen/events-servicesquery.js',
         ),
 
     'admin_js': Bundle(

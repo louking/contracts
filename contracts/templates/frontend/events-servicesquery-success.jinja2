@@ -1,0 +1,20 @@
+{% extends "frontend_layout.jinja2" %}
+{% block pagename %}
+    {{ pagename }}
+{% endblock pagename %}
+{% block css %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+.disclaimer{width: 480px; color:#646464;margin:20px auto;padding:0 16px;text-align:left;font:400 12px Roboto,Helvetica,Arial,sans-serif}.disclaimer a{color:#009688}#credit{display:none}
+</style>
+{% endblock css %}
+
+{% block scripts %}
+{% endblock scripts %}
+{% block body %}
+    <h5 class="left-align blue-text text-darken-4">FSRC Race Services Request</h5>
+    <p>Your request has been successfully submitted.</p>
+    <p>Thank you for requesting information about our race services products.</p>
+    <p>You will be hearing from us soon.</p>
+    <p>If you have any questions, please send email to <a href="mailto:{{ servicesquery_contact }}">{{ servicesquery_contact }}</a>
+{% endblock body%}

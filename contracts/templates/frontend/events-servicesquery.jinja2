@@ -1,0 +1,151 @@
+{% extends "frontend_layout.jinja2" %}
+{% block pagename %}
+    {{ pagename }}
+{% endblock pagename %}
+{% block css %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+.disclaimer{width: 480px; color:#646464;margin:20px auto;padding:0 16px;text-align:left;font:400 12px Roboto,Helvetica,Arial,sans-serif}.disclaimer a{color:#009688}#credit{display:none}
+</style>
+{% endblock css %}
+
+{% block scripts %}
+{% endblock scripts %}
+{% block body %}
+    <form class="main" id="form" novalidate="novalidate" style="max-width: 480px;margin: 40px auto;" action={{ servicesqueryurl }} method="post">
+      <div id="forminner">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center-align blue-text text-darken-4">FSRC Race Services Request</h5>
+            <p class="disclaimer">Race directors who want to request a reservation with our race support
+            services team, who want to sign up for premium promotion, or who want more information should
+            fill out as much of this form as possible.</p>
+            <p class="disclaimer">We will use 'contact email' to get back to you as soon as possible, 
+            normally within two business days.</p>
+            <p class="disclaimer">Fields marked with a * are required.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="contact_name" type="text" name="contact_name" class="validate" required="" aria-required="true">
+            <label for="contact_name">Contact Name *</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="contact_email" type="email" name="contact_email" class="validate" required="" aria-required="true">
+            <label for="contact_email">Contact Email *</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="organization" type="text" name="organization" class="validate" required="" aria-required="true">
+            <label for="organization">Organization *</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="subject" name="subject" class="validate" required="" aria-required="true">
+              <option value="" disabled selected>Choose subject</option>
+              <option>Request Race Services</option>
+              <option>Request Information about Services</option>
+              <option>Other (please explain below)</option>
+            </select>
+            <label for="subject">Subject</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s8">
+            <input id="event_name" type="text" name="event_name" class="validate" required="" aria-required="true">
+            <label for="event_name">Event Name *</label>
+          </div>
+          <div class="input-field col s4">
+            <input id="event_date" type="date" name="event_date" class="validate" required="" aria-required="true">
+            <label for="event_date">Event Date *</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="event_url" type="url" name="event_url" class="validate" aria-required="false">
+            <label for="event_url">Event Website</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s8">
+            <input id="distance" type="number" step="0.1" name="distance" class="validate" required="" aria-required="true">
+            <label for="distance">Distance *</label>
+          </div>
+          <div class="input-field col s4">
+            <select id="distance_units" name="distance_units" class="validate" required="" aria-required="true">
+              <option value="M" selected>Miles</option>
+              <option value="km">km</option>
+            </select>
+            <label for="distance_units">Units *</label>
+          </div>
+        </div>
+        <div class="row">
+          <p>
+            <label for="is_new-race">
+                <input id="is_new-race" name="is_new-race" type="checkbox" />
+                <span>Check if this is a new race</span>
+            </label>
+          </p>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="num_finishers" name="num_finishers" class="validate" required="" aria-required="true">
+              <option value="" disabled selected>Choose number of finishers</option>
+              <option>less than 200</option>
+              <option>201-300</option>
+              <option>301-400</option>
+              <option>401-500</option>
+            </select>
+            <label for="num_finishers">Expected number of finishers</label>
+          </div>
+        </div>
+        <h6>I'm interested in the following services for my race</h6>
+        <div class="row">
+          <p>
+            <label for="is_finish_line">
+                <input id="is_finish_line" name="is_finish_line" type="checkbox" />
+                <span>Finish Line and Timing</span>
+            </label>
+          </p>
+          <p>
+            <label for="is_course_marking">
+                <input id="is_course_marking" name="is_course_marking" type="checkbox" />
+                <span>Course Marking</span>
+            </label>
+          </p>
+          <p>
+            <label for="is_premium_promotion">
+                <input id="is_premium_promotion" name="is_premium_promotion" type="checkbox" />
+                <span>Premium Promotion</span>
+            </label>
+          </p>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <textarea id="comments" class="materialize-textarea" name="comments"></textarea>
+            <label for="comments">Your comments or questions</label>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="input-field col s6">
+            <button class="waves-effect waves-light btn submit-btn blue darken-4" type="submit">Submit</button>
+          </div>   
+        </div>
+        <div class="row">
+         <p class="disclaimer">
+         If you have any problems submitting this form, or questions on how to use this form, 
+         please send an email describing what you did and what went wrong, or with your question, to 
+         <a href="mailto:{{ servicesquery_contact }}?subject=[FSRC Race Services Request - Help] problem or question on Race Services Request form">{{ servicesquery_contact }}</a>
+         </p>
+        </div>
+        <div class="row">
+          <div class="input-field col s12" id = "progress">
+          </div>
+        </div>
+      </div>
+    </form>
+{% endblock body %}

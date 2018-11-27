@@ -1,0 +1,19 @@
+/* override stylings from materialize.css */
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 8px;
+    box-sizing: content-box;
+    line-height: normal;
+    text-size-adjust: auto;
+}
+
+h1 .brand-all {
+    font-family: Impact, Charcoal, sans-serif;
+}
+
+/* the following overrides style.css */
+form label {
+    width: auto;
+    font-weight: normal;
+}

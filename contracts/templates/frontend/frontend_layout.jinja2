@@ -1,6 +1,8 @@
 <!doctype html>
 <head>
   <title>{{pagename|striptags}}</title>
+  {% block head %}
+  {% endblock head %}
 </head>
 <body>
 {% set urlparts = request.url.split('/') %}
@@ -41,6 +43,11 @@
 {% assets "frontend_css" %}
   <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
 {% endassets %}
+{% if pageassets_css %}
+  {% assets pageassets_css %}
+    <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+  {% endassets %}
+{% endif %}
 {% for css in pagecssfiles %}
   <link rel=stylesheet type=text/css href="{{ css }}">
 {% endfor %}
@@ -59,6 +66,11 @@
 {% assets "frontend_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+{% if pageassets_js %}
+  {% assets pageassets_js %}
+      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+{% endif %}
 {% for js in pagejsfiles %}
   <script type="text/javascript" src="{{ js }}"></script>
 {% endfor %}

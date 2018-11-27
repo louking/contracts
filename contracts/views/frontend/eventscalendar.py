@@ -15,7 +15,7 @@ Supports API for fullcalendar javascript client
 '''
 
 # pypi
-from flask import request, jsonify, render_template, url_for
+from flask import current_app, request, jsonify, render_template, url_for
 from flask.views import MethodView
 
 # home grown
@@ -23,6 +23,7 @@ from . import bp
 from contracts.dbmodel import db, Event, EventAvailabilityException, DateRule
 from contracts.daterule import daterule2dates
 from contracts.utils import time24
+from contracts.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 
 class parameterError(Exception): pass
@@ -187,7 +188,8 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
         context = {
                    'pagename'          : 'events calendar',
-                   'servicesqueryurl'  : request.url_root[0:-1] + url_for('.servicesquery')
+                   # 'servicesqueryurl'  : request.url_root[0:-1] + url_for('.events-servicesquery')
+                   'servicesqueryurl'  : url_for('.events-servicesquery')
                   }
         return render_template( 'eventscalendar.jinja2', **context )
 
@@ -200,16 +202,56 @@ add_url_rules(bp, EventsCalendar)
 class ServicesQuery(MethodView):
 #######################################################################
     url_rules = {
-                'servicesquery': ['/servicesquery',('GET',)],
+                'events-servicesquery': ['/eventsservicesquery',('GET','POST',)],
                 }
 
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
         context = {
-                   'pagename'          : 'request race services',
+                   'pagename'         : 'request race services',
+                   'pageassets_css'   : 'materialize-css',
+                   'pageassets_js'    : 'page-events-servicesquery-js',
+                   'servicesqueryurl' : url_for( '.events-servicesquery' ),
+                   'servicesquery_contact' : current_app.config['SERVICEQUERY_CONTACT'],
                   }
-        return render_template( 'servicesquery.jinja2', **context )
+        return render_template( 'events-servicesquery.jinja2', **context )
+
+    #----------------------------------------------------------------------
+    def post(self):
+    #----------------------------------------------------------------------
+        # request.form is werkzeug.datastructures.ImmutableMultiDict
+        # and each field will show up as list if we don't convert to dict here
+        form = {k:v for k,v in request.form.items()}
+
+        # process a couple of form entries for easier reading
+        theseservices = []
+        for service in ['is_finish_line', 'is_course_marking', 'is_premium_promotion']:
+            if form.get(service, False):
+                # skip 'is_' portion
+                theseservices.append(service[3:])
+        services = ', '.join(theseservices)
+        form['services'] = services
+        form['is_new_race'] = 'yes' if form.get('is_new_race', False) else 'no'
+
+        # turn form into email
+        html = render_template( 'events-servicesquery-mail.jinja2', **form)
+
+        # TODO: this should be in database
+        subject = '[FSRC-RACE-REQUEST] {}'.format(form['subject'])
+        tolist = current_app.config['SERVICEQUERY_TO']
+        # TODO: these should be in database
+        cclist = current_app.config['SERVICEQUERY_CC'] + ['{} <{}>'.format(form['contact_name'], form['contact_email'])]
+        fromlist = current_app.config['SERVICEQUERY_CONTACT']
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        context = {
+                   'pagename'         : 'request race services - success',
+                   'pageassets_css'   : 'materialize-css',
+                   'pageassets_js'    : 'materialize-js',
+                   'servicesquery_contact' : current_app.config['SERVICEQUERY_CONTACT'],
+                  }
+        return render_template( 'events-servicesquery-success.jinja2', **context )
 
 #----------------------------------------------------------------------
 add_url_rules(bp, ServicesQuery)
