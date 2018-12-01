@@ -440,6 +440,64 @@ def event_validate(action, formdata):
 
     return results
 
+filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>State(s)</span>",
+            "        <span id='external-filter-state' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Date Range</span>",
+            "        <span id='external-filter-dates' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Service(s)</span>",
+            "        <span id='external-filter-services' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+# options for yadcf
+datecol = 2
+statecol = 3
+servicecol = 15
+yadcf_options = [
+          {
+           'column_number': statecol, 
+            'select_type': 'select2',
+            'select_type_options': {
+                'placeholder': 'Select states', # this doesn't seem to work
+                'width': '150px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-state',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+           'column_number': datecol,
+            'filter_type': 'range_date',
+            'date_format': 'yyyy-mm-dd',
+            'filter_container_id': 'external-filter-dates',
+          },
+          {
+            'column_number': servicecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'placeholder': 'Select service', # this doesn't seem to work
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-services',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
 event = EventsApi(
                     app = bp,   # use blueprint instead of app
                     db = db,
@@ -451,6 +509,7 @@ event = EventsApi(
                     rule = '/events', 
                     dbmapping = event_dbmapping, 
                     formmapping = event_formmapping, 
+                    pretablehtml = filters,
                     clientcolumns = [
                         { 'data': 'event', 'name': 'event', 'label': 'Event' },
                         { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 
@@ -531,8 +590,8 @@ event = EventsApi(
                     validate = event_validate,
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove', 
-                               # would use url_for('.calendar'), but this can't be done at until bp created
+                    buttons = ['create', 'edit', 'remove', 'csv',
+                               # would use url_for('.calendar'), but this can't be done until bp created
                                {'name':'calendar', 'text':'Calendar', 'url':'/admin/calendar'},
                     ],
                     dtoptions = {
@@ -548,6 +607,7 @@ event = EventsApi(
                     edoptions = {
                                         'template':'#customForm',
                                 },
+                    yadcfoptions = yadcf_options,
                     )
 event.register()
 

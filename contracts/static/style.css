@@ -67,3 +67,32 @@ h2              { font-size: 1.2em; }
   font-weight:bold;
 }
 
+/* yadcf stuff */
+
+.external-filter {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.external-filter .label {
+    font-weight: bold;
+    /*width: 160px;*/
+    display: inline-block;
+}
+
+.external-filter .filter {
+    /*width: 160px;*/
+    display: inline-block;
+}
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  order: 0; 
+  flex-grow: 0;
+  margin-right: 5px;
+}
+
