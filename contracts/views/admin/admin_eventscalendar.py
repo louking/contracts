@@ -17,6 +17,7 @@ Supports API for fullcalendar javascript client
 # pypi
 from flask import request, jsonify, render_template, url_for
 from flask.views import MethodView
+from flask_security.decorators import roles_accepted
 
 # home grown
 from . import bp
@@ -36,6 +37,7 @@ class EventsCalendarApi(MethodView):
     url_rules = {
                 'eventsapi': ['/eventsapi',('GET',)],
                 }
+    decorators = [roles_accepted('superadmin', 'admin')]
 
     #----------------------------------------------------------------------
     def get(self):
@@ -101,6 +103,7 @@ class EventsExceptionsApi(MethodView):
     url_rules = {
                 'eventexceptionsapi': ['/eventexceptionsapi',('GET',)],
                 }
+    decorators = [roles_accepted('superadmin', 'admin')]
 
     #----------------------------------------------------------------------
     def get(self):
@@ -204,6 +207,8 @@ class EventsCalendar(MethodView):
     url_rules = {
                 'calendar': ['/calendar',('GET',)],
                 }
+    # see https://stackoverflow.com/questions/38925644/flask-security-roles-required-with-pluggable-views
+    decorators = [roles_accepted('superadmin', 'admin')]
 
     #----------------------------------------------------------------------
     def get(self):
