@@ -468,9 +468,12 @@ yadcf_options = [
            'column_number': statecol, 
             'select_type': 'select2',
             'select_type_options': {
-                'placeholder': 'Select states', # this doesn't seem to work
                 'width': '150px',
                 'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select states', 
+                },
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-state',
@@ -487,8 +490,11 @@ yadcf_options = [
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
-                'placeholder': 'Select service', # this doesn't seem to work
                 'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select services', 
+                },
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-services',
