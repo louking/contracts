@@ -58,16 +58,6 @@ function configureformbuttons( that, action ) {
                     }
                 },
                 {
-                    text: 'Mark as Paid',
-                    className: ( that.field( 'paymentRecdDate' ).get() ) ? 'disabled' : 'enabled',
-                    action: function () {
-                        if ( ! that.field( 'paymentRecdDate' ).get() ) {                 
-                            that.field( 'paymentRecdDate' ).set( currentdate() );
-                            that.submit();
-                        }
-                    }
-                },
-                {
                     text: 'Update',
                     action: function () {
                         that.submit();
@@ -104,7 +94,7 @@ function configureformbuttons( that, action ) {
 }
 
 // set up triggers for configuring event buttons
-var event_trigger_fields = [ 'state.id', 'contractDocId', 'invoiceSentDate', 'paymentRecdDate' ];
+var event_trigger_fields = [ 'state.id', 'contractDocId', 'invoiceSentDate' ];
 function event_settriggers( editor ) {
     // regenerate the edit buttons if certain fields change
     editor.dependent( event_trigger_fields, function( val, data, callback ) {

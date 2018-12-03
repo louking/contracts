@@ -408,15 +408,15 @@ client.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,paymentRecdDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
 def event_validate(action, formdata):
     results = []
 
-    for field in ['date', 'paymentRecdDate', 'invoiceSentDate']:
+    for field in ['date', 'invoiceSentDate']:
         if formdata[field] and not match(r"^(20|21)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid date: correct format is yyyy-mm-dd' })
 
@@ -573,9 +573,6 @@ event = EventsApi(
                         { 'data': 'maxParticipants', 'name': 'maxParticipants', 'label': 'Max Participants' },
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
                           '_treatment' : { 'relationship' : { 'model':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
-                        },
-                        { 'data': 'paymentRecdDate', 'name': 'paymentRecdDate', 'label': 'Pymt Recd Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
-                            'ed':{ 'label': 'Pymt Recd Date (yyyy-mm-dd)' }
                         },
                         { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }

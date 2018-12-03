@@ -213,7 +213,6 @@ class Event(Base):
     contractSentDate    = Column( String(DATETIME_LEN) )
     contractSignedDate  = Column( String(DATETIME_LEN) )
     invoiceSentDate     = Column( String(DATE_LEN) )
-    paymentRecdDate     = Column( String(DATE_LEN) )
     isOnCalendar        = Column( Boolean )
     contractDocId       = Column( String(FID_LEN) )
     notes               = Column( String(NOTES_LEN) )
