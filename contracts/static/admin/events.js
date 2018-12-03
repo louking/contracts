@@ -84,6 +84,16 @@ function configureformbuttons( that, action ) {
                         }
                     }
                 },
+                {
+                    text: 'Delete',
+                    action: function () {
+                        that.close();
+                        that.title( 'Delete' )
+                            .buttons( 'Confirm Delete' )
+                            .message( 'Are you sure you want to delete this event?' )
+                            .remove( that.modifier() )
+                    }
+                },
 
             ]);
 
