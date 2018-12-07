@@ -18,7 +18,7 @@ from flask import current_app
 
 # homegrown
 from . import bp
-from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship
+from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.dbmodel import db, DateRule
 from loutilities.tables import DataTablesEditor
 

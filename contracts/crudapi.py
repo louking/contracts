@@ -20,6 +20,8 @@ from copy import deepcopy
 
 # pypi
 from flask import request, current_app, make_response, url_for, jsonify
+from datatables import DataTables, ColumnDT
+from sqlalchemy import func
 
 # home grown
 from loutilities.tables import CrudApi, DataTablesEditor
@@ -39,9 +41,10 @@ class DteDbRelationship():
 
     for relationships defined like
     class model()
-        dbfield            = relationship( 'mappingmodel', backref='event', lazy=True )
+        dbfield            = relationship( 'mappingmodel', backref=tablemodel, lazy=True )
 
-    * model - name of model comprises list in dbfield
+    * tablemodel - name of model for the table
+    * fieldmodel - name of model comprises list in dbfield
     * labelfield - field in model which is used to be displayed to the user
     * valuefield - field in model which is used as value for select and to retrieve record, passed on Editor interface, default 'id' - needs to be a key for model record
     * formfield - field as used on the form
@@ -63,8 +66,7 @@ class DteDbRelationship():
 
         TODO: add more detail here -- this is confusing
 
-        children = DteDbRelationship(Child, 'name', 'children', 'children')
-        
+        children = DteDbRelationship(tablemodel=Parent, fieldmodel=Child, labelfield='name', formfield='children', dbfield='children')
     '''
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
@@ -72,7 +74,8 @@ class DteDbRelationship():
         # the args dict has default values for arguments added by this class
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
-        args = dict(model=None, 
+        args = dict(tablemodel=None,
+                    fieldmodel=None, 
                     labelfield=None,
                     valuefield ='id',
                     formfield=None,
@@ -83,7 +86,7 @@ class DteDbRelationship():
         args.update(kwargs)
 
         # some of the args are required
-        reqdfields = ['model', 'labelfield', 'formfield', 'dbfield']
+        reqdfields = ['fieldmodel', 'labelfield', 'formfield', 'dbfield']
         for field in reqdfields:
             if not args[field]:
                 raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
@@ -117,19 +120,25 @@ class DteDbRelationship():
             for itemvalue in itemvalues:
                 queryfilter = itemvalue
                 # queryfilter = {self.valuefield : itemvalue}
-                thisitem = self.model.query.filter_by(**queryfilter).one()
+                thisitem = self.fieldmodel.query.filter_by(**queryfilter).one()
                 items.append(thisitem)
             return items
         else:
             itemvalue = formrow[self.formfield] if formrow[self.formfield] else None
             queryfilter = itemvalue
             # queryfilter = {self.valuefield : itemvalue}
-            thisitem = self.model.query.filter_by(**queryfilter).one_or_none()
+            thisitem = self.fieldmodel.query.filter_by(**queryfilter).one_or_none()
             return thisitem
 
     #----------------------------------------------------------------------
-    def get(self, dbrow):
+    def get(self, dbrow_or_id):
     #----------------------------------------------------------------------
+        # check if id supplied, if so retrieve dbrow
+        if type(dbrow_or_id) in [int, str]:
+            dbrow = self.tablemodel.query().filter_by(id=dbrow_or_id).one()
+        else:
+            dbrow = dbrow_or_id
+
         # get from database to form
         if self.uselist:
             items = {}
@@ -154,7 +163,7 @@ class DteDbRelationship():
     def options(self):
     #----------------------------------------------------------------------
         # return sorted list of items in the model
-        items = [{'label': getattr(item, self.labelfield), 'value': item.id} for item in self.model.query.all()]
+        items = [{'label': getattr(item, self.labelfield), 'value': item.id} for item in self.fieldmodel.query.all()]
         items.sort(key=lambda k: k['label'].lower())
         return items
 
@@ -182,7 +191,8 @@ class DteDbBool():
         # the args dict has default values for arguments added by this class
         # caller supplied keyword args are used to update these
         # all arguments are made into attributes for self by the inherited class
-        args = dict(formfield=None, 
+        args = dict(tablemodel=None,
+                    formfield=None, 
                     dbfield=None,
                     truedisplay='yes',
                     falsedisplay='no',
@@ -200,13 +210,21 @@ class DteDbBool():
             setattr(self, key, args[key])
 
     #----------------------------------------------------------------------
-    def get(self, dbrow):
+    def get(self, dbrow_or_id):
     #----------------------------------------------------------------------
+        """get from database for form"""
+        # check if id supplied, if so retrieve dbrow
+        if type(dbrow_or_id) in [int, str]:
+            dbrow = self.tablemodel.query().filter_by(id=dbrow_or_id).one()
+        else:
+            dbrow = dbrow_or_id
+
         return self.truedisplay if getattr(dbrow, self.dbfield) else self.falsedisplay
 
     #----------------------------------------------------------------------
     def set(self, formrow):
     #----------------------------------------------------------------------
+        """set to database from form"""
         return formrow[self.formfield] == self.truedisplay
 
     #----------------------------------------------------------------------
@@ -273,7 +291,9 @@ class DbCrudApi(CrudApi):
                 * relationship - {DteDbRelationship keyword parameters, 'editable' : { 'api':<DbCrudApi()> }}
                     'editable' is set only if it is desired to bring up a form to edit the underlying model row
 
-        **servercolumns** - if present table will be displayed through ajax get calls
+            * _ColumnDT_args - dict with keyword arguments passed to ColumnDT for serverside processing
+
+        **serverside** - if present table will be displayed through ajax get calls
 
     '''
 
@@ -291,14 +311,15 @@ class DbCrudApi(CrudApi):
                     model = None,
                     dbmapping = {},
                     formmapping = {},
+                    serverside = False, # duplicated here and in CrudApi because test before super() called
                     queryparams = {},
                     dtoptions = {},
                     filtercoloptions = [],
                     )
         args.update(kwargs)
 
-        # make sure '_treatment' and '_unique' column options are removed before invoking DataTables and Editor
-        args['filtercoloptions'] += ['_treatment', '_unique']
+        # make sure '_treatment', '_unique' and '_ColumnDT_args' column options are removed before invoking DataTables and Editor
+        args['filtercoloptions'] += ['_treatment', '_unique', '_ColumnDT_args']
 
         # make copy of dbmapping and formmapping
         # Need to do this because we update the mapping with functions. 
@@ -310,6 +331,10 @@ class DbCrudApi(CrudApi):
         # keep track of columns which must be unique in the database
         self.uniquecols = []
 
+        # for serverside processing, self.servercolumns is built up from column data, always starts with model.id
+        if args['serverside']:
+            self.servercolumns = [ColumnDT(getattr(args['model'], 'id'), mData=self.dbmapping['id'])]
+
         # do some preprocessing on columns
         booleandb = {}
         booleanform = {}
@@ -320,32 +345,48 @@ class DbCrudApi(CrudApi):
             if col.get('type',None) == 'readonly':
                 self.dbmapping.pop(col['name'], None)
             
-            # need formfield for a couple of things
+            # need formfield and dbattr for a couple of things
             formfield = col['name'] # TODO: should this come from 'name' or 'data'?
+            dbattr = self.formmapping[formfield]
 
             # maybe this column needs to be unique
             if col.get('_unique', False):
-                self.uniquecols.append(self.formmapping[formfield])
+                self.uniquecols.append(dbattr)
 
-            # handle special treatment for column
+            # check for special treatment for column
             treatment = col.get('_treatment', None)
+            columndt_args = col.get('_ColumnDT_args', {})
             if debug: current_app.logger.debug('__init__(): treatment = {}'.format(treatment))
-            if treatment:
+
+            # no special treatment is the norm
+            if not treatment:
+                if args['serverside']:
+                    self.servercolumns.append( ColumnDT(getattr(args['model'], dbattr), mData=formfield, **columndt_args) )
+            
+            # special treatment required
+            else:
                 if type(treatment) != dict or len(treatment) != 1 or treatment.keys()[0] not in ['boolean', 'relationship']:
                     raise parameterError, 'invalid treatment: {}'.format(treatment)
 
                 # handle boolean treatment
                 if 'boolean' in treatment:
-                    thisbool = DteDbBool(**treatment['boolean'])
+                    thisbool = DteDbBool(tablemodel=args['model'], **treatment['boolean'])
                     col['type'] = 'select2'
                     col['opts'] = { 'minimumResultsForSearch': 'Infinity' }
-                    # get original formfield and dbattr
-                    dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
+
                     # form processing section
-                    ## save handler, get data from form using handler get function, update form to call handler options when options needed
+                    ## save handler, get data from database using handler get function, update form to call handler options when options needed
                     booleanform[formfield] = thisbool
-                    self.formmapping[formfield] = booleanform[formfield].get
                     col['options'] = booleanform[formfield].options
+
+                    # client side table modifies getter to handle boolean values
+                    if not args['serverside']:
+                        self.formmapping[formfield] = booleanform[formfield].get
+
+                    # server side tables adds ColumnDT to handle boolean values
+                    else:
+                        self.servercolumns.append( ColumnDT( func.thisbool.get(getattr(thisbool.tablemodel, 'id')) , mData=formfield, **columndt_args) )                        
+
                     # db processing section
                     ## save handler, set data to db using handler set function
                     booleandb[dbattr] = thisbool
@@ -354,7 +395,7 @@ class DbCrudApi(CrudApi):
                 # handle relationship treatment
                 if 'relationship' in treatment:
                     # now create the relationship
-                    thisreln = DteDbRelationship(**treatment['relationship'])
+                    thisreln = DteDbRelationship(tablemodel=args['model'], **treatment['relationship'])
                     col['type'] = 'select2'
                     col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 
                                     'multiple':thisreln.uselist, 
@@ -365,14 +406,24 @@ class DbCrudApi(CrudApi):
                     # TODO: should this come from 'name' or 'data'?
                     ## actually name and data should be the same value, name for editor and data for datatable
                     ## see https://editor.datatables.net/examples/simple/join.html
-                    dbattr = self.formmapping[formfield]    # need to collect dbattr name before updating self.formmapping
+
                     # form processing section
                     ## save handler, get data from form using handler get function, update form to call handler options when options needed
                     # relationshipform[formfield] = thisreln
-                    self.formmapping[formfield] = thisreln.get
+
+                    # client side table modifies getter to handle boolean values
+                    if not args['serverside']:
+                        self.formmapping[formfield] = thisreln.get
+
+                    # server side tables adds ColumnDT to handle boolean values
+                    else:
+                        # TODO: maybe need to do something with {formfield : {'id': xx, label: yy}} or maybe this will just work?
+                        self.servercolumns.append( ColumnDT(func.thisreln.get(getattr(thisreln.tablemodel, 'id')) , mData=formfield, **columndt_args))
+
                     # db processing section
                     ## save handler, set data to db using handler set function
                     self.dbmapping[dbattr] = thisreln.set
+                    
                     ## if this field needs form for editing the record it points at, remember information
                     ## also add <new> option
                     editable = treatment['relationship'].get('editable', {})
@@ -546,12 +597,57 @@ class DbCrudApi(CrudApi):
 
         # pull in the data
         query = self.model.query.filter_by(**self.queryparams)
-        self.rows = iter(query.all())
 
-        # THIS CAN'T BE CALLED FROM self._renderpage
-        # params = request.args.to_dict()
-        # rowTable = self.DataTables(params, query, self.servercolumns)
-        # self.outputResult = rowTable.output_result()
+        # not server table, rows will be handled in nexttablerow()
+        if not self.serverside:
+            self.rows = iter(query.all())
+        
+        # server table, this is the output to be returned, nexttablerow() is noop
+        # note get_response_data transform is not done - name mapping is in self.servercolumns
+        else:
+            rowTable = DataTables(request.args.to_dict(), query, self.servercolumns)
+
+            output = rowTable.output_result()
+            print output
+
+            # check for errors
+            if 'error' in output:
+                raise parameterError, output['error']
+
+            # # transform rowTable.output_result()['data'] using get_response_data
+            # ## loop through data
+            # data = output['data']
+            # for i in range(len(data)):
+            #     rowobj = Dictate(data[i])
+            #     newdict = {}
+            #     self.dte.get_response_data(rowobj, newdict)
+            #     data[i] = newdict
+
+            self.output_result = output
+
+    #----------------------------------------------------------------------
+    def nexttablerow(self):
+    #----------------------------------------------------------------------
+        '''
+        since open has done all the work, tell the caller we're done
+        '''
+        if debug: current_app.logger.debug('DbCrudApi.nexttablerow()')
+
+        # not server table, need to do translation
+        if not self.serverside:
+            dbrecord = self.rows.next()
+            return self.dte.get_response_data(dbrecord)
+
+        # server table
+        else:
+            # nothing to do, all done in open()
+            raise StopIteration
+
+    #----------------------------------------------------------------------
+    def close(self):
+    #----------------------------------------------------------------------
+        if debug: current_app.logger.debug('DbCrudApi.close()')
+        pass
 
     #----------------------------------------------------------------------
     def validatedb(self, action, formdata):
@@ -574,23 +670,6 @@ class DbCrudApi(CrudApi):
                     results.append({ 'name' : field, 'status' : 'duplicate found, must be unique' })
 
         return results
-
-    #----------------------------------------------------------------------
-    def nexttablerow(self):
-    #----------------------------------------------------------------------
-        '''
-        since open has done all the work, tell the caller we're done
-        '''
-        if debug: current_app.logger.debug('DbCrudApi.nexttablerow()')
-
-        dbrecord = self.rows.next()
-        return self.dte.get_response_data(dbrecord)
-
-    #----------------------------------------------------------------------
-    def close(self):
-    #----------------------------------------------------------------------
-        if debug: current_app.logger.debug('DbCrudApi.close()')
-        pass
 
     #----------------------------------------------------------------------
     def createrow(self, formdata):

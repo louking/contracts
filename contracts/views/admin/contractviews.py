@@ -20,7 +20,7 @@ contract - class and helpers to manage contract
 # homegrown
 from . import bp
 from contracts.dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
-from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship
+from contracts.crudapi import DbCrudApiRolePermissions
 
 ##########################################################################################
 # templatetype endpoint
@@ -46,7 +46,7 @@ templatetype = DbCrudApiRolePermissions(
                         { 'data': 'templateType', 'name': 'templateType', 'label': 'Template Type' },
                         { 'data': 'description', 'name': 'description', 'label': 'Description' },
                         { 'data': 'contractType', 'name': 'contractType', 'label': 'Contract Type',
-                                  '_treatment' : { 'relationship' : { 'model':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
+                                  '_treatment' : { 'relationship' : { 'fieldmodel':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
                                                  } },
                     ], 
                     servercolumns = None,  # not server side
@@ -155,14 +155,14 @@ contract = DbCrudApiRolePermissions(
                     formmapping = contract_formmapping, 
                     clientcolumns = [
                         { 'data': 'contractType', 'name': 'contractType', 'label': 'Contract Type',
-                                  '_treatment' : { 'relationship' : { 'model':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
+                                  '_treatment' : { 'relationship' : { 'fieldmodel':ContractType, 'labelfield':'contractType', 'formfield':'contractType', 'dbfield':'contractType', 'uselist':False, }
                                                  } },
                         { 'data': 'templateType', 'name': 'templateType', 'label': 'Template Type',
-                                  '_treatment' : { 'relationship' : { 'model':TemplateType, 'labelfield':'templateType', 'formfield':'templateType', 'dbfield':'templateType', 'uselist':False, }
+                                  '_treatment' : { 'relationship' : { 'fieldmodel':TemplateType, 'labelfield':'templateType', 'formfield':'templateType', 'dbfield':'templateType', 'uselist':False, }
                                                  } },
                         { 'data': 'blockPriority', 'name': 'blockPriority', 'label': 'Priority' },
                         { 'data': 'contractBlockType', 'name': 'contractBlockType', 'label': 'Block Type',
-                                  '_treatment' : { 'relationship' : { 'model':ContractBlockType, 'labelfield':'blockType', 'formfield':'contractBlockType', 'dbfield':'contractBlockType', 'uselist':False, }
+                                  '_treatment' : { 'relationship' : { 'fieldmodel':ContractBlockType, 'labelfield':'blockType', 'formfield':'contractBlockType', 'dbfield':'contractBlockType', 'uselist':False, }
                                                  } },
                         { 'data': 'block', 'name': 'block', 'label': 'Block', 'type': 'textarea' },
                     ], 

@@ -23,7 +23,7 @@ from flask_security import roles_accepted, current_user
 from . import bp
 from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
-from contracts.crudapi import DbCrudApiRolePermissions, DteDbRelationship, DteDbBool
+from contracts.crudapi import DbCrudApiRolePermissions
 from eventscontract import EventsApi
 
 # https://www.regextester.com/93652 - modified to allow upper case
@@ -204,7 +204,7 @@ feebasedon = DbCrudApiRolePermissions(
                     formmapping = feebasedon_formmapping, 
                     clientcolumns = [
                         { 'data': 'service', 'name': 'service', 'label': 'Service',
-                          '_treatment' : { 'relationship' : { 'model':Service, 'labelfield':'service', 'formfield':'service', 'dbfield':'service', 'uselist':False } },
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'service', 'dbfield':'service', 'uselist':False } },
                         },
                         { 'data': 'fieldValue', 'name': 'fieldValue', 'label': 'Field Value' },
                         { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
@@ -288,7 +288,7 @@ service = DbCrudApiRolePermissions(
                           '_treatment' : { 'boolean' : {'formfield':'isCalendarBlocked', 'dbfield':'isCalendarBlocked'} },
                         },
                         { 'data': 'feeType', 'name': 'feeType', 'label': 'Fee Type',
-                          '_treatment' : { 'relationship' : { 'model':FeeType, 'labelfield':'feeType', 'formfield':'feeType', 'dbfield':'feeType', 'uselist':False } }
+                          '_treatment' : { 'relationship' : { 'fieldmodel':FeeType, 'labelfield':'feeType', 'formfield':'feeType', 'dbfield':'feeType', 'uselist':False } }
                         },
                         { 'data': 'fee', 'name': 'fee', 'label': 'Fee' },
                         { 'data': 'basedOnField', 'name': 'basedOnField', 'label': 'Based on Field' },
@@ -328,7 +328,7 @@ eventexception = DbCrudApiRolePermissions(
                     clientcolumns = [
                         { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Name', '_unique': True },
                         { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
-                          '_treatment' : { 'relationship' : { 'model':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
+                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
                         },
                         { 'data': 'exception', 'name': 'exception', 'label': 'Exception', 'type': 'select2',
                           'options':['available', 'unavailable'], 
@@ -413,6 +413,7 @@ event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,cours
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
+## validate fields
 def event_validate(action, formdata):
     results = []
 
@@ -440,6 +441,7 @@ def event_validate(action, formdata):
 
     return results
 
+## yadcf external filters
 filters = '\n'.join([
             "<div class='external-filter filter-container'>",
             "    <div class='filter-item'>",
@@ -459,7 +461,7 @@ filters = '\n'.join([
             "</div>",
             ])
 
-# options for yadcf
+## options for yadcf
 datecol = 2
 statecol = 3
 servicecol = 15
@@ -504,10 +506,13 @@ yadcf_options = [
           },
     ]
 
+
+## finally the endpoint definition
 event = EventsApi(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Event, 
+                    serverside = False,
                     pagename = 'events', 
                     roles_accepted = ['superadmin', 'admin'],
                     template = 'events.superadmin.jinja2',
@@ -524,12 +529,12 @@ event = EventsApi(
                             'opts':{ 'momentStrict':True, 'firstDay':0 } },
                         },
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
-                          '_treatment' : { 'relationship' : { 'model':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
+                          '_treatment' : { 'relationship' : { 'fieldmodel':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
                           # can't do this because it's done at initialization so if database not filled yet this raises exception
                           # 'ed':{ 'def':State.query.filter_by(state='pending').one().id }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
-                          '_treatment' : { 'relationship' : { 'model':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
                                                               'editable' : { 'api':client },
                            } },
                         },
@@ -537,7 +542,7 @@ event = EventsApi(
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
                           '_treatment' : { 'relationship' : { 
-                                                             'model':Course, 'labelfield':'course', 'formfield':'course', 
+                                                             'fieldmodel':Course, 'labelfield':'course', 'formfield':'course', 
                                                              'dbfield':'course', 'uselist':False, 'searchbox':True,
                                                              'editable' : { 'api':course },
                                                             } 
@@ -563,16 +568,16 @@ event = EventsApi(
                         },
 
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
-                          '_treatment' : { 'relationship' : { 'model':Lead, 'labelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Lead, 'labelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
                         },
                         { 'data': 'services', 'name': 'services', 'label': 'Services', 
-                          '_treatment' : { 'relationship' : { 'model':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'finishersPrevYear', 'name': 'finishersPrevYear', 'label': 'Prev Year #Finishers' },
                         { 'data': 'finishersCurrYear', 'name': 'finishersCurrYear', 'label': 'Curr Year #Finishers' },
                         { 'data': 'maxParticipants', 'name': 'maxParticipants', 'label': 'Max Participants' },
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
-                          '_treatment' : { 'relationship' : { 'model':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
+                          '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
@@ -591,7 +596,6 @@ event = EventsApi(
 
                     ], 
                     validate = event_validate,
-                    servercolumns = None,  # not server side
                     idSrc = 'rowid', 
                     buttons = ['create', 'edit', 'csv',
                                # would use url_for('.calendar'), but this can't be done until bp created
