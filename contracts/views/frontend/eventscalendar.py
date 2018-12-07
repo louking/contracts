@@ -56,6 +56,8 @@ class EventsCalendarApi(MethodView):
             if len(event.services) == 0: continue
             # don't supply events which are only premium promotion
             if len(event.services) == 1 and event.services[0].service == 'premiumpromotion': continue
+            # don't supply events which have been canceled
+            if event.state.state == 'canceled': continue
 
             # send event to client
             eventobject = {

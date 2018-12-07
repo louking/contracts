@@ -56,17 +56,22 @@ class EventsCalendarApi(MethodView):
         # build Event Objects per https://fullcalendar.io/docs/event-object
         eventobjects = []
         for event in events:
-            # some services should cause the day to show it is blocked
+            # some services should cause the day to show it is blocked, unless state is canceled
             # TODO: make this table driven
             blocked = False
-            if { 'coursemarking', 'finishline' } & { s.service for s in event.services}:
+            if ( { 'coursemarking', 'finishline' } & { s.service for s in event.services} ) and event.state.state != 'canceled':
                 blocked = True
 
             # set color class for event
             # TODO: make this table driven
+
+            # canceled takes precedence
+            if event.state.state == 'canceled':
+                className = 'contracts-event-canceled'
+
             # not committed
-            if event.state.state != 'committed':
-                className = 'contracts-event-committed'
+            elif event.state.state != 'committed':
+                className = 'contracts-event-uncommitted'
             
             # committed
             else:
