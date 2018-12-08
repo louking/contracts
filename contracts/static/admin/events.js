@@ -58,12 +58,6 @@ function configureformbuttons( that, action ) {
                     }
                 },
                 {
-                    text: 'Update',
-                    action: function () {
-                        that.submit();
-                    }
-                },
-                {
                     text: 'Update and Send Contract',
                     className: ( contractsent ) ? 'disabled' : 'enabled',
                     action: function () {
@@ -72,6 +66,12 @@ function configureformbuttons( that, action ) {
                                 data.addlaction = 'sendcontract';
                             });
                         }
+                    }
+                },
+                {
+                    text: 'Update',
+                    action: function () {
+                        that.submit();
                     }
                 },
                 {
