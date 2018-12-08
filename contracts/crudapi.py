@@ -489,6 +489,7 @@ class DbCrudApi(CrudApi):
             valuefield = request.args['valuefield']
             js  = [
                    # 'var row;',
+                   'var {}_{}_lastval;'.format(labelfield, valuefield),
                    '',
                    'if ( typeof openeditor == "undefined" ) {',
                    '    function openeditor() {',
@@ -504,6 +505,9 @@ class DbCrudApi(CrudApi):
                    '$( function () {', 
                    '  // handle save, then open editor on submit',
                    '  var fieldname = "{}.{}"'.format(labelfield, valuefield),
+                   '  $( editor.field( fieldname ).input() ).on ("select2:open", function () {', 
+                   '    {}_{}_lastval = editor.get( fieldname );'.format(labelfield, valuefield),
+                   '  } );',
                    '  $( editor.field( fieldname ).input() ).on ("change", function () {', 
                    '    console.log("{} select2 change fired");'.format(labelfield), 
                    '    console.log("editor.get() = " + editor.get( fieldname ));', 
@@ -518,6 +522,8 @@ class DbCrudApi(CrudApi):
                    '                  label: "Cancel",', 
                    '                  fn: function () {', 
                    '                        this.close();', 
+                   # this is needed here and also on close
+                   '                        editor.field( fieldname ).set( {}_{}_lastval );'.format(labelfield, valuefield),
                    '                        openeditor( );', 
                    '                  },', 
                    '                 },', 
@@ -550,6 +556,8 @@ class DbCrudApi(CrudApi):
                    '  // if form closes, reopen editor',
                    '  {}_editor'.format(labelfield),
                    '    .on("close", function () {',
+                   # this is needed here and also when cancel button is pressed
+                   '      editor.field( fieldname ).set( {}_{}_lastval );'.format(labelfield, valuefield),
                    '      openeditor( );',
                    '  });',
                    '} );',
