@@ -32,6 +32,7 @@ def nav_menu():
 
     # normal administrative stuff
     if current_user.has_role('admin') or current_user.has_role('superadmin'):
+        navbar.items.append(View('Races', 'admin.races'))
         navbar.items.append(View('Events Table', 'admin.events-superadmin'))
         navbar.items.append(View('Events Calendar', 'admin.calendar'))
         navbar.items.append(View('Clients', 'admin.clients-admin'))

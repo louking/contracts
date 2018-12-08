@@ -62,7 +62,7 @@ class EventsCalendarApi(MethodView):
             # send event to client
             eventobject = {
                 'id'    : event.id,
-                'title' : event.event,
+                'title' : event.race.race,
                 'state' : event.state.state,
                 'start' : event.date + 'T' + time24(event.mainStartTime),
             }

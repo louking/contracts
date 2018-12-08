@@ -21,7 +21,8 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, Client, State, Lead, Course, Service, AddOn, FeeType, FeeBasedOn, EventAvailabilityException
+from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Service
+from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
 from contracts.crudapi import DbCrudApiRolePermissions
 from eventscontract import EventsApi
@@ -405,11 +406,50 @@ client = DbCrudApiRolePermissions(
 client.register()
 
 ###########################################################################################
+# races endpoint
+###########################################################################################
+
+race_dbattrs = 'id,race,daterule,notes'.split(',')
+race_formfields = 'rowid,race,daterule,notes'.split(',')
+race_dbmapping = dict(zip(race_dbattrs, race_formfields))
+race_formmapping = dict(zip(race_formfields, race_dbattrs))
+
+race = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = Race, 
+                    roles_accepted = ['superadmin', 'admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'races', 
+                    endpoint = 'admin.races', 
+                    rule = '/races', 
+                    dbmapping = race_dbmapping, 
+                    formmapping = race_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'race', 'name': 'race', 'label': 'Name', '_unique': True },
+                        { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
+                        },
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                  },
+                    )
+race.register()
+
+###########################################################################################
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,event,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -431,7 +471,7 @@ def event_validate(action, formdata):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
     # verify some fields were supplied
-    for field in ['event', 'date']:
+    for field in ['race', 'date']:
         if not formdata[field]:
             results.append({ 'name' : field, 'status' : 'please supply'})
     ## handle select fields
@@ -522,7 +562,13 @@ event = EventsApi(
                     formmapping = event_formmapping, 
                     pretablehtml = filters,
                     clientcolumns = [
-                        { 'data': 'event', 'name': 'event', 'label': 'Event' },
+                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Race, 'labelfield':'race', 'formfield':'race', 
+                                                              'dbfield':'race', 'uselist':False, 'searchbox':True,
+                                                              'editable' : { 'api':race },
+                                                            } 
+                                         },
+                        },
                         { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 
                             'ed':{ 'label': 'Date (yyyy-mm-dd)', 'format':'YYYY-MM-DD', 
                             # first day of week for date picker is Sunday, strict date format required
@@ -534,7 +580,8 @@ event = EventsApi(
                           # 'ed':{ 'def':State.query.filter_by(state='pending').one().id }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
-                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 'dbfield':'client', 'uselist':False,
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 
+                                                              'dbfield':'client', 'uselist':False, 'searchbox':True,
                                                               'editable' : { 'api':client },
                            } },
                         },

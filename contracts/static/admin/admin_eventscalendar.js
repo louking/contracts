@@ -102,6 +102,13 @@ $( function() {
         editor.set( field, _.get(event.data, field ) );
       })
       configureformbuttons( editor, 'edit' );
+
+      // special processing for contractApproverNotes field to make readonly
+      editor.field( 'contractApproverNotes' ).disable();
+
+      // make sure focus is on race field
+      editor.field( 'race.id' ).focus();
+        
       event_settriggers( editor );
 
     },  // eventClick: function() {

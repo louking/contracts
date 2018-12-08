@@ -41,7 +41,7 @@ Base = db.Model
 
 # some string sizes
 URL_LEN = 2047      # https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
-EVENT_LEN = 256
+RACE_LEN = 256
 DATE_LEN = 10
 TIME_LEN = 8
 DATETIME_LEN = DATE_LEN + 1 + TIME_LEN
@@ -178,15 +178,23 @@ class Client(Base):
     clientPhone         = Column( String(SNAILADDR_LEN) )
     clientAddr          = Column( String(PHONE_LEN) )
 
+class Race(Base):
+    __tablename__ = 'race'
+    id                  = Column( Integer, primary_key=True ) 
+    race                = Column( String(RACE_LEN) )
+    daterule_id         = Column( Integer, ForeignKey('daterule.id') )
+    daterule            = relationship( 'DateRule', backref='racerule', uselist=False, lazy=True )
+
 class Event(Base):
     __tablename__ = 'event'
     id                  = Column( Integer, primary_key=True )
-    event               = Column( String(EVENT_LEN) )
     date                = Column( String(DATE_LEN) )
     eventUrl            = Column( String(URL_LEN) )
     registrationUrl     = Column( String(URL_LEN) )
 
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
+    race_id             = Column( Integer, ForeignKey('race.id') )
+    race                = relationship( 'Race', backref='events', lazy=True )
     state_id            = Column( Integer, ForeignKey('state.id') )
     state               = relationship( 'State', backref='events', lazy=True )
     lead_id             = Column( Integer, ForeignKey('lead.id') )

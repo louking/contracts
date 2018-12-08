@@ -122,6 +122,9 @@ function afterdatatables() {
 
         // special processing for contractApproverNotes field to make readonly
         editor.field( 'contractApproverNotes' ).disable();
+
+        // make sure focus is on race field
+        editor.field( 'race.id' ).focus();
         
         return true;
     });
