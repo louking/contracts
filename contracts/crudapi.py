@@ -399,6 +399,7 @@ class DbCrudApi(CrudApi):
                     col['type'] = 'select2'
                     col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 
                                     'multiple':thisreln.uselist, 
+                                    'onFocus': 'focus',
                                     'placeholder': None if thisreln.uselist else '(select)' }
                     if thisreln.uselist:
                         col['separator'] = SEPARATOR
