@@ -425,13 +425,16 @@ class DbCrudApi(CrudApi):
                     self.dbmapping[dbattr] = thisreln.set
                     
                     ## if this field needs form for editing the record it points at, remember information
-                    ## also add <new> option
                     editable = treatment['relationship'].get('editable', {})
                     if debug: current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
                     valuefield = 'id' if 'valuefield' not in treatment['relationship'] else treatment['relationship']['valuefield']
                     if editable:
                         saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'valuefield':valuefield } })
+                        # add <new> option
                         col['options'] = thisreln.new_plus_options
+                        # this is for #65, abandoned for first release
+                        # col['opts'].update({'tags':True, 'createTag': {'eval':'select2_createtag'}})                            
+                        # col['options'] = thisreln.options
                     else:
                         col['options'] = thisreln.options
                         col['options'] = thisreln.options
@@ -508,11 +511,15 @@ class DbCrudApi(CrudApi):
                    '  $( editor.field( fieldname ).input() ).on ("select2:open", function () {', 
                    '    {}_{}_lastval = editor.get( fieldname );'.format(labelfield, valuefield),
                    '  } );',
-                   '  $( editor.field( fieldname ).input() ).on ("change", function () {', 
+                   '  $( editor.field( fieldname ).input() ).on ("change", function (e) {', 
                    '    console.log("{} select2 change fired");'.format(labelfield), 
-                   '    console.log("editor.get() = " + editor.get( fieldname ));', 
                    '    // only fire if <new> entry',
                    '    if ( editor.get( fieldname ) != 0 ) return;',
+                   # this is for #65, abandoned for first release
+                   # '    // ignore initialization',
+                   # '    if ( !e.params ) return;',
+                   # '    // only fire if new entry',
+                   # '    if ( !e.params.data.isNew ) return;',
                    '',
                    '    closeeditor();', 
                    '',

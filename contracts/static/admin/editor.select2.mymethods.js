@@ -44,4 +44,10 @@ _fieldTypes.select2.AddOption = function(conf, opts) {
     }
 };
 
+// added beyond https://editor.datatables.net/plug-ins/field-type/editor.select2
+// based on https://datatables.net/forums/discussion/comment/140478/#Comment_140478
+_fieldTypes.select2.canReturnSubmit = function(conf, node) {
+  return false;
+};
+
 }));

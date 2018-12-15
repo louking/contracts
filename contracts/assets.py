@@ -135,6 +135,7 @@ asset_bundles = {
 
         'admin/editor.googledoc.js',
         'admin/layout.js',
+        'admin/crudapi.js',
         'admin/datatables.js',
         'admin/events.js',
         'admin/daterules.js',
