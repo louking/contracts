@@ -67,6 +67,7 @@ asset_bundles = {
         'js/moment-{ver}/moment.js'.format(ver=moment_ver),
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
+        'legend.js',
         'frontend/eventscalendar.js',
 
         filters='jsmin',
@@ -140,6 +141,7 @@ asset_bundles = {
         'admin/events.js',
         'admin/daterules.js',
         'admin/editor.select2.mymethods.js',
+        'legend.js',
         'admin/admin_eventscalendar.js',
 
         output='gen/admin.js',

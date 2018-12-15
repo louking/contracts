@@ -12,8 +12,12 @@
     var saformurl = "{{ saformurl }}";
     var saformjsurls = {{ saformjsurls }};
 </script>
+
 {% endblock scripts %}
 {% block body %}
 {% include "event.editorform.html" %}
+  <div id='legend' title='Legend'>
+      <table id='legend-table' class='legend-table'></table>
+  </div>
   <div id='calendar'></div>
 {% endblock body %}

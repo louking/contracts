@@ -10,13 +10,19 @@ $( function() {
         click: function() {
           window.location.href = servicesqueryurl;
         }
-      }
+      },
+      legend: {
+        text: 'Legend',
+        click: function () {
+          $( '#legend' ).dialog( 'open' );
+        }
+      },
     },
 
     header: {
       left: 'prev,next today prevYear,nextYear',
       center: 'title',
-      right: 'servicesQuery'
+      right: 'servicesQuery legend'
     },
     // aspectRatio: 2,
     height: 450,
@@ -73,5 +79,21 @@ $( function() {
     },
 
   })
+
+  // legend
+  var day_legend = [
+    {label:'Available', class:'contracts-available'},
+    {label:'Committed', class:'contracts-committed'},
+    {label:'Tentative', class:'contracts-tentative'},
+    {label:'Unavailable', class:'contracts-unavailable'},
+  ];
+
+  create_legend('legend-table', day_legend);
+
+  $( '#legend' ).dialog({
+    autoOpen: false
+  }); // $( '#legend' ).dialog({})
+
+
 })
   

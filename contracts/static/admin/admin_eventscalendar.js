@@ -36,13 +36,19 @@ $( function() {
         click: function() {
           window.location.href = tableurl;
         }
-      }
+      },
+      legend: {
+        text: 'Legend',
+        click: function () {
+          $( '#legend' ).dialog( 'open' );
+        }
+      },
     },
 
     header: {
       left: 'prev,next today prevYear,nextYear tableNav',
       center: 'title',
-      right: ''
+      right: 'legend'
     },
     // aspectRatio: 2,
     height: 450,
@@ -120,6 +126,30 @@ $( function() {
     },  // eventClick: function() {
 
   })  // $('#calendar').fullCalendar(
+
+  // legend
+  var day_legend = [
+    {label:'Available', class:'contracts-available'},
+    {label:'Committed', class:'contracts-committed'},
+    {label:'Tentative', class:'contracts-tentative'},
+    {label:'Unavailable', class:'contracts-unavailable'},
+  ];
+
+  var event_legend =[
+    {label:'Committed - services', class:'contracts-event-blocked'},
+    {label:'Committed - promotion', class:'contracts-event-unblocked'},
+    {label:'Tentative', class:'contracts-event-uncommitted'},
+    {label:'Canceled', class:'contracts-event-canceled'},
+  ];
+
+  create_legend_header('legend-table', 'Days');
+  create_legend('legend-table', day_legend);
+  create_legend_header('legend-table', 'Events');
+  create_legend('legend-table', event_legend);
+
+  $( '#legend' ).dialog({
+    autoOpen: false
+  }); // $( '#legend' ).dialog({})
 
 })  // $(
   
