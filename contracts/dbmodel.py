@@ -184,6 +184,7 @@ class Race(Base):
     race                = Column( String(RACE_LEN) )
     daterule_id         = Column( Integer, ForeignKey('daterule.id') )
     daterule            = relationship( 'DateRule', backref='racerule', uselist=False, lazy=True )
+    notes               = Column( String(NOTES_LEN) )
 
 class Event(Base):
     __tablename__ = 'event'
