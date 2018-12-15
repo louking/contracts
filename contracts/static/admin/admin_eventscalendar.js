@@ -13,6 +13,12 @@ $( function() {
           $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
           $('#calendar').fullCalendar( 'refetchEvents' );
         });
+
+        $.each(saformjsurls, function(i, js) {
+          $.getScript( js, function( data, textStatus, jqxhr ) {
+            console.log( 'load '+js+' status '+jqxhr.status);
+          })  // $.getScript( js, function( data, textStatus, jqxhr )
+        }); // $.each(saformjsurls, function(i, js)
     } // success: function() {
   }); // $.getJSON(
 

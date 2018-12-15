@@ -218,10 +218,12 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
+        from events import event
         context = {
-                   'pagename'   : 'events',
-                   'tableurl'   : url_for( '.events-superadmin' ),
-                   'saformurl'  : '{}/saform'.format( url_for( '.events-superadmin' ) ),
+                   'pagename'     : 'events',
+                   'tableurl'     : url_for( '.events-superadmin' ),
+                   'saformurl'    : '{}/saform'.format( url_for( '.events-superadmin' ) ),
+                   'saformjsurls' : event.saformjsurls()
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )
 

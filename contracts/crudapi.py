@@ -462,7 +462,8 @@ class DbCrudApi(CrudApi):
 
         # if any standalone forms required, add to templateargs
         if saforms:
-            self.templateargs['saformjsurls'] = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
+            self.saformjsurls = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
+            self.templateargs['saformjsurls'] = self.saformjsurls
 
         # save caller's validation method and update validation to local version
         self.callervalidate = self.validate
