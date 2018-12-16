@@ -122,7 +122,7 @@ class AcceptAgreement(MethodView):
 
         # add needed fields
         mergefields['servicenames'] = [s.service for s in thisevent.services] 
-        mergefields['race'] = thisevent.race.race
+        mergefields['event'] = thisevent.race.race
 
         # drive urls
         # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
@@ -138,7 +138,7 @@ class AcceptAgreement(MethodView):
         cclist = current_app.config['CONTRACTS_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print 'mergefields={}'.format(mergefields)
-        subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['race'], mergefields['date'])
+        subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
         # update for web view

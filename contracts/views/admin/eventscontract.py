@@ -141,7 +141,8 @@ class EventsApi(DbCrudApiRolePermissions):
                     docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
                                       addlfields={'servicenames': [s.service for s in eventdb.services],
                                                   'servicefees' : servicefees,
-                                                  'totalfees' : { 'service' : 'TOTAL', 'fee' : feetotal },
+                                                  'event'       : eventdb.race.race,
+                                                  'totalfees'   : { 'service' : 'TOTAL', 'fee' : feetotal },
                                                  })
                     
                     # update database to show contract sent
@@ -196,6 +197,8 @@ class EventsApi(DbCrudApiRolePermissions):
                 # need to bring in full path for email, so use url_root
                 mergefields['acceptcontracturl'] = request.url_root[:-1] + url_for('frontend.acceptagreement', docid=docid)
                 mergefields['servicenames'] = [s.service for s in eventdb.services] 
+                mergefields['event'] = eventdb.race.race
+
 
                 html = template.render( mergefields )
                 tolist = eventdb.client.contactEmail
