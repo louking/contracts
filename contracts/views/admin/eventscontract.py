@@ -67,7 +67,7 @@ class EventsApi(DbCrudApiRolePermissions):
                     servicenames = set([s.service for s in eventdb.services])
                     if servicenames & {'coursemarking', 'finishline'}:
                         self._fielderrors = []
-                        for field in ['event', 'date', 'mainStartTime', 'mainDistance' ]:
+                        for field in ['race', 'date', 'mainStartTime', 'mainDistance' ]:
                             if not data[thisid][field]:
                                 self._fielderrors.append({ 'name' : field, 'status' : 'please supply'})
                         ## handle select fields
@@ -138,7 +138,7 @@ class EventsApi(DbCrudApiRolePermissions):
                     
                     # generate contract
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
-                    docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.event, eventdb.date), eventdb, 
+                    docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
                                       addlfields={'servicenames': [s.service for s in eventdb.services],
                                                   'servicefees' : servicefees,
                                                   'totalfees' : { 'service' : 'TOTAL', 'fee' : feetotal },
@@ -171,7 +171,7 @@ class EventsApi(DbCrudApiRolePermissions):
                                    .one()
                                   ).block
                     template = Template( templatestr )
-                    subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
+                    subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
 
                 elif eventdb.state.state == 'contract-sent':
                     # send contract mail to client
@@ -183,7 +183,7 @@ class EventsApi(DbCrudApiRolePermissions):
                                .one()
                               ).block
                     template = Template( templatestr )
-                    subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.event, eventdb.date)
+                    subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
 
                 # state must be 'committed' or 'contract-sent', else logic error
                 else:
