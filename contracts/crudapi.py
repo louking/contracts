@@ -397,9 +397,9 @@ class DbCrudApi(CrudApi):
                     # now create the relationship
                     thisreln = DteDbRelationship(tablemodel=args['model'], **treatment['relationship'])
                     col['type'] = 'select2'
+                    col['onFocus'] = 'focus'
                     col['opts'] = { 'minimumResultsForSearch': 0 if thisreln.searchbox else 'Infinity', 
                                     'multiple':thisreln.uselist, 
-                                    'onFocus': 'focus',
                                     'placeholder': None if thisreln.uselist else '(select)' }
                     if thisreln.uselist:
                         col['separator'] = SEPARATOR
