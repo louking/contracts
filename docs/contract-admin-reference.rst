@@ -36,7 +36,7 @@ premium promotion :term:`service`.
 Event Overview view
 ===================
 
-While the :ref:`admin-calendar-view` may be the easiest way to view all the :term`events <event>`,
+While the :ref:`admin-calendar-view` may be the easiest way to view all the :term:`events <event>`,
 this view  provides a table  of all the events in the database which can be used as well. The admin
 can create a new :term:`event`, or  select an :term:`event` for Edit, Notes, Delete or Renew
 operations.
@@ -83,10 +83,14 @@ The Create Event view is one way a race entry is created in the tool. Generally 
 request is received for a new race. See  :ref:`post-event-processing` for details on how existing
 races are automatically “renewed” for the following year.
 
+Notice the :term:`State` field. The :term:`State` may be updated automatically by the tool or the
+admin can update it through the administrative interface. See :term:`state` for a description of the
+states and whether they are set by the tool or by the administrator.
+
 When selecting **Race**, **Course**, or **Client**, a search box is displayed. You can start typing
 to find these items if they were previously stored. If a new :term:`race`, :term:`course`, or 
-:term:`client` is needed, click on the *<new>* entry and the appropriate form will be display so 
-the item can be created.
+:term:`client` is needed, click on the *<new>* entry and the :ref:`create-race-view`, :ref:`create-course-view`,
+or :ref:`create-client-view`, respectively, will be displayed so the item can be created.
 
 .. image:: images/create-event-view.*
 
