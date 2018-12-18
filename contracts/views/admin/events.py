@@ -602,7 +602,7 @@ event = EventsApi(
                         { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
                           'className': 'inhibitlabel', 
                           'options':['M', 'km'], 
-                          'ed':{ 'def':'M' }, 
+                          'ed':{ 'def':'km' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time', 
@@ -611,7 +611,7 @@ event = EventsApi(
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance' },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
                           'className': 'inhibitlabel', 
-                          'options':['M', 'km'], 'ed':{ 'def':'M' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
+                          'options':['M', 'km'], 'ed':{ 'def':'km' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
 
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
