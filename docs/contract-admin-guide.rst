@@ -29,21 +29,23 @@ information you have.
 * fill in as much information as you have available to you
 * click Create
 
-Race has Finish Line Services
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if the Race has Finish Line Services
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Race directors may be contacting you with incomplete information, and if so you will have to chase them down 
 to find all the relevant bits. This may have to be done over time as often when they first contact us they may not have 
 all of the information themselves. 
 
-Race has Only Premium Promotion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if the Race has Only Premium Promotion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Premium promotion is executed through the communications group rather than race services. We'll still be using 
 this tool to track that. 
 
 It is expected that the communication group will look at the **contractility** data periodically to determine 
 what races are to be promoted.
+
+See :ref:`contract-for-premium-promotion` for more details.
 
 When the Race Director has Questions
 --------------------------------------
@@ -88,7 +90,7 @@ When Race Director Accepts Agreement (Treasurer)
 -------------------------------------------------
 
 When a race director accepts the agreement, the treasurer will receive an email. The :term:`event` will 
-automatically be transition into the *committed* :term:`state`. 
+automatically be transitioned into the *committed* :term:`state`. 
 
 An invoice should be generated to the :term:`client` as indicated by the financial policies. Once an invoice is 
 generated, the treasurer should click the **Invoice Sent** button on the :ref:`edit-event-view`. 
@@ -97,12 +99,14 @@ When Race Director Accepts Agreement (Race Services Admin)
 -----------------------------------------------------------
 
 When a race director accepts the agreement, the race services admin will receive an email. The :term:`event` will 
-automatically be transition into the *committed* :term:`state`. 
+automatically be transitioned into the *committed* :term:`state`. 
 
 The :term:`lead` for the race needs to be identified well before the event so that resources are allocated 
 correctly and emails are sent to the appropriate people. Generally we should have a committment for a :term:`lead`
 before sending the contract to the race director, however the system does not enforce this.
 
+
+.. _contract-for-premium-promotion:
 
 When We Contract for Premium Promotion (Communications)
 ----------------------------------------------------------
