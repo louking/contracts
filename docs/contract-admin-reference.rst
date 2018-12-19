@@ -127,13 +127,18 @@ Edit Event view
 The Edit Event view can be used to update the specifics about the race,
 and to generate a contract.
 
-After **Update and Send Contract** button is submitted, :ref:`contract-email` 
-is sent to race director (Contact email), treasurer, and raceservices. The event state 
+Click **Update** to update any changed fields in the :term:`event`.
+
+Click **Update and Send Contract** button to generate the contract and send the :ref:`contract-email` 
+to the race director (Contact email), treasurer, and raceservices. The event state 
 is automatically set to *contract-sent*.
 
-The **Resend Contract** button is only active if contact has been sent. If in *contract-sent* :term`state`
-:ref:`contract-email` will be resent. If in *committed* :term:`state` :ref:`agreement-accepted-email`
+The **Resend Contract** button is only active if contact has been sent. If in *contract-sent* :term:`state`
+:ref:`contract-email` will be resent. If in *committed* :term:`state`, :ref:`agreement-accepted-email`
 will be resent.
+
+If the :term:`event` needs to be deleted, click **Delete**. You will be asked for confirmation before the 
+:term:`event` is deleted. Note another option is to change the :term:`event` :term:`state` to *canceled*.
 
 .. image:: images/edit-event-view.*
 
@@ -165,6 +170,9 @@ agreement and accept the agreement directly from this email.
 
 When the **Update and Send Contract** button is clicked from the :ref:`edit-event-view`, 
 this email will be generated automatically.
+
+The email will be something like the following. Note this is configured in the system
+and can be changed by a superadmin.
 
    To: <Contact email>
 
@@ -203,10 +211,6 @@ this email will be generated automatically.
 
    thanks,
 
-   Mark Lawrence
-
-   Race Support Chair, Frederick Steeplechasers Running Club
-
 When race director clicks ACCEPT AGREEMENT, the link takes them to the
 :ref:`accept-agreement-view`.
 
@@ -219,6 +223,9 @@ Agreement Accepted email
 The Agreement Accepted email is sent when the race director accepts the
 agreement. This contains the same information as was displayed in the
 browser view after accepting.
+
+The email will be something like the following. Note this is configured in the system
+and can be changed by a superadmin.
 
    To: <Contact email>
 
@@ -269,10 +276,6 @@ browser view after accepting.
 
    thanks,
 
-   Mark Lawrence
-
-   Race Support Chair, Frederick Steeplechasers Running Club
-
 
 .. _pre-event-coordination-email:
 
@@ -283,6 +286,9 @@ Before the :term:`event`, an email is sent to to assure proper coordination.
 
 If the race director contracted for finishline and/or for coursemarking, [5 days]
 prior to the race, the Pre Event Coordination email is sent.
+
+The email will be something like the following. Note this is configured in the system
+and can be changed by a superadmin.
 
    To: <Contact email>
 
@@ -329,10 +335,6 @@ prior to the race, the Pre Event Coordination email is sent.
 
    thanks,
 
-   Mark Lawrence
-
-   Race Support Chair, Frederick Steeplechasers Running Club
-
 
 .. _post-event-processing:
 
@@ -363,6 +365,9 @@ Post Event email
 The Post Event email is sent several days after the event completes. This
 email is tailored based on the contracted services and solicits input
 through a post event survey.
+
+The email will be something like the following. Note this is configured in the system
+and can be changed by a superadmin.
 
    To: <Contact email>
 
@@ -402,96 +407,91 @@ through a post event survey.
 
    thanks,
 
-   Mark Lawrence
-
-   Race Support Chair, Frederick Steeplechasers Running Club
-
 
 .. _agreement:
 
 Agreement
 =========
 
-The agreement will be similar to the following. When viewing, this will
+The agreement will be similar to the following. Note this is configured in the system and can be changed by a superadmin.
+
+When viewing, this will
 be a google doc published view, and when downloading this will be a pdf
 document.
 
-January 30, 2018
+    January 30, 2018
 
-<Contact first name> <Contact last name>
+    <Contact first name> <Contact last name>
 
-<Event>
+    <Event>
 
-Dear <Contact first name>:
+    Dear <Contact first name>:
 
-You have requested race support services from Frederick Steeplechasers
-Running Club for your event. This is to confirm that we have scheduled
-the race support services as detailed on the following agreement.
+    You have requested race support services from Frederick Steeplechasers
+    Running Club for your event. This is to confirm that we have scheduled
+    the race support services as detailed on the following agreement.
 
-Your organization is responsible for the following:
+    Your organization is responsible for the following:
 
--  | **Finish Line/Timing Services**
-      | - Provide race bib numbers with pull-off tags to all
-        participants with the name, age and gender of each participant
-        recorded on the tags. The runners should be instructed to pin
-        the race bib (with the pull-tag in place) on the front where it
-        can be clearly seen by the finish line personnel
+    - **Finish Line/Timing Services** - Provide race bib numbers with pull-off tags to all
+      participants with the name, age and gender of each participant
+      recorded on the tags. The runners should be instructed to pin
+      the race bib (with the pull-tag in place) on the front where it
+      can be clearly seen by the finish line personnel
 
--  **Standard Promotion**: Add your race to the FSRC website event
+    - **Standard Promotion**: Add your race to the FSRC website event
       calendar (if not already present):
       https://steeplechasers.org/events/community/add
 
--  **Premium Promotion:** Provide spreadsheet file of your participants'
+    - **Premium Promotion:** Provide spreadsheet file of your participants'
       email addresses from the previous year (if available) , and then
       provide the current list at the conclusion of the race. Please
       include a statement in your race waiver as follows: I understand
       that I may receive emails about this race and other races promoted
       by the Frederick Steeplechasers Running Club.
 
--  **Course Support:** Aid stations and Course Marshals at key locations
+    - **Course Support:** Aid stations and Course Marshals at key locations
       along the route are recommended and are the responsibility of the
       race organizers.
 
-FSRC is responsible for:
+    FSRC is responsible for:
 
--  | **Finish Line/Timing Services**
-      | - Transport, setup and operation of FSRC equipment (Display
+    - **Finish Line/Timing Services**
+
+      - Transport, setup and operation of FSRC equipment (Display
         Clock, Time Machine Race Timer, Finish Line Chute, flags,
         signage and related materials)
-      | - Timing and scoring, including generation of a list of award
+      - Timing and scoring, including generation of a list of award
         winners, posting of ordered bib pull-tags with finish times at
         the race site, and delivery of bib pull-tags at the conclusion
         of the event. Note: FSRC does not tally final race results
         beyond the award winners. Race Directors are expected to use the
         delivered bib pull-tags to generate race results.
 
--  | **Course Marking**
-      | - The race course will be marked with cones, directional signage
+    - **Course Marking**
+
+      - The race course will be marked with cones, directional signage
         and mile markers
 
--  | **Premium Promotion**
-      | - Your race will be included in twice-monthly email blasts to
+    - **Premium Promotion**
+
+      - Your race will be included in twice-monthly email blasts to
         the FSRC-maintained list of area race participants, starting
         three months prior to your race date.
 
--  **Results**: Your race results will be published on the FSRC website,
+    - **Results**: Your race results will be published on the FSRC website,
       if desired. Email results to results@steeplechasers.org. Suggested
       format can be found on the `Race Support
       Services <https://steeplechasers.org/race-support-services/>`__
       page of the FSRC website.
 
-FSRC finish line, timing and course marking services apply only to the
-competitive portion of the event. Walks or “fun runs” associated with
-the event are not part of this agreement and are the sole responsibility
-of the event organizer.
+    FSRC finish line, timing and course marking services apply only to the
+    competitive portion of the event. Walks or “fun runs” associated with
+    the event are not part of this agreement and are the sole responsibility
+    of the event organizer.
 
-Thanks
+    Thanks
 
-Mark Lawrence, Race Support Chair, Frederick Steeplechasers Running Club
-
-240-285-4703
-
-mark.lawrence@steeplechasers.org
 
 .. _date-rules:
 

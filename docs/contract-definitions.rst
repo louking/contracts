@@ -14,8 +14,17 @@ Definitions
         The course has an address where the finish line will be set up. Generally we work with loop courses, so
         this is the same as the starting line.
 
+    date rule
+        A rule which defines a date on which a :term:`race` or :term:`exception` is created. E.g., Third Sat Aug is
+        a date rule.
+
     event
         :term:`Race` on a particular date. E.g., the event record saves information about the 9/14/2019 Market Street Mile 
+
+    exception
+        An exception to the normal rules for allowing races. Normally races are allowed on weekends and not allowed
+        on weekdays. So the first Monday of September (Labor Day) is an example of an exception because we will 
+        allow races on that day.
 
     lead
         the leader who will run the finish line operation on the day of the :term:`event`
@@ -23,6 +32,10 @@ Definitions
     race
         A race can be run annually. The 'race' (e.g., Market Street Mile) has information which doesn't generally change, 
         e.g., it's run on the second Saturday of September. Compare to :term:`event` which is a race on a particular date.
+
+    renew
+        A :term:`race` is renewed a few days after the :term:`event` for the current year. The :term:`date rule` for the
+        race is used to schedule the race for the following year.
 
     service
         - finishline - timing service done by the race services team
