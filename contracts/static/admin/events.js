@@ -116,6 +116,7 @@ if ( ['/admin/events'].includes(location.pathname) ) {
 function afterdatatables() {
     configuretablebuttons( _dt_table );
 
+    // needs to be same in admin_eventscalendar.js
     editor.on('open', function( e, mode, action ) {
         // set up the buttons
         configureformbuttons( this, action );

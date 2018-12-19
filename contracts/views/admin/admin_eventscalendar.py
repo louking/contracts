@@ -13,11 +13,14 @@ calendar - admin events api for contracts database
 
 Supports API for fullcalendar javascript client
 '''
+# standard
+from json import dumps
 
 # pypi
 from flask import request, jsonify, render_template, url_for
 from flask.views import MethodView
 from flask_security.decorators import roles_accepted
+import requests
 
 # home grown
 from . import bp
@@ -219,10 +222,15 @@ class EventsCalendar(MethodView):
     def get(self):
     #----------------------------------------------------------------------
         from events import event
+
+        # get the editor options, need url_root minus trailing /
+        dt = requests.get('{}{}/saform'.format( request.url_root[:-1], url_for( '.events-superadmin' )))
+        edoptions = dumps(dt.json()['edoptions'])
+
         context = {
                    'pagename'     : 'events',
                    'tableurl'     : url_for( '.events-superadmin' ),
-                   'saformurl'    : '{}/saform'.format( url_for( '.events-superadmin' ) ),
+                   'edoptions'    : edoptions,
                    'saformjsurls' : event.saformjsurls()
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )

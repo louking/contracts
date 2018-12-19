@@ -3,24 +3,26 @@ var editor;
 $( function() {
   if ( location.pathname != '/admin/calendar' ) return;
 
-  $.getJSON( {
-      url: saformurl, 
-      success: function(data, textStatus, jqXHR) {
-        var edoptions = data.edoptions;
-        editor = new $.fn.dataTable.Editor ( edoptions );
+  editor = new $.fn.dataTable.Editor ( edoptions );
 
-        editor.on( 'submitSuccess', function() {
-          $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
-          $('#calendar').fullCalendar( 'refetchEvents' );
-        });
+  editor.on( 'submitSuccess', function() {
+    $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
+    $('#calendar').fullCalendar( 'refetchEvents' );
+  });
 
-        $.each(saformjsurls, function(i, js) {
-          $.getScript( js, function( data, textStatus, jqxhr ) {
-            console.log( 'load '+js+' status '+jqxhr.status);
-          })  // $.getScript( js, function( data, textStatus, jqxhr )
-        }); // $.each(saformjsurls, function(i, js)
-    } // success: function() {
-  }); // $.getJSON(
+  // needs to be same in events.js
+  editor.on('open', function( e, mode, action ) {
+      // set up the buttons
+      configureformbuttons( this, action );
+
+      // special processing for contractApproverNotes field to make readonly
+      editor.field( 'contractApproverNotes' ).disable();
+
+      // make sure focus is on race field
+      editor.field( 'race.id' ).focus();
+      
+      return true;
+  });
 
   $('#calendar').fullCalendar({
     defaultView: 'month',
@@ -101,6 +103,7 @@ $( function() {
       editor.title('Create new entry').buttons('Create').create();
       configureformbuttons( editor, 'create' );
       editor.set( 'date', date.format() );
+      editor.field( 'race.id' ).focus();
 
     },  // dayClick: function() {
 

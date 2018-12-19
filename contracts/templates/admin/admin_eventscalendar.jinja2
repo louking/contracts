@@ -9,9 +9,12 @@
 <script>
 {# these are needed by admin_eventscalendar.js #}
     var tableurl = "{{ tableurl }}";
-    var saformurl = "{{ saformurl }}";
+    var edoptions = JSON.parse('{{ edoptions }}');
     var saformjsurls = {{ saformjsurls }};
 </script>
+{% for saformurl in saformjsurls %}
+    <script type="text/javascript" src="{{ saformurl }}"></script>
+{% endfor %}
 
 {% endblock scripts %}
 {% block body %}
