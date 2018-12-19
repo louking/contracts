@@ -73,8 +73,8 @@ state.register()
 # leads endpoint
 ###########################################################################################
 
-lead_dbattrs = 'id,name,email'.split(',')
-lead_formfields = 'rowid,name,email'.split(',')
+lead_dbattrs = 'id,name,email,phone'.split(',')
+lead_formfields = 'rowid,name,email,phone'.split(',')
 lead_dbmapping = dict(zip(lead_dbattrs, lead_formfields))
 lead_formmapping = dict(zip(lead_formfields, lead_dbattrs))
 
@@ -92,6 +92,7 @@ lead = DbCrudApiRolePermissions(
                     clientcolumns = [
                         { 'data': 'name', 'name': 'name', 'label': 'Name' },
                         { 'data': 'email', 'name': 'email', 'label': 'Email' },
+                        { 'data': 'phone', 'name': 'phone', 'label': 'Phone' },
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 

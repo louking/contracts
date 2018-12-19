@@ -73,6 +73,7 @@ class Lead(Base):
     id          = Column( Integer, primary_key=True )
     name        = Column( String(NAME_LEN) )
     email       = Column( String(EMAIL_LEN) )
+    phone       = Column( String(PHONE_LEN) )
 
 class ContractType(Base):
     __tablename__ = 'contracttype'
