@@ -526,6 +526,7 @@ class DbCrudApi(CrudApi):
                    '    closeeditor();', 
                    '',
                    '    {}_editor'.format(labelfield), 
+                   "      .title('Create new entry')",
                    '      .buttons( [', 
                    '                 {', 
                    '                  label: "Cancel",', 
