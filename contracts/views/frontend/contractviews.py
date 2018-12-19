@@ -89,7 +89,17 @@ class AcceptAgreement(MethodView):
         # force load of 'client' field so that it will be in __dict__
         clientgarbage = thisevent.client
 
-        return render_template_string( templatestr, **thisevent.__dict__ )
+        # make copy of the event for merging with the template
+        mergefields = deepcopy(thisevent.__dict__)
+
+        # page heading
+        mergefields['pagename'] = 'accept agreement'
+
+        # materialize bits
+        mergefields['pageassets_css']   = 'materialize-css'
+        mergefields['pageassets_js']    = 'materialize-js'
+
+        return render_template_string( templatestr, **mergefields )
 
     #----------------------------------------------------------------------
     def post(self, docid):
@@ -123,6 +133,7 @@ class AcceptAgreement(MethodView):
         # add needed fields
         mergefields['servicenames'] = [s.service for s in thisevent.services] 
         mergefields['event'] = thisevent.race.race
+
 
         # drive urls
         # see https://www.labnol.org/internet/direct-links-for-google-drive/28356/
