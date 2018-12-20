@@ -18,6 +18,9 @@ The race director accepts the contract through the system which generates anothe
 Use Cases (What To Do...)
 =========================
 
+
+.. _contact-new-race:
+
 When We Learn About a New Race
 ------------------------------
 
@@ -45,6 +48,9 @@ communications group rather than race services. We'll still be using  this tool 
 expected that the communication group will look at the **contractility** data periodically to
 determine what races are to be promoted. See :ref:`contract-for-premium-promotion` for more details.
 
+
+.. _contact-legacy-race:
+
 When We're Contacted for a Race We've Done Before
 ------------------------------------------------------
 
@@ -70,6 +76,9 @@ Now you can edit the :term:`event` with the current details and when ready send 
    * click **Update**
       * or if you're ready to generate a contract, click **Update and Send Contract**
 
+
+.. _race-director-questions:
+
 When the Race Director has Questions
 --------------------------------------
 
@@ -77,6 +86,9 @@ Some questions you get will have to go through Mark, as you won't be able to han
 questions about how to manage a race rather than contract related stuff. Probably best way to handle this is to 
 forward to Mark, copying the RD, with appropriate text that Mark is best suited to respond. Hopefully if Mark 
 gets information from them which needs to be in the database and you're not copied, he'll get it to you.
+
+
+.. _race-details-confirmed:
 
 When Race Details are Confirmed by Race Director
 ------------------------------------------------
@@ -109,6 +121,9 @@ is sent.
 
 The remaining fields are useful as well, and should be filled in if applicable and known.
 
+
+.. _agreement-accepted-race-treasurer:
+
 When Race Director Accepts Agreement (Treasurer)
 -------------------------------------------------
 
@@ -117,6 +132,9 @@ automatically be transitioned into the *committed* :term:`state`.
 
 An invoice should be generated to the :term:`client` as indicated by the financial policies. Once an invoice is 
 generated, the treasurer should click the **Invoice Sent** button on the :ref:`edit-event-view`. 
+
+
+.. _agreement-accepted-race-services:
 
 When Race Director Accepts Agreement (Race Services Admin)
 -----------------------------------------------------------
@@ -148,3 +166,19 @@ The table will be filtered to only the :term:`events <event>` which should be in
 The **CSV** button can be used to download these :term:`events <event>`, if desired.
 
 
+.. _changes-to-committed-agreement:
+
+When Changes Need to be Made to a Committed Agreement
+---------------------------------------------------------------
+
+Occasionally, after the race director has agreed to the contract, there needs to be a change. E.g., if the race
+director decides on premium promotion after the initial agreement, a change needs to be made.
+
+When the contract is in *committed* :term:`state`, the **Update and Send Contract** button is desensitized.
+
+If it's necessary to change the contract after the initial agreement, simply edit the :term:`event`, make the 
+needed changes (e.g., add *premiumpromotion*), and change the :term:`state` to *tentative*. By changing the 
+:term:`state`, the **Update and Send Contract** button will be sensitized, and can be clicked to send another
+contract.
+
+Note once this is done, the system voids previous contract and is not accessible.
