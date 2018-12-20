@@ -21,11 +21,12 @@ from flask_security import roles_accepted, current_user
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Service
+from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Service, Tag
 from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
 from contracts.crudapi import DbCrudApiRolePermissions
 from eventscontract import EventsApi
+from tags import tag
 
 # https://www.regextester.com/93652 - modified to allow upper case
 REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
@@ -449,8 +450,8 @@ race.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
 
@@ -633,6 +634,14 @@ event = EventsApi(
                         { 'data': 'isOnCalendar', 'name': 'isOnCalendar', 'label': 'On Calendar', 
                           '_treatment' : {'boolean':{'formfield':'isOnCalendar', 'dbfield':'isOnCalendar'}},
                           'ed':{ 'def': 'no' }, 
+                        },
+                        { 'data': 'tags', 'name': 'tags', 'label': 'Tags', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Tag, 'labelfield':'tag', 'formfield':'tags', 'dbfield':'tags', 
+                                                              'uselist':True, 'searchbox':False,
+                                                              # TODO: requires fix for #80
+                                                              # 'editable' : { 'api':tag },
+                                                            }
+                           },
                         },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type': 'textarea' },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },

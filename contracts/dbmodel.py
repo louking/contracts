@@ -49,6 +49,7 @@ STATE_LEN = 16
 NAME_LEN = 256
 EMAIL_LEN = 100
 SERVICE_LEN = 20
+TAG_LEN = 20
 FIELD_LEN = 30
 COURSE_LEN = 50
 ROLENAME_LEN = 32
@@ -130,6 +131,18 @@ class Service(Base):
     feeType           = relationship( 'FeeType', backref='services', lazy=True )
     fee               = Column( Integer )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
+
+# see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+eventtag_table = Table('eventtag', Base.metadata,
+    Column( 'event_id', Integer, ForeignKey('event.id' ) ),
+    Column( 'tag_id', Integer, ForeignKey('tag.id' ), nullable=False ),
+    )
+
+class Tag(Base):
+    __tablename__ =  'tag'
+    id                = Column( Integer, primary_key=True ) 
+    tag               = Column( String(TAG_LEN) )
+    description       = Column( String(DESCR_LEN) )
 
 # for a given service, fieldValues are sorted
 # fee is based on the largest fieldValue <= basedOnField 
@@ -231,6 +244,9 @@ class Event(Base):
     contractApprover    = Column( String(NAME_LEN) )
     contractApproverEmail = Column( String(EMAIL_LEN) )
     contractApproverNotes = Column( String(NOTES_LEN) )
+
+    # tags
+    tags                = relationship( 'Tag', secondary=eventtag_table, backref='events', lazy=True )
 
 class EventAvailabilityException(Base):
     __tablename__ = 'eventavailabilityexception'

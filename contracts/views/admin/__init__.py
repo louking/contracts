@@ -18,6 +18,7 @@ import login
 import userrole
 import events
 import admin_eventscalendar
+import tags
 import daterules
 import contractviews
 import sysinfo

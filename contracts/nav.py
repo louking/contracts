@@ -39,6 +39,7 @@ def nav_menu():
         navbar.items.append(View('Event Leads', 'admin.leads'))
         navbar.items.append(View('Event Courses', 'admin.courses'))
         navbar.items.append(View('Date Rules', 'admin.daterules'))
+        navbar.items.append(View('Tags', 'admin.tags'))
         navbar.items.append(View('Event Exceptions', 'admin.eventexceptions'))
 
     # superadmin stuff
