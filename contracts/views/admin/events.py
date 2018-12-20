@@ -650,17 +650,18 @@ event = EventsApi(
                                {'name':'calendar', 'text':'Calendar', 'url':'/admin/calendar'},
                     ],
                     dtoptions = {
-                                        'scrollCollapse': True,
-                                        'scrollX': True,
-                                        'scrollXInner': "100%",
-                                        'scrollY': True,
-                                        'fixedColumns': {
-                                                          'leftColumns': 3
-                                                        },
-                                        'order': [[2, 'asc']],
+                                    'scrollCollapse': True,
+                                    'scrollX': True,
+                                    'scrollXInner': "100%",
+                                    'scrollY': True,
+                                    'fixedColumns': {
+                                                      'leftColumns': 3
+                                                    },
+                                    'order': [[2, 'asc']],
                                 },
                     edoptions = {
-                                        'template':'#customForm',
+                                    'template':'#customForm',
+                                    'formOptions': { 'main': { 'focus': None } },
                                 },
                     yadcfoptions = yadcf_options,
                     )

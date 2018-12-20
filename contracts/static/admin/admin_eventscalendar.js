@@ -18,11 +18,12 @@ $( function() {
       // special processing for contractApproverNotes field to make readonly
       editor.field( 'contractApproverNotes' ).disable();
 
-      // make sure focus is on race field
-      editor.field( 'race.id' ).focus();
-      
       return true;
   });
+
+  // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
+  // note this affects subforms as well as event form
+  $.ui.dialog.prototype._focusTabbable = $.noop;
 
   $('#calendar').fullCalendar({
     defaultView: 'month',
@@ -103,7 +104,7 @@ $( function() {
       editor.title('Create new entry').buttons('Create').create();
       configureformbuttons( editor, 'create' );
       editor.set( 'date', date.format() );
-      editor.field( 'race.id' ).focus();
+      // editor.field( 'race.id' ).focus();
 
     },  // dayClick: function() {
 
@@ -122,8 +123,9 @@ $( function() {
       editor.field( 'contractApproverNotes' ).disable();
 
       // make sure focus is on race field
-      editor.field( 'race.id' ).focus();
+      // editor.field( 'race.id' ).focus();
         
+      // set the triggers which case the form buttons to change
       event_settriggers( editor );
 
     },  // eventClick: function() {
