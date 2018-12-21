@@ -72,7 +72,7 @@ class EventsApi(DbCrudApiRolePermissions):
                             if not data[thisid][field]:
                                 self._fielderrors.append({ 'name' : field, 'status' : 'please supply'})
                         ## handle select fields
-                        for field in ['state', 'services', 'client', 'course']:
+                        for field in ['state', 'services', 'client', 'course', 'lead']:
                             if not data[thisid][field]['id']:
                                 self._fielderrors.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
                         if self._fielderrors:
