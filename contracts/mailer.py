@@ -37,7 +37,7 @@ def sendmail(subject, fromaddr, toaddr, html, text='', ccaddr=None ):
     :param html: html to send
     :param text: optional text alternative to send
     '''
-    if debug: current_app.logger.debug('sendmail(): fromaddr={}, toaddr={}, ccaddr={}'.format(fromaddr, toaddr, ccaddr))
+    current_app.logger.info('sendmail(): from={}, to={}, cc={}, subject="{}"'.format(fromaddr, toaddr, ccaddr, subject))
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
@@ -75,7 +75,6 @@ def sendmail(subject, fromaddr, toaddr, html, text='', ccaddr=None ):
         if debug: current_app.logger.debug('sendmail(): msg.as_string()={}'.format(msg.as_string()))
         message = { 'raw' : urlsafe_b64encode(msg.as_string()) }
         sent = gmail.users().messages().send(userId='me', body=message).execute()
-        print('Message Id: %s' % sent['id'])
         return sent
     except errors.HttpError as error:
         current_app.logger.error('sendmail(): An error occurred: {}'.format(error))

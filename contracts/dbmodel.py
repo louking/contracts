@@ -49,7 +49,7 @@ STATE_LEN = 16
 NAME_LEN = 256
 EMAIL_LEN = 100
 SERVICE_LEN = 20
-TAG_LEN = 20
+TAG_LEN = 30
 FIELD_LEN = 30
 COURSE_LEN = 50
 ROLENAME_LEN = 32
@@ -138,6 +138,12 @@ eventtag_table = Table('eventtag', Base.metadata,
     Column( 'tag_id', Integer, ForeignKey('tag.id' ), nullable=False ),
     )
 
+# system tag text
+PRERACEMAILSENT = 'pre-race-email-sent'
+POSTRACEMAILSENT = 'post-race-email-sent'
+PRERACEMAILINHIBITED = 'inhibit-pre-race-email'
+POSTRACEMAILINHIBITED = 'inhibit-post-race-email'
+RACERENEWED = 'race-renewed'
 class Tag(Base):
     __tablename__ =  'tag'
     id                = Column( Integer, primary_key=True ) 
