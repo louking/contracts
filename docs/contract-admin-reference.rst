@@ -344,7 +344,7 @@ Post Event Processing
 After the :term:`event`, a couple of automated tasks take place. This processing
 happens [5 days] after the event.
 
--  :term:`Race` is automatically “renewed” meaning a *pending* :term:`event` is created
+-  :term:`Race` is automatically “renewed” meaning a *renewed-pending* :term:`event` is created
    the following year, on the same date, depending on the date rule specified for this
    race. See :ref:`date-rules` for more information.
 
