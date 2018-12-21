@@ -25,7 +25,9 @@ from jinja2 import Template
 
 # homegrown
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag
-from contracts.dbmodel import PRERACEMAILSENT, PRERACEMAILINHIBITED, POSTRACEMAILSENT, POSTRACEMAILINHIBITED, RACERENEWED
+from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
+from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
+from contracts.dbmodel import STATE_COMMITTED
 from contracts.settings import Production
 from contracts.mailer import sendmail
 from contracts.applogging import setlogging
@@ -67,8 +69,8 @@ def hello():
 @app.cli.command()
 def preraceemail():
     # set up tag which is used to control this email
-    senttag = Tag.query.filter_by(tag=PRERACEMAILSENT).one()
-    inhibittag = Tag.query.filter_by(tag=PRERACEMAILINHIBITED).one()
+    senttag = Tag.query.filter_by(tag=TAG_PRERACEMAILSENT).one()
+    inhibittag = Tag.query.filter_by(tag=TAG_PRERACEMAILINHIBITED).one()
 
     # calculate start and end date window
     start = dbdate.dt2asc(date.today())
@@ -79,7 +81,7 @@ def preraceemail():
 
     for event in events:
         # ignore uncommitted events
-        if event.state.state != 'committed': continue
+        if event.state.state != STATE_COMMITTED: continue
 
         # don't send if this message has already been sent or was inhibited by admin
         if senttag in event.tags or inhibittag in event.tags: continue

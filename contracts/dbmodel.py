@@ -139,11 +139,11 @@ eventtag_table = Table('eventtag', Base.metadata,
     )
 
 # system tag text
-PRERACEMAILSENT = 'pre-race-email-sent'
-POSTRACEMAILSENT = 'post-race-email-sent'
-PRERACEMAILINHIBITED = 'inhibit-pre-race-email'
-POSTRACEMAILINHIBITED = 'inhibit-post-race-email'
-RACERENEWED = 'race-renewed'
+TAG_PRERACEMAILSENT         = 'pre-race-email-sent'
+TAG_POSTRACEMAILSENT        = 'post-race-email-sent'
+TAG_PRERACEMAILINHIBITED    = 'inhibit-pre-race-email'
+TAG_POSTRACEMAILINHIBITED   = 'inhibit-post-race-email'
+TAG_RACERENEWED             = 'race-renewed'
 class Tag(Base):
     __tablename__ =  'tag'
     id                = Column( Integer, primary_key=True ) 
@@ -181,6 +181,12 @@ class AddOn(Base):
     fee         = Column( Integer )
     # eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
 
+# system tag text
+STATE_RENEWED_PENDING   = 'renewed-pending'
+STATE_TENTATIVE         = 'tentative'
+STATE_CONTRACT_SENT     = 'contract-sent'
+STATE_COMMITTED         = 'committed'
+STATE_CANCELED          = 'canceled'
 class State(Base):
     __tablename__ = 'state'
     id          = Column( Integer, primary_key=True ) 

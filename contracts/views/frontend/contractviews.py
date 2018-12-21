@@ -27,6 +27,7 @@ from jinja2 import Template
 # home grown
 from . import bp
 from contracts.dbmodel import db, Event, State, Contract, ContractType, TemplateType
+from contracts.dbmodel import STATE_COMMITTED
 from contracts.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
@@ -115,7 +116,7 @@ class AcceptAgreement(MethodView):
         thisevent.contractApprover = name
         thisevent.contractApproverEmail = email
         thisevent.contractApproverNotes = notes
-        thisevent.state = State.query.filter_by(state='committed').one()
+        thisevent.state = State.query.filter_by(state=STATE_COMMITTED).one()
         # need to get merge fields before commit, first force load of client
         clientgarbage = thisevent.client
         mergefields = deepcopy(thisevent.__dict__)

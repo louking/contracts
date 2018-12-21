@@ -25,6 +25,7 @@ import requests
 # home grown
 from . import bp
 from contracts.dbmodel import db, Event, EventAvailabilityException, DateRule
+from contracts.dbmodel import STATE_CANCELED, STATE_COMMITTED
 from contracts.daterule import daterule2dates
 from contracts.utils import time24
 from loutilities.flask_helpers.blueprints import add_url_rules
@@ -62,18 +63,18 @@ class EventsCalendarApi(MethodView):
             # some services should cause the day to show it is blocked, unless state is canceled
             # TODO: make this table driven
             blocked = False
-            if ( { 'coursemarking', 'finishline' } & { s.service for s in event.services} ) and event.state.state != 'canceled':
+            if ( { 'coursemarking', 'finishline' } & { s.service for s in event.services} ) and event.state.state != STATE_CANCELED:
                 blocked = True
 
             # set color class for event
             # TODO: make this table driven
 
             # canceled takes precedence
-            if event.state.state == 'canceled':
+            if event.state.state == STATE_CANCELED:
                 className = 'contracts-event-canceled'
 
             # not committed
-            elif event.state.state != 'committed':
+            elif event.state.state != STATE_COMMITTED:
                 className = 'contracts-event-uncommitted'
             
             # committed

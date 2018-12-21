@@ -21,6 +21,7 @@ from jinja2 import Template
 
 # homegrown
 from contracts.dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
+from contracts.dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from contracts.mailer import sendmail
@@ -146,7 +147,7 @@ class EventsApi(DbCrudApiRolePermissions):
                                                  })
                     
                     # update database to show contract sent
-                    eventdb.state = State.query.filter_by(state='contract-sent').one()
+                    eventdb.state = State.query.filter_by(state=STATE_CONTRACT_SENT).one()
                     eventdb.contractSentDate = dt.dt2asc( date.today() )
                     eventdb.contractDocId = docid
                     
@@ -162,7 +163,7 @@ class EventsApi(DbCrudApiRolePermissions):
                     docid = eventdb.contractDocId
 
                 # email sent depends on current state as this flows from 'sendcontract' and 'resendcontract'
-                if eventdb.state.state == 'committed':
+                if eventdb.state.state == STATE_COMMITTED:
                     # prepare agreement accepted email 
                     templatestr = (db.session.query(Contract)
                                    .filter(Contract.contractTypeId==ContractType.id)
@@ -174,7 +175,7 @@ class EventsApi(DbCrudApiRolePermissions):
                     template = Template( templatestr )
                     subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
 
-                elif eventdb.state.state == 'contract-sent':
+                elif eventdb.state.state == STATE_CONTRACT_SENT:
                     # send contract mail to client
                     templatestr = (db.session.query(Contract)
                                .filter(Contract.contractTypeId==ContractType.id)
@@ -186,7 +187,7 @@ class EventsApi(DbCrudApiRolePermissions):
                     template = Template( templatestr )
                     subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
 
-                # state must be 'committed' or 'contract-sent', else logic error
+                # state must be STATE_COMMITTED or STATE_CONTRACT_SENT, else logic error
                 else:
                     raise parameterError, 'editor_method_posthook(): bad state seen for {}: {}'.format(form['addlaction'], eventdb.state.state)
 

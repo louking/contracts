@@ -21,6 +21,7 @@ from flask.views import MethodView
 # home grown
 from . import bp
 from contracts.dbmodel import db, Event, EventAvailabilityException, DateRule
+from contracts.dbmodel import STATE_CANCELED
 from contracts.daterule import daterule2dates
 from contracts.utils import time24
 from contracts.mailer import sendmail
@@ -57,7 +58,7 @@ class EventsCalendarApi(MethodView):
             # don't supply events which are only premium promotion
             if len(event.services) == 1 and event.services[0].service == 'premiumpromotion': continue
             # don't supply events which have been canceled
-            if event.state.state == 'canceled': continue
+            if event.state.state == STATE_CANCELED: continue
 
             # send event to client
             eventobject = {

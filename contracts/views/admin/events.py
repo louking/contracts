@@ -473,11 +473,11 @@ def event_validate(action, formdata):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
     # verify some fields were supplied
-    for field in ['race', 'date']:
+    for field in ['date']:
         if not formdata[field]:
             results.append({ 'name' : field, 'status' : 'please supply'})
     ## handle select fields
-    for field in ['state', 'services', 'client']:
+    for field in ['race', 'state', 'services', 'client']:
         if not formdata[field]['id']:
             results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
 
@@ -579,7 +579,7 @@ event = EventsApi(
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
                           # can't do this because it's done at initialization so if database not filled yet this raises exception
-                          # 'ed':{ 'def':State.query.filter_by(state='pending').one().id }, 
+                          # 'ed':{ 'def':State.query.filter_by(state=STATE_RENEWED_PENDING).one().id }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 
