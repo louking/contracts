@@ -181,4 +181,4 @@ needed changes (e.g., add *premiumpromotion*), and change the :term:`state` to *
 :term:`state`, the **Update and Send Contract** button will be sensitized, and can be clicked to send another
 contract.
 
-Note once this is done, the system voids previous contract and is not accessible.
+Note once this is done, the system voids previous contract and it is not accessible.
