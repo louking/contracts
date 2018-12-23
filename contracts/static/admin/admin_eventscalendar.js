@@ -5,10 +5,12 @@ $( function() {
 
   editor = new $.fn.dataTable.Editor ( edoptions );
 
-  editor.on( 'submitSuccess', function() {
+  function refresh_events() {
     $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
     $('#calendar').fullCalendar( 'refetchEvents' );
-  });
+  };
+
+  editor.on( 'submitSuccess', refresh_events);
 
   // needs to be same in events.js
   editor.on('open', function( e, mode, action ) {
@@ -131,6 +133,9 @@ $( function() {
     },  // eventClick: function() {
 
   })  // $('#calendar').fullCalendar(
+
+  // refresh events every minute to keep calendar updated
+  setInterval(refresh_events, 60*1000);
 
   // legend
   var day_legend = [

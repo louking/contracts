@@ -1,4 +1,9 @@
 $( function() {
+  function refresh_events() {
+    $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
+    $('#calendar').fullCalendar( 'refetchEvents' );
+  };
+
   $('#calendar').fullCalendar({
     defaultView: 'month',
     themeSystem: 'jquery-ui',
@@ -79,6 +84,9 @@ $( function() {
     },
 
   })
+
+  // refresh events every minute to keep calendar updated
+  setInterval(refresh_events, 60*1000);
 
   // legend
   var day_legend = [
