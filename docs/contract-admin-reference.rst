@@ -38,7 +38,7 @@ Event Overview view
 
 While the :ref:`admin-calendar-view` may be the easiest way to view all the :term:`events <event>`,
 this view  provides a table  of all the events in the database which can be used as well. The admin
-can create a new :term:`event`, or  select an :term:`event` for Edit, Notes, Delete or Renew
+can create a new :term:`event`, or  select an :term:`event` for Edit, Notes, or Delete 
 operations.
 
 Notice the :term:`State` column. The :term:`State` may be updated automatically by the tool or the
@@ -61,9 +61,6 @@ action.
 
       **Note:** if you don't want the event deleted because (e.g., the race owes or paid money we want to 
       track), change the :term:`state` to *canceled*
-
-   :Renew: (select one or more events) shows popup “are you sure”, and if click OK renews :term:`race(s) <race>` 
-      for selected :term:`event(s) <event>`.
 
    :Calendar: switch to the :ref:`admin-calendar-view`
 
@@ -348,8 +345,8 @@ happens [5 days] after the event.
    the following year, on the same date, depending on the date rule specified for this
    race. See :ref:`date-rules` for more information.
 
-   **Note** if the date rule for the :term:`race` is not set, an email is generated
-   to the administrator that this race was not renewed.
+   **Note** if the date rule for the :term:`race` is not set, the system creates
+   one automatically, based on nth day of week in month.
 
 -  a :ref:`post-event-email` is sent to thank the race
    director for the opportunity to provide our services, to let them
