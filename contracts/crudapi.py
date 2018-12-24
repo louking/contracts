@@ -570,6 +570,9 @@ class DbCrudApi(CrudApi):
                    '      editor.field( fieldname ).set( {}_{}_lastval );'.format(labelfield, valuefield),
                    '      openeditor( );',
                    '  });',
+                   '',
+                   # set the width for this form
+                   '  {}_editor.__dialouge.dialog( "option", "width", 600 );'.format(labelfield),
                    '} );',
             ]
             # see https://stackoverflow.com/questions/11017466/flask-return-image-created-from-database

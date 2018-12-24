@@ -1,6 +1,7 @@
 // set editor form width
 $.extend( $.fn.DataTable.Editor.display.jqueryui.modalOptions, {
-    width: '1200px'
+    width: 'auto',
+    minWidth: 600,  // this doesn't seem to do anything. see crudapi.py for patch to handle subforms
 } );
 
 // current date for form
