@@ -25,6 +25,7 @@ from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Serv
 from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
 from contracts.crudapi import DbCrudApiRolePermissions
+from daterules import daterule
 from eventscontract import EventsApi
 from tags import tag
 
@@ -430,7 +431,10 @@ race = DbCrudApiRolePermissions(
                     clientcolumns = [
                         { 'data': 'race', 'name': 'race', 'label': 'Name', '_unique': True },
                         { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
-                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
+                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 
+                                                              'dbfield':'daterule', 'uselist':False, 'searchbox':True,
+                                                              'editable' : { 'api':daterule },
+                           } }
                         },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea' },
                     ], 

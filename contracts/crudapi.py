@@ -16,7 +16,7 @@ crudapi - CRUD api for this application
 # standard
 from urllib import urlencode
 from json import dumps
-from copy import deepcopy
+from copy import deepcopy, copy
 
 # pypi
 from flask import request, current_app, make_response, url_for, jsonify
@@ -338,7 +338,7 @@ class DbCrudApi(CrudApi):
         # do some preprocessing on columns
         booleandb = {}
         booleanform = {}
-        saforms = []
+        self.saforms = []
         for col in args['clientcolumns']:
             if debug: current_app.logger.debug('__init__(): col = {}'.format(col))
             # remove readonly fields from dbmapping
@@ -429,8 +429,21 @@ class DbCrudApi(CrudApi):
                     editable = treatment['relationship'].get('editable', {})
                     if debug: current_app.logger.debug('__init__(): labelfield={} editable={}'.format(treatment['relationship']['labelfield'], editable))
                     valuefield = 'id' if 'valuefield' not in treatment['relationship'] else treatment['relationship']['valuefield']
+                    labelfield = treatment['relationship']['labelfield']
+                    formfield  = treatment['relationship']['formfield']
                     if editable:
-                        saforms.append({ 'api':editable['api'], 'args': { 'name':treatment['relationship']['labelfield'], 'valuefield':valuefield } })
+                        self.saforms.append({ 'api':editable['api'], 'args': { 'labelfield':labelfield, 'valuefield':valuefield, 'parentfield': formfield } })
+                        # bring in standalone forms from subforms, create parent arg if not already present
+                        # parent arg may be present from a deeper subform
+                        for saform in editable['api'].saforms:
+                            thisform = saform
+                            if 'parent' not in saform['args']:
+                                thisform = {}
+                                thisform['api'] = saform['api']
+                                # make copy so we don't corrupt xxx.saforms
+                                thisform['args'] = copy(saform['args'])
+                                thisform['args']['parent'] = '{}_editor'.format(treatment['relationship']['labelfield'])
+                            self.saforms.append(thisform)
                         # add <new> option
                         col['options'] = thisreln.new_plus_options
                         # this is for #65, abandoned for first release
@@ -462,8 +475,8 @@ class DbCrudApi(CrudApi):
         super(DbCrudApi, self).__init__(**args)
 
         # if any standalone forms required, add to templateargs
-        if saforms:
-            self.saformjsurls = lambda: [ saf['api'].saformurl(**saf['args']) for saf in saforms ]
+        if self.saforms:
+            self.saformjsurls = lambda: [ saf['api'].saformurl(**saf['args']) for saf in self.saforms ]
             self.templateargs['saformjsurls'] = self.saformjsurls
 
         # save caller's validation method and update validation to local version
@@ -490,69 +503,121 @@ class DbCrudApi(CrudApi):
             # indent all by 4 and use indent=2 to make debugging easy
             edoptsjson = ['    {}'.format(l) for l in dumps(ed_options, indent=2).split('\n')]
 
-            labelfield = request.args['name']
+            labelfield = request.args['labelfield']
+            parentfield = request.args['parentfield']
             valuefield = request.args['valuefield']
+            parent     = request.args.get('parent', 'editor')
             js  = [
-                   # 'var row;',
-                   'var {}_{}_lastval;'.format(labelfield, valuefield),
-                   '',
-                   'if ( typeof openeditor == "undefined" ) {',
-                   '    function openeditor() {',
-                   '      editor.open( );',
-                   # TODO: need fix for #25
-                   '    }',
-                   '',
-                   '    function closeeditor() {',
-                   '      editor.close()',
-                   '    }',
+                   'var {}_{}_lastval;'.format(parentfield, valuefield),
+                   'var {}_editor;'.format(labelfield),
+
+                   # first one of these initializes stack variable
+                   'if ( typeof editorstack == "undefined" ) {',
+                   '    var editorstack = [];',
+                   '    var curreditor = editor;',
+                   '    var pushing = false;',
+                   '    var restoring = false;',
+                   '    var parentbuttons;',
                    '}',
                    '',
                    '$( function () {', 
-                   '  // handle save, then open editor on submit',
+                   # NOTE: this assumes editor has been defined by an earlier $([ready]) function
+                   '  if ( editorstack.length == 0 ) {',
+                   '      curreditor = editor;',
+                   '      parentbuttons = [];',
+                   '  }',
+                   '',
+                   '  if ( typeof pusheditor == "undefined" ) {',
+                   '      function pusheditor( neweditor, parentname, buttons, editorname ) {',
+                   '        var fields = {};',
+                   '        $.each(curreditor.fields(), function(i, field) {',
+                   '            fields[field] = curreditor.field(field).get();',
+                   '        });',
+                   '        pushing = true;',
+                   '        curreditor.close()',
+                   '        pushing = false;',
+                   # need to map / extend to make a copy of parentbuttons
+                   '        editorstack.push( { editor:curreditor, newcurrent:editorname, fields:fields, buttons:parentbuttons.map(a => $.extend(true, {}, a)) } );',
+                   '        parentbuttons = buttons;',
+                   '        curreditor = neweditor;',
+                   'console.log("pusheditor(): newcurrent=" + editorname + " depth="+editorstack.length);',
+                   '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
+                   '      }',
+                   '',
+                   '      function popeditor( ) {',
+                   '        editorrec = editorstack.pop();',
+                   '        curreditor = editorrec.editor;',
+                   '        buttons = editorrec.buttons;',
+                   '        if ( curreditor != editor ) {',
+                   # handle buttons specially for top level editor
+                   # requires special handling above
+                   # TODO: make this generic
+                   '          curreditor',
+                   '            .buttons( buttons )',
+                   '            .create();', 
+                   '          restoring = true;',
+                   '          $.each(editorrec.fields, function(field, val) {',
+                   '              curreditor.field(field).set( val );',
+                   '          });',
+                   '          restoring = false;',
+                   '        } else {',
+                   '          curreditor.open( );',
+                   '        }',
+                   'console.log("popeditor(): depth="+editorstack.length);',
+                   '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
+                   'console.trace();',
+                   '      }',
+                   '  }',
+                   '',
+                   '  // handle save, then open parent on submit',
                    '  var fieldname = "{}.{}"'.format(labelfield, valuefield),
-                   '  $( editor.field( fieldname ).input() ).on ("select2:open", function () {', 
-                   '    {}_{}_lastval = editor.get( fieldname );'.format(labelfield, valuefield),
-                   '  } );',
-                   '  $( editor.field( fieldname ).input() ).on ("change", function (e) {', 
-                   '    console.log("{} select2 change fired");'.format(labelfield), 
-                   '    // only fire if <new> entry',
-                   '    if ( editor.get( fieldname ) != 0 ) return;',
-                   # this is for #65, abandoned for first release
-                   # '    // ignore initialization',
-                   # '    if ( !e.params ) return;',
-                   # '    // only fire if new entry',
-                   # '    if ( !e.params.data.isNew ) return;',
-                   '',
-                   '    closeeditor();', 
-                   '',
-                   '    {}_editor'.format(labelfield), 
-                   "      .title('Create new entry')",
-                   '      .buttons( [', 
+                   '  var parentname = "{}.{}"'.format(parentfield, valuefield),
+                   '  var {label}_buttons = ['.format(label=labelfield),
                    '                 {', 
                    '                  label: "Cancel",', 
                    '                  fn: function () {', 
                    '                        this.close();', 
                    # this is needed here and also on close
-                   '                        editor.field( fieldname ).set( {}_{}_lastval );'.format(labelfield, valuefield),
-                   '                        openeditor( );', 
+                   # '                        editor.field( fieldname ).set( {}_{}_lastval );'.format(parentfield, valuefield),
+                   # '                        popeditor( );', 
                    '                  },', 
                    '                 },', 
                    '                 {', 
                    '                  label: "Create",', 
                    '                  fn: function () {', 
                    '                        this.submit( function(resp) {',
-                   '                              this.close();', 
-                   '                              openeditor( );', 
+                   # apparently close/popeditor has already occurred, so curreditor should work
+                   # '                              this.close();', 
+                   # '                              popeditor( );', 
+                   'console.log("{} create submit resp="+JSON.stringify(resp));'.format(labelfield),
                    '                              var newval = {{label:resp.data[0].{}, value:resp.data[0].{}}};'.format(labelfield,self.idSrc),
-                   '                              console.log( "newval = " + newval );',
-                   '                              editor.field( fieldname ).AddOption( [ newval ] );',
-                   '                              editor.field( fieldname ).set( newval.value );',
+                   '                              curreditor.field( parentname ).AddOption( [ newval ] );',
+                   '                              curreditor.field( parentname ).set( newval.value );',
                    '                           },',
                    '                        )',
                    '                  },', 
                    '                 },', 
-                   '                ]', 
-                   '      )', 
+                   '                ];', 
+                   '  $( {}.field( parentname ).input() ).on ("select2:open", function () {{'.format(parent), 
+                   '    {}_{}_lastval = {}.get( parentname );'.format(parentfield, valuefield, parent),
+                   '  } );',
+                   '  $( {}.field( parentname ).input() ).on ("change", function (e) {{'.format(parent),
+                   # '    console.log("{} select2 change fired");'.format(parentfield), 
+                   '    // only fire if <new> entry',
+                   '    if ( {}.get( parentname ) != 0 ) return;'.format(parent),
+                   '    // no fire if restoring',
+                   '    if ( restoring ) return;',
+                   # this is for #65, abandoned for first release
+                   # '    // ignore initialization',
+                   # '    if ( !e.params ) return;',
+                   # '    // only fire if new entry',
+                   # '    if ( !e.params.data.isNew ) return;',
+                   '',
+                   '    pusheditor( {label}_editor, parentname, {label}_buttons, "{label}_editor" );'.format(label=labelfield), 
+                   '',
+                   '    {}_editor'.format(labelfield), 
+                   "      .title('Create new entry')",
+                   '      .buttons( {label}_buttons )'.format(label=labelfield),
                    '      .create();', 
                    '  } );',
                    '',
@@ -563,12 +628,15 @@ class DbCrudApi(CrudApi):
 
             js += [
                    '  );',
-                   '  // if form closes, reopen editor',
+                   '  // if form closes, reopen previous editor',
                    '  {}_editor'.format(labelfield),
                    '    .on("close", function () {',
                    # this is needed here and also when cancel button is pressed
-                   '      editor.field( fieldname ).set( {}_{}_lastval );'.format(labelfield, valuefield),
-                   '      openeditor( );',
+                   # don't pop if in the middle of pushing
+                   '      if (!pushing) {',
+                   '        popeditor( );',
+                   '        curreditor.field( parentname ).set( {}_{}_lastval );'.format(parentfield, valuefield),
+                   '      };',
                    '  });',
                    '',
                    # set the width for this form
@@ -707,7 +775,9 @@ class DbCrudApi(CrudApi):
         self.dte.set_dbrow(formdata, dbrow)
         if debug: current_app.logger.debug('createrow(): creating dbrow={}'.format(dbrow.__dict__))
         self.db.session.add(dbrow)
+        if debug: current_app.logger.debug('createrow(): created dbrow={}'.format(dbrow.__dict__))
         self.db.session.flush()
+        if debug: current_app.logger.debug('createrow(): flushed dbrow={}'.format(dbrow.__dict__))
 
         # prepare response
         thisrow = self.dte.get_response_data(dbrow)
