@@ -771,6 +771,9 @@ class DbCrudApi(CrudApi):
                 if row:
                     results.append({ 'name' : field, 'status' : 'duplicate found, must be unique' })
 
+            # clear out dbrow from sqlalchemy
+            self.db.session.rollback()
+
         return results
 
     #----------------------------------------------------------------------

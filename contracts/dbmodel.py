@@ -209,7 +209,7 @@ class Race(Base):
     id                  = Column( Integer, primary_key=True ) 
     race                = Column( String(RACE_LEN) )
     daterule_id         = Column( Integer, ForeignKey('daterule.id') )
-    daterule            = relationship( 'DateRule', backref='racerule', uselist=False, lazy=True )
+    daterule            = relationship( 'DateRule', backref='racerules', lazy=True )
     notes               = Column( String(NOTES_LEN) )
 
 class Event(Base):
@@ -266,7 +266,7 @@ class EventAvailabilityException(Base):
     shortDescr    = Column( String(EXCEPTION_LEN) )
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html One To One
     daterule_id   = Column( Integer, ForeignKey('daterule.id') )
-    daterule      = relationship( 'DateRule', backref='eventexception', uselist=False, lazy=True )
+    daterule      = relationship( 'DateRule', backref='eventexceptions', lazy=True )
     exception     = Column( Enum( 'available',  'unavailable' ) )
     notes         = Column( String(NOTES_LEN) )
 
