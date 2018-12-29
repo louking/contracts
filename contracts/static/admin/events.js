@@ -102,6 +102,29 @@ function event_settriggers( editor ) {
         configureformbuttons( editor, editor.mode() );
         return {};
     });
+
+    // save services options
+    var toclass = {};
+    var classes = [];
+    $.each(editor.field('services.id').inst().children(), function(i, thisval) {
+        toclass[thisval.value] = 'service_' + thisval.text;
+        classes.push( toclass[thisval.value] );
+    });
+
+    function set_services_class( val ) {
+        // clear all the classes from the main form, then add what has been selected
+        $( '#customForm' ).removeClass( classes.join(' ') );
+        if (val != '') {
+            values = val.split(', ');
+            $.each(values, function(i, thisval) {
+                $( '#customForm' ).addClass( toclass[thisval] );
+            });
+        };
+        return {};
+    };
+
+    // set form class dependent on services
+    editor.dependent( 'services.id', set_services_class);
 }
 
 function event_cleartriggers( editor ) {
@@ -125,6 +148,9 @@ function afterdatatables() {
         // special processing for contractApproverNotes field to make readonly
         editor.field( 'contractApproverNotes' ).disable();
 
+        // force services class initial setup
+        editor.field( 'services.id' ).set( editor.field( 'services.id' ).get() );
+        
         return true;
     });
 

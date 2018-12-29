@@ -96,3 +96,23 @@ h2              { font-size: 1.2em; }
   margin-right: 5px;
 }
 
+/******************************************/
+/* editor field management                */
+/******************************************/
+.field_req label {
+  font-weight: bold;
+}
+
+/* don't show finish line services if not selected */
+.field_show_finishline,
+.field_show_coursemarking
+{
+  display: none;
+}
+
+/* show finish line services if selected */
+.service_finishline .field_show_finishline,
+.service_coursemarking .field_show_coursemarking
+{
+  display: block;
+}

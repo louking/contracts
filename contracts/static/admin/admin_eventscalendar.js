@@ -130,6 +130,9 @@ $( function() {
       // set the triggers which case the form buttons to change
       event_settriggers( editor );
 
+      // force services class initial setup
+      editor.field( 'services.id' ).set( editor.field( 'services.id' ).get() );
+      
     },  // eventClick: function() {
 
   })  // $('#calendar').fullCalendar(
