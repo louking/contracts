@@ -32,10 +32,11 @@ app = create_app(Development(configpath), configpath)
 
 from loutilities.flask_helpers.blueprints import list_routes
 
-debug = True
+debug = False
 
 if debug:
     with app.app_context():
+        print 'listing routes from run.py'
         list_routes(app)
 
 if __name__ == "__main__":

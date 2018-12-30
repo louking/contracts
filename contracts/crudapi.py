@@ -31,7 +31,7 @@ class parameterError(Exception): pass
 # separator for select2 tag list
 SEPARATOR = ', '
 
-debug = True
+debug = False
 
 #####################################################
 class DteDbRelationship():
@@ -553,8 +553,8 @@ class DbCrudApi(CrudApi):
                    '        editorstack.push( { editor:curreditor, newcurrent:editorname, fields:fields, buttons:parentbuttons.map(a => $.extend(true, {}, a)) } );',
                    '        parentbuttons = buttons;',
                    '        curreditor = neweditor;',
-                   'console.log("pusheditor(): newcurrent=" + editorname + " depth="+editorstack.length);',
-                   '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
+                   # 'console.log("pusheditor(): newcurrent=" + editorname + " depth="+editorstack.length);',
+                   # '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
                    '      }',
                    '',
                    '      function popeditor( ) {',
@@ -576,9 +576,9 @@ class DbCrudApi(CrudApi):
                    # '        } else {',
                    # '          curreditor.open( );',
                    # '        }',
-                   'console.log("popeditor(): depth="+editorstack.length);',
-                   '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
-                   'console.trace();',
+                   # 'console.log("popeditor(): depth="+editorstack.length);',
+                   # '$.each(editorstack, function(i,val) { console.log("editorstack["+i+"].fields="+JSON.stringify(val.fields)) });',
+                   # 'console.trace();',
                    '      }',
                    '  }',
                    '',
@@ -602,7 +602,7 @@ class DbCrudApi(CrudApi):
                    # apparently close/popeditor has already occurred, so curreditor should work
                    # '                              this.close();', 
                    # '                              popeditor( );', 
-                   'console.log("{} create submit resp="+JSON.stringify(resp));'.format(labelfield),
+                   # 'console.log("{} create submit resp="+JSON.stringify(resp));'.format(labelfield),
                    '                              var newval = {{label:resp.data[0].{}, value:resp.data[0].{}}};'.format(labelfield,self.idSrc),
                    '                              curreditor.field( parentname ).AddOption( [ newval ] );',
                    '                              curreditor.field( parentname ).set( newval.value );',
