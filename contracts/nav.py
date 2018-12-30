@@ -19,10 +19,26 @@ define navigation bar based on privileges
 # pypi
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup
+from flask_nav.renderers import SimpleRenderer
+from dominate import tags
 from flask_security import current_user
 from flask import current_app
 
 thisnav = Nav()
+
+@thisnav.renderer()
+class NavRenderer(SimpleRenderer):
+    def visit_Subgroup(self, node):
+        group = tags.ul(_class='subgroup')
+        title = tags.div(node.title)
+
+        if node.active:
+            title.attributes['class'] = 'active'
+
+        for item in node.items:
+            group.add(tags.li(self.visit(item)))
+
+        return [title, group]
 
 @thisnav.navigation()
 def nav_menu():
@@ -30,39 +46,44 @@ def nav_menu():
 
     navbar.items.append(View('Home', 'frontend.index'))
 
-    # normal administrative stuff
+    contracts = Subgroup('Contracts')
+    events    = Subgroup('Events')
+    services  = Subgroup('Services')
+
+    # event administrative stuff
     if current_user.has_role('admin') or current_user.has_role('superadmin'):
-        navbar.items.append(View('Races', 'admin.races'))
-        navbar.items.append(View('Events Table', 'admin.events-superadmin'))
-        navbar.items.append(View('Events Calendar', 'admin.calendar'))
+
+        navbar.items.append(events)
+        events.items.append(View('Calendar', 'admin.calendar'))
+        events.items.append(View('Table', 'admin.events-superadmin'))
+        events.items.append(View('Races', 'admin.races'))
+        events.items.append(View('Courses', 'admin.courses'))
+        events.items.append(View('Leads', 'admin.leads'))
+        events.items.append(View('Exceptions', 'admin.eventexceptions'))
+        events.items.append(View('Tags', 'admin.tags'))
+
         navbar.items.append(View('Clients', 'admin.clients-admin'))
-        navbar.items.append(View('Event Leads', 'admin.leads'))
-        navbar.items.append(View('Event Courses', 'admin.courses'))
         navbar.items.append(View('Date Rules', 'admin.daterules'))
-        navbar.items.append(View('Tags', 'admin.tags'))
-        navbar.items.append(View('Event Exceptions', 'admin.eventexceptions'))
 
     # superadmin stuff
     if current_user.has_role('superadmin'):
+
         navbar.items.append(View('Users', 'admin.users'))
-        navbar.items.append(View('Services', 'admin.services'))
-        navbar.items.append(View('Add-Ons', 'admin.addon'))
-        navbar.items.append(View('Fee Types', 'admin.feetype'))
-        navbar.items.append(View('Fee Based On', 'admin.feebasedon'))
         navbar.items.append(View('Roles', 'admin.roles'))
-        navbar.items.append(View('States', 'admin.states'))
-        
-        # TODO: Contracts won't expand for some reason
-        # contracts = Subgroup('Contracts',
-        #                      View('Contracts', 'admin.contracts'),
-        #                      View('Contract Types', 'admin.contracttypes'),
-        #                      View('Block Types', 'admin.contractblocktypes'),
-        #                     )
-        # navbar.items.append(contracts)
-        navbar.items.append(View('Contracts', 'admin.contracts')),
-        navbar.items.append(View('Contract Types', 'admin.contracttypes')),
-        navbar.items.append(View('Template Types', 'admin.templatetypes')),
-        navbar.items.append(View('Block Types', 'admin.contractblocktypes')),
+
+        events.items.append(View('States', 'admin.states'))
+
+        navbar.items.append(services)
+        services.items.append(View('Services', 'admin.services'))
+        services.items.append(View('Add-Ons', 'admin.addon'))
+        services.items.append(View('Fee Types', 'admin.feetype'))
+        services.items.append(View('Fee Based On', 'admin.feebasedon'))
+
+        navbar.items.append(contracts)
+        contracts.items.append(View('Contracts', 'admin.contracts')),
+        contracts.items.append(View('Contract Types', 'admin.contracttypes')),
+        contracts.items.append(View('Template Types', 'admin.templatetypes')),
+        contracts.items.append(View('Block Types', 'admin.contractblocktypes')),
 
         navbar.items.append(View('Debug', 'admin.debug'))
 

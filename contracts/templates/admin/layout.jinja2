@@ -25,7 +25,7 @@
   </div>
   <div class=wrapper>
     {# render navigation bar - see https://pythonhosted.org/flask-nav/index.html #}
-    {{ nav.nav_menu.render(id='navigation') }}
+    {{ nav.nav_menu.render(id='navigation', renderer='nav_renderer') }}
 
     <div class=body>
       {% if error %}<p class=error><strong>Error: {{ error }}</strong></p>{% endif %}
