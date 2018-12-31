@@ -76,6 +76,7 @@ daterule = DbCrudApiRolePermissions(
                         { 'data': 'rulename', 'name': 'rulename', 'label': 'Rule Name', 'ed':{'type':'hidden'} },
                         { 'data': 'rule', 'name': 'rule', 'label': 'Rule', 'type': 'select2',
                           # see https://stackoverflow.com/questions/47770592/how-to-get-all-the-column-names-their-types-including-enum-and-its-possible
+                          'className': 'field_req',
                           'options': DateRule.__table__.columns['rule'].type.enums, 
                         },
                         { 'data': 'day', 'name': 'day', 'label': 'Day of Week', 'type':'select2',

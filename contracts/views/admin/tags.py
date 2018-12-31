@@ -39,8 +39,12 @@ tag = DbCrudApiRolePermissions(
                     dbmapping = tag_dbmapping, 
                     formmapping = tag_formmapping, 
                     clientcolumns = [
-                        { 'data': 'tag', 'name': 'tag', 'label': 'Tag', '_unique': True },
-                        { 'data': 'description', 'name': 'description', 'label': 'Description' },
+                        { 'data': 'tag', 'name': 'tag', 'label': 'Tag', '_unique': True, 
+                          'className': 'field_req',
+                        },
+                        { 'data': 'description', 'name': 'description', 'label': 'Description', 
+                          'className': 'field_req',
+                        },
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
