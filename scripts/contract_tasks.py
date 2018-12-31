@@ -28,6 +28,7 @@ from jinja2 import Template
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
 from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
+from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import STATE_COMMITTED
 from contracts.settings import Production
 from contracts.mailer import sendmail
@@ -66,21 +67,17 @@ dbdate = asctime('%Y-%m-%d')
 
 #----------------------------------------------------------------------
 @app.cli.command()
-def hello():
-#----------------------------------------------------------------------
-    print 'hello world'
-
-#----------------------------------------------------------------------
-@app.cli.command()
 def preraceemail():
 #----------------------------------------------------------------------
+    '''Send pre-race email to race director and lead.'''
+
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACEMAILSENT).one()
     inhibittag = Tag.query.filter_by(tag=TAG_PRERACEMAILINHIBITED).one()
 
     # calculate start and end date window
     start = dbdate.dt2asc(date.today())
-    end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_EMAIL'] - 1))
+    end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_EMAIL']))
 
     # use correct filter to get races in next N days
     events = Event.query.filter(Event.date.between(start, end)).all()
@@ -132,8 +129,69 @@ def preraceemail():
 
 #----------------------------------------------------------------------
 @app.cli.command()
+def leademail():
+#----------------------------------------------------------------------
+    '''Send pre-race email to lead.'''
+
+    # set up tag which is used to control this email
+    senttag = Tag.query.filter_by(tag=TAG_LEADEMAILSENT).one()
+
+    # calculate start and end date window
+    start = dbdate.dt2asc(date.today())
+    end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_LEAD_EMAIL']))
+
+    # use correct filter to get races in next N days
+    events = Event.query.filter(Event.date.between(start, end)).all()
+
+    for event in events:
+        # ignore uncommitted events
+        if event.state.state != STATE_COMMITTED: continue
+
+        # don't send if this message has already been sent
+        if senttag in event.tags: continue
+
+        # don't send if only premium promotion service
+        if len(event.services) == 1 and event.services[0].service == 'premiumpromotion': continue
+
+        # send pre-race mail to client
+        templatestr = (db.session.query(Contract)
+                   .filter(Contract.contractTypeId==ContractType.id)
+                   .filter(ContractType.contractType=='race services')
+                   .filter(Contract.templateTypeId==TemplateType.id)
+                   .filter(TemplateType.templateType=='lead email')
+                   .one()
+                  ).block
+        template = Template( templatestr )
+
+        # bring in needed relations
+        garbage = event.client
+        garbage = event.lead
+
+        # merge database fields into template and send email
+        mergefields = deepcopy(event.__dict__)
+
+        mergefields['servicenames'] = [s.service for s in event.services] 
+        mergefields['servicedescrs'] = [s.serviceLong for s in event.services]
+        mergefields['event'] = event.race.race
+
+        html = template.render( mergefields )
+
+        subject = 'FSRC race reminders for lead: {} - {}'.format(event.race.race, event.date)
+        tolist = event.lead.email
+        cclist = app.config['CONTRACTS_CC']
+        fromlist = app.config['CONTRACTS_CONTACT']
+        
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        # mark as sent
+        event.tags.append(senttag)
+        db.session.commit()
+
+#----------------------------------------------------------------------
+@app.cli.command()
 def postraceprocessing():
 #----------------------------------------------------------------------
+    '''Sending post-race email and renew race.'''
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
     inhibittag = Tag.query.filter_by(tag=TAG_POSTRACEMAILINHIBITED).one()

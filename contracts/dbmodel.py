@@ -144,6 +144,7 @@ TAG_POSTRACEMAILSENT        = 'post-race-email-sent'
 TAG_PRERACEMAILINHIBITED    = 'inhibit-pre-race-email'
 TAG_POSTRACEMAILINHIBITED   = 'inhibit-post-race-email'
 TAG_RACERENEWED             = 'race-renewed'
+TAG_LEADEMAILSENT           = 'lead-email-sent'
 class Tag(Base):
     __tablename__ =  'tag'
     id                = Column( Integer, primary_key=True ) 
