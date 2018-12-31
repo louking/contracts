@@ -548,6 +548,11 @@ filters = '\n'.join([
             "        <span class='label'>Service(s)</span>",
             "        <span id='external-filter-services' class='filter'></span>",
             "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Tag(s)</span>",
+            "        <span id='external-filter-tags' class='filter'></span>",
+            "    </div>",
             "</div>",
             ])
 
@@ -555,6 +560,7 @@ filters = '\n'.join([
 datecol = 2
 statecol = 3
 servicecol = 15
+tagcol = 22
 yadcf_options = [
           {
            'column_number': statecol, 
@@ -590,6 +596,23 @@ yadcf_options = [
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-services',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+            'column_number': tagcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select tags', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-tags',
             'column_data_type': 'text',
             'text_data_delimiter': ', ',
             'filter_reset_button_text': False, # hide yadcf reset button
