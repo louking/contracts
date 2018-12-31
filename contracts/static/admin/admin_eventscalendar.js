@@ -108,6 +108,9 @@ $( function() {
       editor.set( 'date', date.format() );
       // editor.field( 'race.id' ).focus();
 
+      // set the triggers which case the form buttons to change
+      event_settriggers( editor );
+
     },  // dayClick: function() {
 
     eventClick: function( event, jsEvent, view ) {
