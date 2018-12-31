@@ -105,6 +105,7 @@ def preraceemail():
         # bring in needed relations
         garbage = event.client
         garbage = event.lead
+        garbage = event.course
 
         # merge database fields into template and send email
         mergefields = deepcopy(event.__dict__)
@@ -166,12 +167,12 @@ def leademail():
         # bring in needed relations
         garbage = event.client
         garbage = event.lead
+        garbage = event.course
 
         # merge database fields into template and send email
         mergefields = deepcopy(event.__dict__)
 
-        mergefields['servicenames'] = [s.service for s in event.services] 
-        mergefields['servicedescrs'] = [s.serviceLong for s in event.services]
+        mergefields['servicedescrs'] = [s.serviceLong for s in event.services if s.service != 'premiumpromotion']
         mergefields['event'] = event.race.race
 
         html = template.render( mergefields )
