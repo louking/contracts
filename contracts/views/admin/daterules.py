@@ -73,7 +73,7 @@ daterule = DbCrudApiRolePermissions(
                     dbmapping = daterule_dbmapping, 
                     formmapping = daterule_formmapping, 
                     clientcolumns = [
-                        { 'data': 'rulename', 'name': 'rulename', 'label': 'Rule Name' },   # hidden on forms by daterules.js
+                        { 'data': 'rulename', 'name': 'rulename', 'label': 'Rule Name', 'ed':{'type':'hidden'} },
                         { 'data': 'rule', 'name': 'rule', 'label': 'Rule', 'type': 'select2',
                           # see https://stackoverflow.com/questions/47770592/how-to-get-all-the-column-names-their-types-including-enum-and-its-possible
                           'options': DateRule.__table__.columns['rule'].type.enums, 
