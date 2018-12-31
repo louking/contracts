@@ -63,7 +63,6 @@
 {% for css in pagecssfiles %}
   <link rel=stylesheet type=text/css href="{{ css }}">
 {% endfor %}
-{# TODO: remove this upon deployment
 <style>
   {% if hostname[0:9] == "127.0.0.1" %}
     html {background: antiquewhite;}
@@ -72,7 +71,6 @@
     html {background: lightcyan;}
   {% endif %}
 </style>
-#}
 {% block css %}
 {% endblock %}
 
