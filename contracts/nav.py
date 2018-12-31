@@ -53,6 +53,9 @@ def nav_menu():
     # event administrative stuff
     if current_user.has_role('admin') or current_user.has_role('superadmin'):
 
+        # note calendar is in menu twice
+        navbar.items.append(View('Calendar', 'admin.calendar'))
+
         navbar.items.append(events)
         events.items.append(View('Calendar', 'admin.calendar'))
         events.items.append(View('Table', 'admin.events-superadmin'))
