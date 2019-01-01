@@ -72,6 +72,7 @@ daterule = DbCrudApiRolePermissions(
                     rule = '/daterules', 
                     dbmapping = daterule_dbmapping, 
                     formmapping = daterule_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'rulename', 'name': 'rulename', 'label': 'Rule Name', 'ed':{'type':'hidden'} },
                         { 'data': 'rule', 'name': 'rule', 'label': 'Rule', 'type': 'select2',

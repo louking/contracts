@@ -56,6 +56,7 @@ state = DbCrudApiRolePermissions(
                     rule = '/states', 
                     dbmapping = state_dbmapping, 
                     formmapping = state_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
                           'className': 'field_req',
@@ -96,6 +97,7 @@ lead = DbCrudApiRolePermissions(
                     rule = '/leads', 
                     dbmapping = lead_dbmapping, 
                     formmapping = lead_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'name', 'name': 'name', 'label': 'Name', 
                           'className': 'field_req',
@@ -142,6 +144,7 @@ course = DbCrudApiRolePermissions(
                     rule = '/courses', 
                     dbmapping = course_dbmapping, 
                     formmapping = course_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'course', 'name': 'course', 'label': 'Course', '_unique':True,
                           'className': 'field_req',
@@ -186,6 +189,7 @@ feetype = DbCrudApiRolePermissions(
                     rule = '/feetype', 
                     dbmapping = feetype_dbmapping, 
                     formmapping = feetype_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'feeType', 'name': 'feeType', 'label': 'Fee Type', '_unique': True, 
                           'className': 'field_req',
@@ -226,6 +230,7 @@ feebasedon = DbCrudApiRolePermissions(
                     rule = '/feebasedon', 
                     dbmapping = feebasedon_dbmapping, 
                     formmapping = feebasedon_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'service', 'name': 'service', 'label': 'Service',
                           'className': 'field_req',
@@ -271,6 +276,7 @@ addon = DbCrudApiRolePermissions(
                     rule = '/addon', 
                     dbmapping = addon_dbmapping, 
                     formmapping = addon_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Add-on', '_unique': True, 
                           'className': 'field_req',
@@ -314,6 +320,7 @@ service = DbCrudApiRolePermissions(
                     rule = '/services', 
                     dbmapping = service_dbmapping, 
                     formmapping = service_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'service', 'name': 'service', 'label': 'Service', '_unique': True },
                         { 'data': 'serviceLong', 'name': 'serviceLong', 'label': 'Description',
@@ -360,6 +367,7 @@ eventexception = DbCrudApiRolePermissions(
                     rule = '/eventexceptions', 
                     dbmapping = eventexception_dbmapping, 
                     formmapping = eventexception_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'shortDescr', 'name': 'shortDescr', 'label': 'Name', '_unique': True, 
                           'className': 'field_req',
@@ -421,6 +429,7 @@ client = DbCrudApiRolePermissions(
                     rule = '/clients', 
                     dbmapping = client_dbmapping, 
                     formmapping = client_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'client', 'name': 'client', 'label': 'Client Name', '_unique':True,
                           'className': 'field_req',
@@ -471,11 +480,13 @@ race = DbCrudApiRolePermissions(
                     rule = '/races', 
                     dbmapping = race_dbmapping, 
                     formmapping = race_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'race', 'name': 'race', 'label': 'Name', '_unique': True,
                           'className': 'field_req',
                         },
                         { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
+                          'className': 'field_req', # REMOVE!
                           '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 
                                                               'dbfield':'daterule', 'uselist':False, 'searchbox':True,
                                                               'editable' : { 'api':daterule },
@@ -637,6 +648,7 @@ event = EventsApi(
                     dbmapping = event_dbmapping, 
                     formmapping = event_formmapping, 
                     pretablehtml = filters,
+                    checkrequired = False,  # special checks in event_validate
                     clientcolumns = [
                         { 'data': 'race', 'name': 'race', 'label': 'Race', 
                           'className': 'field_req',

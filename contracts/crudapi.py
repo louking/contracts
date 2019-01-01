@@ -315,6 +315,7 @@ class DbCrudApi(CrudApi):
                     queryparams = {},
                     dtoptions = {},
                     filtercoloptions = [],
+                    checkrequired = None,  # TODO: should this be made more general? Maybe a function to check col
                     )
         args.update(kwargs)
 
@@ -758,6 +759,18 @@ class DbCrudApi(CrudApi):
 
         # check results of caller's validation
         results = self.callervalidate( action, formdata )
+
+        # check required fields if requested
+        # TODO: this should be made more general, and possibly moved lower in the chain to CrudApi
+        if self.checkrequired:
+            for col in self.clientcolumns:
+                field = col['data']
+                if 'className' in col and 'field_req' in col['className'].split(' '):
+                    if 'id' in formdata[field]:
+                        if not formdata[field]['id']:
+                            results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
+                    elif not formdata[field]:
+                        results.append({ 'name' : field, 'status' : 'please supply' })
 
         # check if any records conflict with uniqueness requirements
         if action == 'create' and self.uniquecols:

@@ -38,6 +38,7 @@ tag = DbCrudApiRolePermissions(
                     rule = '/tags', 
                     dbmapping = tag_dbmapping, 
                     formmapping = tag_formmapping, 
+                    checkrequired = True,
                     clientcolumns = [
                         { 'data': 'tag', 'name': 'tag', 'label': 'Tag', '_unique': True, 
                           'className': 'field_req',
