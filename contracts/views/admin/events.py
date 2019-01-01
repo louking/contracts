@@ -486,7 +486,6 @@ race = DbCrudApiRolePermissions(
                           'className': 'field_req',
                         },
                         { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
-                          'className': 'field_req', # REMOVE!
                           '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 
                                                               'dbfield':'daterule', 'uselist':False, 'searchbox':True,
                                                               'editable' : { 'api':daterule },
