@@ -24,6 +24,7 @@ from . import bp
 from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Service, Tag
 from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
+from contracts.dbmodel import STATE_TENTATIVE
 from contracts.crudapi import DbCrudApiRolePermissions
 from daterules import daterule
 from eventscontract import EventsApi
@@ -619,6 +620,8 @@ yadcf_options = [
           },
     ]
 
+def event_state_default():
+    return State.query.filter_by(state=STATE_TENTATIVE).one().id
 
 ## finally the endpoint definition
 event = EventsApi(
@@ -652,8 +655,8 @@ event = EventsApi(
                         { 'data': 'state', 'name': 'state', 'label': 'State', 
                           'className': 'field_req',
                           '_treatment' : { 'relationship' : { 'fieldmodel':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
-                          # can't do this because it's done at initialization so if database not filled yet this raises exception
-                          # 'ed':{ 'def':State.query.filter_by(state=STATE_RENEWED_PENDING).one().id }, 
+                          # can't do this yet because need to evaluate callable 'def' in crudapi or tables
+                          # 'ed':{ 'def':event_state_default }, 
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
                           'className': 'field_req',
