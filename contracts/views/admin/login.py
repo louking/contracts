@@ -40,6 +40,8 @@ def do_login(email):
 
     else:
         flash("Your email {} was not found. If you this this is in error, please contact raceservices@steeplechasers.org".format(email), 'error')
+        do_logout()
+        googleauth.clear_credentials()
 
 #----------------------------------------------------------------------
 def do_logout():
