@@ -51,7 +51,7 @@ def nav_menu():
     services  = Subgroup('Services')
 
     # event administrative stuff
-    if current_user.has_role('admin') or current_user.has_role('superadmin'):
+    if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
 
         # note calendar is in menu twice
         navbar.items.append(View('Calendar', 'admin.calendar'))
@@ -69,7 +69,7 @@ def nav_menu():
         navbar.items.append(View('Date Rules', 'admin.daterules'))
 
     # superadmin stuff
-    if current_user.has_role('superadmin'):
+    if current_user.has_role('super-admin'):
 
         navbar.items.append(View('Users', 'admin.users'))
         navbar.items.append(View('Roles', 'admin.roles'))

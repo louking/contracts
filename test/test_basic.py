@@ -43,7 +43,7 @@ def test_login(dbapp):
     init_db(defineowner=False)
     useremail = 'testuser@example.com'
     with app.test_client() as client:
-        create_user(useremail, 'superadmin')
+        create_user(useremail, 'super-admin')
         login_test_user(useremail)
         resp = client.get('/', follow_redirects=True)
         assert resp.status_code == 200

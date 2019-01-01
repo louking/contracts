@@ -37,9 +37,10 @@ def init_db(defineowner=True):
     # special processing for user roles because need to remember the roles when defining the owner
     # define user roles here
     userroles = [
-        {'name':'superadmin', 'description':'everything'},
-        {'name':'admin'     , 'description':'all but users / roles'},
-        {'name':'notes'     , 'description':'can only edit notes'},
+        {'name':'super-admin',   'description':'everything'},
+        {'name':'event-admin',   'description':'event administrator'},
+        {'name':'sponsor-admin', 'description':'sponsorship administrator'},
+        {'name':'notes',         'description':'can only edit notes'},
     ]
 
     # initialize roles, remembering what roles we have    

@@ -28,7 +28,7 @@ thisversion = 'no version set'
 #######################################################################
 class ViewSysinfo(MethodView):
 #######################################################################
-    decorators = [lambda f: roles_accepted('superadmin', 'admin')(f)]
+    decorators = [lambda f: roles_accepted('super-admin', 'event-admin')(f)]
     url_rules = {
                 'sysinfo': ['/sysinfo',('GET',)],
                 }
@@ -48,14 +48,14 @@ class ViewSysinfo(MethodView):
             raise
 #----------------------------------------------------------------------
 add_url_rules(bp, ViewSysinfo)
-# sysinfo_view = roles_accepted('superadmin', 'admin')(ViewSysinfo.as_view('sysinfo'))
+# sysinfo_view = roles_accepted('super-admin', 'event-admin')(ViewSysinfo.as_view('sysinfo'))
 # current_app.add_url_rule('/sysinfo',view_func=sysinfo_view,methods=['GET'])
 #----------------------------------------------------------------------
 
 #######################################################################
 class ViewDebug(MethodView):
 #######################################################################
-    decorators = [lambda f: roles_accepted('superadmin')(f)]
+    decorators = [lambda f: roles_accepted('super-admin')(f)]
     url_rules = {
                 'debug': ['/_debuginfo',('GET',)],
                 }
@@ -106,7 +106,7 @@ class ViewDebug(MethodView):
             raise
 #----------------------------------------------------------------------
 add_url_rules(bp, ViewDebug)
-# debuginfo_view = roles_accepted('superadmin')(ViewDebug.as_view('debug'))
+# debuginfo_view = roles_accepted('super-admin')(ViewDebug.as_view('debug'))
 # # debuginfo_view = ViewDebug.as_view('debug')
 # current_app.add_url_rule('/_debuginfo',view_func=debuginfo_view,methods=['GET'])
 #----------------------------------------------------------------------
@@ -114,7 +114,7 @@ add_url_rules(bp, ViewDebug)
 #######################################################################
 class TestException(MethodView):
 #######################################################################
-    decorators = [lambda f: roles_accepted('superadmin')]
+    decorators = [lambda f: roles_accepted('super-admin')]
     url_rules = {
                 'testexception': ['/xcauseexception',('GET',)],
                 }
@@ -129,6 +129,6 @@ class TestException(MethodView):
             db.session.rollback()
             raise
 #----------------------------------------------------------------------
-# exception_view = roles_accepted('superadmin')(TestException.as_view('testexception'))
+# exception_view = roles_accepted('super-admin')(TestException.as_view('testexception'))
 # current_app.add_url_rule('/xcauseexception',view_func=exception_view,methods=['GET'])
 #----------------------------------------------------------------------
