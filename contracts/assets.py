@@ -139,7 +139,6 @@ asset_bundles = {
         'admin/crudapi.js',
         'admin/datatables.js',
         'admin/events.js',
-        'admin/daterules.js',
         'admin/editor.select2.mymethods.js',
         'legend.js',
         'admin/admin_eventscalendar.js',
