@@ -654,7 +654,7 @@ class DbCrudApi(CrudApi):
                    '  });',
                    '',
                    # set the width for this form
-                   '  {}_editor.__dialouge.dialog( "option", "width", 600 );'.format(labelfield),
+                   # '  {}_editor.__dialouge.dialog( "option", "width", 600 );'.format(labelfield),
                    '} );',
             ]
             # see https://stackoverflow.com/questions/11017466/flask-return-image-created-from-database
