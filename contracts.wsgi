@@ -25,7 +25,7 @@ os.environ['RSC_CONFIG_FILE'] = 'contracts.cfg'
 config = SafeConfigParser()
 thisdir = os.path.dirname(__file__)
 configpath = os.path.join(os.path.dirname(thisdir), 'config', os.environ['RSC_CONFIG_FILE'])
-config.readfp(open(os.path.join(configdir, os.environ['RSC_CONFIG_FILE'])))
+config.readfp(open(os.path.join(configpath, os.environ['RSC_CONFIG_FILE'])))
 PROJECT_DIR = config.get('project', 'PROJECT_DIR')
 # remove quotes if present
 if PROJECT_DIR[0] == '"': PROJECT_DIR = PROJECT_DIR[1:-1]

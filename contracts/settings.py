@@ -38,7 +38,7 @@ class Config(object):
     # SECURITY_LOGOUT_URL = False
 
     # javascript configuration
-    APP_JS_CONFIG = 'contracts-prod-config.js'
+    # APP_JS_CONFIG = 'contracts-prod-config.js'
 
     # avoid warning
     SQLALCHEMY_TRACK_MODIFICATIONS = False
