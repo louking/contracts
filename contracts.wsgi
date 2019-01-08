@@ -24,8 +24,8 @@ os.environ['RSC_CONFIG_FILE'] = 'contracts.cfg'
 # get configuration
 config = SafeConfigParser()
 thisdir = os.path.dirname(__file__)
-configpath = os.path.join(os.path.dirname(thisdir), 'config', os.environ['RSC_CONFIG_FILE'])
-config.readfp(open(os.path.join(configpath, os.environ['RSC_CONFIG_FILE'])))
+configpath = os.path.join(os.path.dirname(thisdir), 'contracts', 'config', os.environ['RSC_CONFIG_FILE'])
+config.readfp(open(os.path.join(configpath)))
 PROJECT_DIR = config.get('project', 'PROJECT_DIR')
 # remove quotes if present
 if PROJECT_DIR[0] == '"': PROJECT_DIR = PROJECT_DIR[1:-1]
@@ -42,4 +42,7 @@ if False:
     from getpass import getuser
     print >> sys.stderr, 'contracts user = {}'.format(getuser())
 
-from contracts import app as application
+# from contracts import app as application
+from contracts import create_app
+from contracts.settings import Production
+application = create_app(Production(configpath), configpath)
