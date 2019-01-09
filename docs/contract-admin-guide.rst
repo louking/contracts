@@ -19,6 +19,22 @@ Use Cases (What To Do...)
 =========================
 
 
+.. _log-in:
+
+When You Want to Log In
+-------------------------
+From the contractility home page, click on `log in` in the upper right corner. You will be shown a google sign in 
+challenge similar to below. Sign in with your steeplechasers.org account.
+
+.. image:: images/choose-account.*
+   :align: center
+
+If this is your first time using the application, you be shown the following, which will give the application permission to create files in G Suite on your behalf. Click Allow
+
+.. image:: images/sign-in-challenge.*
+   :align: center
+
+
 .. _contact-new-race:
 
 When We Learn About a New Race
