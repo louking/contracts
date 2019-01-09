@@ -13,12 +13,12 @@
   </h1>
     <div class=pagename>{{self.pagename()}}</div>
     <div class=metanav>
+      <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank">Admin Guide</a>
       {% if not session.user_id %}
         <a href="{{ url_for('authorize') }}">log in</a>
       {% else %}
 {#         {{ session.user_name }}
  #}
-        <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank">Admin Guide</a>
         <a href="{{ url_for('logout') }}">log out</a>
       {% endif %}
     </div>  
