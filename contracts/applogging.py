@@ -42,7 +42,7 @@ def setlogging():
     if not current_app.debug:
         mail_handler = SMTPHandler('localhost',
                                    'noreply@steeplechasers.org',
-                                   ADMINS, '[racesupportcontracts] exception encountered')
+                                   ADMINS, 'contracts exception encountered')
         if 'LOGGING_LEVEL_MAIL' in current_app.config:
             mailloglevel = current_app.config['LOGGING_LEVEL_MAIL']
         else:
