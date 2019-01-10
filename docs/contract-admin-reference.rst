@@ -140,22 +140,6 @@ If the :term:`event` needs to be deleted, click **Delete**. You will be asked fo
 .. image:: images/edit-event-view.*
 
 
-.. _edit-notes-view:
-
-Edit Notes view
-===============
-
-The Edit Notes view can be used to update the notes about the race.
-
-============== ====================
-**Edit entry**
-============== ====================
-Date:          read only date
-Event:         read only event name
-Notes:        
-============== ====================
-
-
 .. _contract-email:
 
 Contract email
