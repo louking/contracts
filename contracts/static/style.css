@@ -104,6 +104,11 @@ h2              { font-size: 1.2em; }
   min-width: 600px;
 }
 
+.ui-widget h2 {
+    font-family: Verdana,Arial,sans-serif;
+}
+
+
 /******************************************/
 /* editor field management                */
 /******************************************/
@@ -124,3 +129,4 @@ h2              { font-size: 1.2em; }
 {
   display: block;
 }
+
