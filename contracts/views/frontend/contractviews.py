@@ -147,7 +147,7 @@ class AcceptAgreement(MethodView):
         template = Template( templatestr )
         html = template.render( mergefields )
         tolist = mergefields['client'].contactEmail
-        cclist = current_app.config['CONTRACTS_CC']
+        cclist = current_app.config['CONTRACTS_TREAS_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print 'mergefields={}'.format(mergefields)
         subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
