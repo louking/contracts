@@ -90,6 +90,10 @@ def nav_menu():
 
         navbar.items.append(View('Debug', 'admin.debug'))
 
+    # finally for non super-admin
+    else:
+        navbar.items.append(View('About', 'admin.sysinfo'))
+
     return navbar
 
 thisnav.init_app(current_app)

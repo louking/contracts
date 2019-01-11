@@ -19,16 +19,17 @@ from flask_security import roles_accepted
 # home grown
 from . import bp
 from contracts.dbmodel import db 
+from contracts.version import __version__
 from loutilities.flask_helpers.blueprints import add_url_rules
 
 class testException(Exception): pass
 
-thisversion = 'no version set'
+thisversion = __version__
 
 #######################################################################
 class ViewSysinfo(MethodView):
 #######################################################################
-    decorators = [lambda f: roles_accepted('super-admin', 'event-admin')(f)]
+    # decorators = [lambda f: roles_accepted('super-admin', 'event-admin')(f)]
     url_rules = {
                 'sysinfo': ['/sysinfo',('GET',)],
                 }
@@ -39,8 +40,7 @@ class ViewSysinfo(MethodView):
         try:
             # commit database updates and close transaction
             db.session.commit()
-            return render_template('sysinfo.jinja2',pagename='About',version=thisversion,
-                                         inhibityear=True,addfooter=True)
+            return render_template('sysinfo.jinja2',pagename='About',version=thisversion)
         
         except:
             # roll back database updates and close transaction
