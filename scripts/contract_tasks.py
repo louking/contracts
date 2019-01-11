@@ -229,14 +229,17 @@ def postraceprocessing():
                   ).block
         template = Template( templatestr )
 
+        # bring in needed relations
+        garbage = event.client
+        garbage = event.lead
+        garbage = event.course
+
         # merge database fields into template and send email
         # deepcopy getting error AttributeError: 'Race' object has no attribute '_sa_instance_state'
         # so just collect what we need
-        # mergefields = deepcopy(event.__dict__)
-        mergefields = {}
+        mergefields = deepcopy(event.__dict__)
         docid = event.contractDocId
 
-        mergefields['client'] = event.client
         mergefields['viewcontracturl'] = 'https://docs.google.com/document/d/{}/view'.format(docid)
         mergefields['servicenames'] = [s.service for s in event.services] 
         mergefields['event'] = event.race.race
