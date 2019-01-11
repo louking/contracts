@@ -22,8 +22,8 @@ from contracts.crudapi import DbCrudApiRolePermissions
 # tags endpoint
 ###########################################################################################
 
-tag_dbattrs = 'id,tag,description'.split(',')
-tag_formfields = 'rowid,tag,description'.split(',')
+tag_dbattrs = 'id,tag,description,isBuiltIn'.split(',')
+tag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
 tag_dbmapping = dict(zip(tag_dbattrs, tag_formfields))
 tag_formmapping = dict(zip(tag_formfields, tag_dbattrs))
 
@@ -46,10 +46,15 @@ tag = DbCrudApiRolePermissions(
                         { 'data': 'description', 'name': 'description', 'label': 'Description', 
                           'className': 'field_req',
                         },
+                        { 'data': 'isBuiltIn', 'name': 'isBuiltIn', 'label': 'Built In',
+                          'ed':{ 'def': 'no', 'type':'hidden' }, 
+                          '_treatment' : { 'boolean' : { 'formfield':'isBuiltIn', 'dbfield':'isBuiltIn' } }
+                        },
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    # TODO: no edit now due to #123, but logic could be added to edit tags which have isBuiltIn==False
+                    buttons = ['create', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,

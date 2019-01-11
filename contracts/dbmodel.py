@@ -139,17 +139,34 @@ eventtag_table = Table('eventtag', Base.metadata,
     )
 
 # system tag text
-TAG_PRERACEMAILSENT         = 'pre-race-email-sent'
-TAG_POSTRACEMAILSENT        = 'post-race-email-sent'
-TAG_PRERACEMAILINHIBITED    = 'inhibit-pre-race-email'
-TAG_POSTRACEMAILINHIBITED   = 'inhibit-post-race-email'
-TAG_RACERENEWED             = 'race-renewed'
-TAG_LEADEMAILSENT           = 'lead-email-sent'
 class Tag(Base):
     __tablename__ =  'tag'
     id                = Column( Integer, primary_key=True ) 
     tag               = Column( String(TAG_LEN) )
     description       = Column( String(DESCR_LEN) )
+    isBuiltIn         = Column( Boolean )   # True if tag configured below
+
+## as the built in tag text is used in code and will be stored in the database, these can't be changed by user
+## (or in the code without very careful consideration of the migration plan)
+## hyphens are avoided because these would cause wrapping in table displays
+TAG_PRERACEMAILSENT         = 'preraceemailsent'
+TAG_POSTRACEMAILSENT        = 'postraceemailsent'
+TAG_PRERACEMAILINHIBITED    = 'inhibitpreraceemail'
+TAG_POSTRACEMAILINHIBITED   = 'inhibitpostraceemail'
+TAG_RACERENEWED             = 'racerenewed'
+TAG_LEADEMAILSENT           = 'leademailsent'
+
+## these tags are used to initialize the database in dbinit_config.py, a file kept private because it
+## has personal information such as email addresses and phone numbers. That file is one time use, so changing
+## the tags structure will have no effect after the project is deployed
+tags = [
+    {'tag':TAG_PRERACEMAILSENT, 'description':'pre-race email has been sent', 'isBuiltIn':True},
+    {'tag':TAG_PRERACEMAILINHIBITED, 'description':'admin wants to inhibit pre-race email', 'isBuiltIn':True},
+    {'tag':TAG_POSTRACEMAILSENT, 'description':'post-race email has been sent', 'isBuiltIn':True},
+    {'tag':TAG_POSTRACEMAILINHIBITED, 'description':'admin wants to inhibit post-race email', 'isBuiltIn':True},
+    {'tag':TAG_RACERENEWED, 'description':'race has been renewed, or admin wants to to inhibit race renewal', 'isBuiltIn':True},
+    {'tag':TAG_LEADEMAILSENT, 'description':'email has been sent to lead just before race', 'isBuiltIn':True},
+]
 
 # for a given service, fieldValues are sorted
 # fee is based on the largest fieldValue <= basedOnField 
