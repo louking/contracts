@@ -1,6 +1,6 @@
 $( function() {
   function refresh_events() {
-    $("td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
+    $("#calendar td").removeClass('contracts-committed contracts-tentative contracts-available contracts-unavailable');
     $('#calendar').fullCalendar( 'refetchEvents' );
   };
 
