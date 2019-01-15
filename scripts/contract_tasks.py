@@ -18,11 +18,13 @@ import os.path
 from copy import deepcopy
 from datetime import date, timedelta
 from urllib import quote_plus
+from re import match
 
 # pypi
 from flask import Flask
 from sqlalchemy.orm import scoped_session, sessionmaker
 from jinja2 import Template
+from click import argument
 
 # homegrown
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag
@@ -36,6 +38,8 @@ from contracts.utils import renew_event
 from contracts.applogging import setlogging
 from loutilities.configparser import getitems
 from loutilities.timeu import asctime
+
+class parameterError(Exception): pass
 
 # create app and get configuration
 app = Flask(__name__)
@@ -267,3 +271,51 @@ def postraceprocessing():
 
         # pick up all db changes (event.tags)
         db.session.commit()
+
+#----------------------------------------------------------------------
+@app.cli.command()
+@argument('startdate')
+@argument('enddate')
+def renewraces(startdate, enddate):
+#----------------------------------------------------------------------
+    '''Renew races between two dates yyyy-mm-dd'''
+
+    # check input argument format
+    if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate)
+            or not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+        print 'ERROR: dates must be in yyyy-mm-dd format'
+        return
+
+    # do arguments make sense?
+    if enddate < startdate:
+        print 'ERROR: enddate must be greater than or equal to startdate'
+        return
+
+    # use filter to get races specified
+    events = Event.query.filter(Event.date.between(startdate, enddate)).all()
+
+    # keep track of events which were renewed
+    newevents = []
+
+    for event in events:
+        # ignore uncommitted events
+        if event.state.state != STATE_COMMITTED: continue
+
+        # renew event
+        newevent = renew_event(event)
+
+        # may be marked as TAG_RACERENEWED, but no future event found, 
+        # so protecting against that
+        if newevent:
+            # make sure race is brought in
+            newevents.append(newevent)
+        
+        # pick up any db changes related to renewal (renew, daterule, event.tags)
+        db.session.commit()
+
+    if newevents:
+        print 'renewed events:'
+        for newevent in newevents:
+            print '   {} {}'.format(newevent.date, newevent.race.race)
+    else:
+        print 'no events found'
