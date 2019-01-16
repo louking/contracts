@@ -438,7 +438,7 @@ client = DbCrudApiRolePermissions(
                         { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name',
                           'className': 'field_req',
                         },
-                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Full Name',
+                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Last Name',
                           'className': 'field_req',
                         },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email',
