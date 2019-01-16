@@ -766,7 +766,7 @@ class DbCrudApi(CrudApi):
             for col in self.clientcolumns:
                 field = col['data']
                 if 'className' in col and 'field_req' in col['className'].split(' '):
-                    if 'id' in formdata[field]:
+                    if not isinstance(formdata[field], basestring) and 'id' in formdata[field]:
                         if not formdata[field]['id']:
                             results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
                     elif not formdata[field]:
