@@ -109,6 +109,10 @@ def renew_event(event):
                   'notes', 'contractApprover', 'contractApproverEmail', 'contractApproverNotes', 'lead']:
             setattr(newevent, f, None)
 
+        # make sure services are carried over
+        for service in event.services:
+            newevent.services.append(service)
+            
         # add the new event to the database
         db.session.add(newevent)
 
