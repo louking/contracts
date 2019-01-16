@@ -31,7 +31,7 @@ from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, T
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
 from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
 from contracts.dbmodel import TAG_LEADEMAILSENT
-from contracts.dbmodel import STATE_COMMITTED
+from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING
 from contracts.settings import Production
 from contracts.mailer import sendmail
 from contracts.utils import renew_event
@@ -242,9 +242,8 @@ def postraceprocessing():
         # deepcopy getting error AttributeError: 'Race' object has no attribute '_sa_instance_state'
         # so just collect what we need
         mergefields = deepcopy(event.__dict__)
-        docid = event.contractDocId
 
-        mergefields['viewcontracturl'] = 'https://docs.google.com/document/d/{}/view'.format(docid)
+        mergefields['nextyeartext'] = 'for next year'
         mergefields['servicenames'] = [s.service for s in event.services] 
         mergefields['event'] = event.race.race
         # this shouldn't happen, but need to handle case where renew_event couldn't find renewed race
@@ -319,3 +318,85 @@ def renewraces(startdate, enddate):
             print '   {} {}'.format(newevent.date, newevent.race.race)
     else:
         print 'no events found'
+
+#----------------------------------------------------------------------
+@app.cli.command()
+@argument('startdate')
+@argument('enddate')
+def sendrenewemails(startdate, enddate):
+#----------------------------------------------------------------------
+    '''Send "renewal" emails for renewed events between two dates yyyy-mm-dd'''
+
+    # set up tag which is used to control this email
+    senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
+    inhibittag = Tag.query.filter_by(tag=TAG_POSTRACEMAILINHIBITED).one()
+
+    # check input argument format
+    if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate)
+            or not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+        print 'ERROR: dates must be in yyyy-mm-dd format'
+        return
+
+    # do arguments make sense?
+    if enddate < startdate:
+        print 'ERROR: enddate must be greater than or equal to startdate'
+        return
+
+    # use filter to get races specified
+    events = Event.query.filter(Event.date.between(startdate, enddate)).all()
+
+    for event in events:
+        # ignore events which are not renewed renewed
+        if event.state.state != STATE_RENEWED_PENDING: continue
+
+        # bring in event this was renewed from
+        # the latest event associated with this race is the one, but before this one
+        prevevents = Event.query.filter(Event.race_id == event.race_id).filter(Event.date < event.date).order_by(Event.date).all()
+        prevevent = prevevents[-1]
+
+        # don't send email if this message has already been sent or was inhibited by admin
+        # don't send email if only premium promotion service
+        if senttag in prevevent.tags or inhibittag in prevevent.tags: continue
+        if len(event.services) == 1 and event.services[0].service == 'premiumpromotion': continue
+
+        # get post-race mail template
+        templatestr = (db.session.query(Contract)
+                   .filter(Contract.contractTypeId==ContractType.id)
+                   .filter(ContractType.contractType=='race services')
+                   .filter(Contract.templateTypeId==TemplateType.id)
+                   .filter(TemplateType.templateType=='post-race email')
+                   .one()
+                  ).block
+        template = Template( templatestr )
+
+        # bring in needed relations
+        garbage = event.client
+        garbage = event.lead
+        garbage = event.course
+
+        # merge database fields into template and send email
+        # deepcopy getting error AttributeError: 'Race' object has no attribute '_sa_instance_state'
+        # so just collect what we need
+        mergefields = deepcopy(event.__dict__)
+
+        mergefields['nextyeartext'] = 'based on your most recent race'
+        mergefields['servicenames'] = [s.service for s in event.services] 
+        mergefields['event'] = event.race.race
+        # this shouldn't happen, but need to handle case where renew_event couldn't find renewed race
+        mergefields['renew_date'] = event.date if event else '[oops - an error occurred determining race date, please contact us]'
+
+        html = template.render( mergefields )
+
+        subject = 'FSRC Race Support Services is holding {} for {}'.format(event.date, event.race.race)
+        tolist = event.client.contactEmail
+        cclist = app.config['CONTRACTS_CC']
+        fromlist = app.config['CONTRACTS_CONTACT']
+        
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        # mark as sent
+        prevevent.tags.append(senttag)
+
+        # pick up all db changes (event.tags)
+        db.session.commit()
+
