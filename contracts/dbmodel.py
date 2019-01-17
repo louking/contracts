@@ -51,12 +51,12 @@ EMAIL_LEN = 100
 SERVICE_LEN = 20
 TAG_LEN = 30
 FIELD_LEN = 30
-COURSE_LEN = 50
+COURSE_LEN = 100
 ROLENAME_LEN = 32
-ADDRESS_LEN = 100
-FEETYPE_LEN = 15
+ADDRESS_LEN = 200
+FEETYPE_LEN = 20
 ALGNAME_LEN = 10
-ORGANIZATION_LEN = 30
+ORGANIZATION_LEN = 100
 NOTES_LEN = 1024
 DESCR_LEN = 512
 FID_LEN = 128   # not taking chance, but 44 per https://stackoverflow.com/questions/38780572/is-there-any-specific-for-google-drive-file-id
@@ -66,8 +66,8 @@ CONTRACT_TYPE_LEN = 30
 TEMPLATE_TYPE_LEN = 30
 CONTRACK_BLOCK_LEN = 2048
 CONTRACT_BLOCK_TYPE_LEN = 20
-EXCEPTION_LEN = 30
-RULENAME_LEN = 20
+EXCEPTION_LEN = 50
+RULENAME_LEN = 100
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -217,7 +217,7 @@ class Client(Base):
     client              = Column( String(ORGANIZATION_LEN) )
     clientUrl           = Column( String(URL_LEN) )
     contactFirstName    = Column( String(NAME_LEN) )
-    contactFullName     = Column( String(NAME_LEN) )
+    contactLastName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
     clientPhone         = Column( String(SNAILADDR_LEN) )
     clientAddr          = Column( String(PHONE_LEN) )
@@ -317,6 +317,13 @@ class DateRule(Base):
                     self.rulename = '{} {}, {}'.format(self.month, self.date, self.year)
             else:
                 self.rulename = '{} {} {}'.format(self.rule, self.day, self.month)
+                if self.year:
+                    self.rulename += ', {}'.format(self.year)
+                # handle text 0 if present
+                if self.deltaday and int(self.deltaday):
+                    self.rulename += ', {} days from'.format(self.deltaday)
+                if self.addldays and int(self.addldays):
+                    self.rulename += ", {} add'l days".format(self.addldays)
 
 # adapted from 
 #   http://flask-dance.readthedocs.io/en/latest/backends.html#sqlalchemy

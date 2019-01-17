@@ -399,8 +399,8 @@ eventexception.register()
 # clients endpoint
 ###########################################################################################
 
-client_dbattrs = 'id,client,clientUrl,contactFirstName,contactFullName,contactEmail,clientPhone,clientAddr'.split(',')
-client_formfields = 'rowid,client,clientUrl,contactFirstName,contactFullName,contactEmail,clientPhone,clientAddr'.split(',')
+client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,clientPhone,clientAddr'.split(',')
+client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,clientPhone,clientAddr'.split(',')
 client_dbmapping = dict(zip(client_dbattrs, client_formfields))
 client_formmapping = dict(zip(client_formfields, client_dbattrs))
 
@@ -438,7 +438,7 @@ client = DbCrudApiRolePermissions(
                         { 'data': 'contactFirstName', 'name': 'contactFirstName', 'label': 'Contact First Name',
                           'className': 'field_req',
                         },
-                        { 'data': 'contactFullName', 'name': 'contactFullName', 'label': 'Contact Last Name',
+                        { 'data': 'contactLastName', 'name': 'contactLastName', 'label': 'Contact Last Name',
                           'className': 'field_req',
                         },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email',
