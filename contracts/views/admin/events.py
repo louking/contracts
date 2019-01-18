@@ -374,7 +374,11 @@ eventexception = DbCrudApiRolePermissions(
                         },
                         { 'data': 'daterule', 'name': 'daterule', 'label': 'Date Rule',
                           'className': 'field_req',
-                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 'dbfield':'daterule', 'uselist':False } }
+                          '_treatment' : { 'relationship' : { 'fieldmodel':DateRule, 'labelfield':'rulename', 'formfield':'daterule', 
+                                                              'dbfield':'daterule', 'uselist':False, 'searchbox':True,
+                                                              'editable' : { 'api':daterule },
+                                                            }
+                                         }
                         },
                         { 'data': 'exception', 'name': 'exception', 'label': 'Exception', 'type': 'select2',
                           'className': 'field_req',
