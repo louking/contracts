@@ -683,7 +683,7 @@ event = EventsApi(
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
-                          'className': 'field_req field_show_finishline field_show_coursemarking',
+                          'className': 'field_req',
                           '_treatment' : { 'relationship' : { 
                                                              'fieldmodel':Course, 'labelfield':'course', 'formfield':'course', 
                                                              'dbfield':'course', 'uselist':False, 'searchbox':True,
@@ -692,7 +692,7 @@ event = EventsApi(
                                          },
                         },
                         { 'data': 'mainStartTime', 'name': 'mainStartTime', 'label': 'Start Time', 
-                          'className': 'field_req field_show_finishline field_show_coursemarking',
+                          'className': 'field_req',
                           'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance',
