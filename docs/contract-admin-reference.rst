@@ -55,8 +55,6 @@ action.
    :CSV: download a csv file of the currently filtered events. **Note** only the displayed events will be downloaded, 
       so if there are multiple pages of events, some may be missing.
 
-   :Notes: (requires single selection) takes you to :ref:`edit-notes-view`
-
    :Delete: (requires single selection) shows popup “are you sure”, and if you click OK delete the :term:`event`
 
       **Note:** if you don't want the event deleted because (e.g., the race owes or paid money we want to 
@@ -326,10 +324,13 @@ After the :term:`event`, a couple of automated tasks take place. This processing
 happens [5 days] after the event.
 
 -  :term:`Race` is automatically “renewed” meaning a *renewed-pending* :term:`event` is created
-   the following year, on the same date, depending on the date rule specified for this
-   race. See :ref:`date-rules` for more information.
+   the following year, on the same date, depending on the :term:`date rule` specified for this
+   race. See :ref:`date-rules-view` for more information.
 
-   **Note** if the date rule for the :term:`race` is not set, the system creates
+   In this case, "same date" means the Nth day of week in the month, e.g., if the race was the
+   3rd Saturday this year, it will be “penciled in” for the 3rd Saturday next year. 
+
+   **Note** if the :term:`date rule` for the :term:`race` is not set, the system creates
    one automatically, based on nth day of week in month.
 
 -  a :ref:`post-event-email` is sent to thank the race
@@ -474,12 +475,75 @@ document.
     Thanks
 
 
-.. _date-rules:
+.. _event-exceptions-view:
+
+Event Exceptions view
+======================
+
+:term:`Exceptions <exception>` are required to alter the normal rules for allowing races. Normally races are allowed on weekends and not allowed on weekdays. So the first Monday of September (Labor Day) is an example of an exception because we will allow races on that day.
+
+To create a new :term:`exception`, click on New from the Event Exceptions view. To edit an :term:`exception`, click on Edit.
+
+.. image:: images/create-event-exception.*
+
+|
+
+**Name**
+    This is an arbitrary name to give the exception (e.g., Labor Day)
+
+**Date Rule**
+    Choose or create a :term:`date rule` which describes the exception. See :ref:`date-rules-view`.
+
+**Exception**
+    *available* for a rule that overrides dates which are normally unavailable, and *unavailable* to override
+    dates which are normally available.
+
+**Notes**
+    Any notes the administrator would like to add
+
+
+.. _date-rules-view:
 
 Date Rules view
 ================
 
-TBA
+For items which need to be carried from year to year (e.g., :term:`races <race>`, :term:`exceptions <exception>`) a :term:`date rule` can be created to describe how to carry over the item.
 
-In this case, “same date” means the Nth day of week in the month, e.g., if the race was the
-3rd Saturday this year, it will be “penciled in” for the 3rd Saturday next year. 
+To create a new :term:`date rule`, click on New from the Date Rules view. To edit an :term:`date rule`, click on Edit.
+
+.. image:: images/create-date-rule.*
+
+|
+
+**Rule**
+    Defines how the :term:`date rule` is interpreted
+
+    * *First*, *Second*, ... , *Fifth*, *Last* mean which Day of Week within the month (e.g., Fourth Thursday in
+      November is Thanksgiving) - must fill in **Day of Week** and **Month**
+    * *Date* means a particular date within the month (e.g., 25th of December is Christmas) - must fill in **Month**
+    * *Easter* is self-explanatory -- no other fields needed
+
+**Day of Week**
+    *Sun*, *Mon*, etc. 
+
+**Month**
+    This is the month for the :term:`date rule` 
+
+**Offset Days**
+    Use Offset Days if the day can be determined from another day (e.g., 1 day after Fourth Thursday in November is 
+    Black Friday, so Offset Days would be 1)
+
+**Additional Days**
+    For a rule with multiple days, use Additional Days (e.g., First Sat in May plus 1 additional day is the 
+    Frederick Running Festival)
+
+**Date**
+    For Rule = Date, this must be specified. (e.g., 25th of December is Christmas)
+
+**Year**
+    For a rule which only applies for a particular year, the year can be specified here.
+
+
+
+
+

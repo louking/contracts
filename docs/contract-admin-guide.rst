@@ -198,3 +198,15 @@ needed changes (e.g., add *premiumpromotion*), and change the :term:`state` to *
 contract.
 
 Note once this is done, the system voids previous contract and it is not accessible.
+
+
+.. _exception-required:
+
+When an Exception to Standard Availability Rules is Needed
+----------------------------------------------------------------
+
+Normally, events are allowed on weekends and not allowed on weekdays. There are some holidays during the week when
+we want to allow events, and some weekend days we don't want to allow events. For these, we need to configure
+:term:`exceptions <exception>`.
+
+To create exceptions, use the :ref:`event-exceptions-view`.
