@@ -151,8 +151,10 @@ class Tag(Base):
 ## hyphens are avoided because these would cause wrapping in table displays
 TAG_PRERACEMAILSENT         = 'preraceemailsent'
 TAG_POSTRACEMAILSENT        = 'postraceemailsent'
+TAG_PRERACEPREMPROMOEMAILSENT = 'preracepremoromoemailsent'
 TAG_PRERACEMAILINHIBITED    = 'inhibitpreraceemail'
 TAG_POSTRACEMAILINHIBITED   = 'inhibitpostraceemail'
+TAG_PRERACEPREMPROMOEMAILINHIBITED = 'inhibitpreracepremoromoemail'
 TAG_RACERENEWED             = 'racerenewed'
 TAG_LEADEMAILSENT           = 'leademailsent'
 
@@ -166,6 +168,8 @@ tags = [
     {'tag':TAG_POSTRACEMAILINHIBITED, 'description':'admin wants to inhibit post-race email', 'isBuiltIn':True},
     {'tag':TAG_RACERENEWED, 'description':'race has been renewed, or admin wants to to inhibit race renewal', 'isBuiltIn':True},
     {'tag':TAG_LEADEMAILSENT, 'description':'email has been sent to lead just before race', 'isBuiltIn':True},
+    {'tag':TAG_PRERACEPREMPROMOEMAILSENT, 'description':"email has been sent for premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
+    {'tag':TAG_PRERACEPREMPROMOEMAILINHIBITED, 'description':"admin wants to inhibit email to premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
 ]
 
 # for a given service, fieldValues are sorted

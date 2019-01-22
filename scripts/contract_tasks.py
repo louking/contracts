@@ -30,6 +30,7 @@ from click import argument
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
 from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
+from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHIBITED
 from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING
 from contracts.settings import Production
@@ -273,11 +274,95 @@ def postraceprocessing():
 
 #----------------------------------------------------------------------
 @app.cli.command()
+@argument('startdate', default='config')
+@argument('enddate', default='config')
+def preraceprempromoemail(startdate, enddate):
+#----------------------------------------------------------------------
+    '''Send pre-race premium promotion email.'''
+    # set up tags which are used to control this email
+    senttag = Tag.query.filter_by(tag=TAG_PRERACEPREMPROMOEMAILSENT).one()
+    inhibittag = Tag.query.filter_by(tag=TAG_PRERACEPREMPROMOEMAILINHIBITED).one()
+
+    # calculate start and end date window (try to send during premium promotion period)
+    if startdate=='config':
+        start = dbdate.dt2asc(date.today())
+    else:
+        if not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate):
+            print 'ERROR: dates must be in yyyy-mm-dd format'
+            return
+        start = startdate
+    if enddate=='config':
+        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_PREMPROMO_EMAIL']))
+    else:
+        if not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate):
+            print 'ERROR: dates must be in yyyy-mm-dd format'
+            return
+        end = enddate
+
+    # debug
+    # print 'start={} end={}'.format(start, end)
+
+    # use filter to get races in which occurred at least N days ago
+    events = Event.query.filter(Event.date.between(start, end)).all()
+
+    for event in events:
+        # ignore uncommitted events
+        if event.state.state != STATE_RENEWED_PENDING: continue
+
+        # don't send email if this message has already been sent or was inhibited by admin
+        # don't send email if other services are included or premiumpromotion not included
+        if senttag in event.tags or inhibittag in event.tags: continue
+        if len(event.services) > 1 or 'premiumpromotion' not in [s.service for s in event.services]: continue
+
+        # get post-race mail template
+        templatestr = (db.session.query(Contract)
+                   .filter(Contract.contractTypeId==ContractType.id)
+                   .filter(ContractType.contractType=='race services')
+                   .filter(Contract.templateTypeId==TemplateType.id)
+                   .filter(TemplateType.templateType=='prempromo email')
+                   .one()
+                  ).block
+        template = Template( templatestr )
+
+        # bring in needed relations
+        garbage = event.client
+        garbage = event.lead
+        garbage = event.course
+
+        # merge database fields into template and send email
+        # deepcopy getting error AttributeError: 'Race' object has no attribute '_sa_instance_state'
+        # so just collect what we need
+        mergefields = deepcopy(event.__dict__)
+
+        mergefields['event'] = event.race.race
+
+        html = template.render( mergefields )
+
+        subject = 'Frederick Steeplechasers Premium Promotion for {}'.format(event.race.race)
+        tolist = event.client.contactEmail
+        cclist = app.config['CONTRACTS_CC']
+        fromlist = app.config['CONTRACTS_CONTACT']
+        
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        # mark as sent
+        event.tags.append(senttag)
+
+        # pick up all db changes (event.tags)
+        db.session.commit()
+
+
+#######################################################################
+### the following commands are designed for initial deployment
+#######################################################################
+
+#----------------------------------------------------------------------
+@app.cli.command()
 @argument('startdate')
 @argument('enddate')
 def renewraces(startdate, enddate):
 #----------------------------------------------------------------------
-    '''Renew races between two dates yyyy-mm-dd'''
+    '''(initial deployment) Renew races between two dates yyyy-mm-dd'''
 
     # check input argument format
     if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate)
@@ -325,7 +410,7 @@ def renewraces(startdate, enddate):
 @argument('enddate')
 def sendrenewemails(startdate, enddate):
 #----------------------------------------------------------------------
-    '''Send "renewal" emails for renewed events between two dates yyyy-mm-dd'''
+    '''(initial deployment) Send "renewal" emails for renewed events between two dates yyyy-mm-dd'''
 
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
