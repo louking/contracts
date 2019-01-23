@@ -64,6 +64,10 @@ def nav_menu():
         events.items.append(View('Leads', 'admin.leads'))
         events.items.append(View('Exceptions', 'admin.eventexceptions'))
         events.items.append(View('Tags', 'admin.tags'))
+        if current_user.has_role('super-admin'):
+            # replace Tags with super_tags
+            events.items.pop()
+            events.items.append(View('Tags', 'admin.super-tags'))
 
         navbar.items.append(View('Clients', 'admin.clients-admin'))
         navbar.items.append(View('Date Rules', 'admin.daterules'))
