@@ -24,8 +24,9 @@ from json import loads
 
 # pypy
 from docx import Document
-from flask import current_app
+from flask import current_app, redirect
 from jinja2 import Environment
+from slugify import slugify
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
@@ -285,7 +286,8 @@ class ContractManager():
 
         # save temporary doc file
         dirpath = mkdtemp(prefix='contracts_')
-        path = pathjoin(dirpath, filename)
+        # slugify to avoid funky characters in race name
+        path = pathjoin(dirpath, slugify(filename))
         docx.save(path)
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
@@ -293,6 +295,7 @@ class ContractManager():
         ## load credentials for drive instance
         credentials = get_credentials(APP_CRED_FOLDER)
         if not credentials:
+            stophere # looking for root cause of https://github.com/louking/contracts/issues/163
             return redirect('authorize')
 
         ## set up drive service

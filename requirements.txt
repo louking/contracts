@@ -65,6 +65,7 @@ pyparsing==2.3.0
 python-dateutil==2.7.3
 python-docx==0.8.7
 python-editor==1.0.3
+python-slugify==2.0.1
 pytz==2018.5
 requests==2.21.0
 requests-oauthlib==1.0.0
