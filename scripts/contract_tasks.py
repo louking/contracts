@@ -274,8 +274,8 @@ def postraceprocessing():
 
 #----------------------------------------------------------------------
 @app.cli.command()
-@argument('startdate', default='config')
-@argument('enddate', default='config')
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
 def preraceprempromoemail(startdate, enddate):
 #----------------------------------------------------------------------
     '''Send pre-race premium promotion email.'''
@@ -283,20 +283,27 @@ def preraceprempromoemail(startdate, enddate):
     senttag = Tag.query.filter_by(tag=TAG_PRERACEPREMPROMOEMAILSENT).one()
     inhibittag = Tag.query.filter_by(tag=TAG_PRERACEPREMPROMOEMAILINHIBITED).one()
 
-    # calculate start and end date window (try to send during premium promotion period)
-    if startdate=='config':
-        start = dbdate.dt2asc(date.today())
-    else:
-        if not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate):
-            print 'ERROR: dates must be in yyyy-mm-dd format'
-            return
-        start = startdate
-    if enddate=='config':
+    # calculate start and end date window
+    if startdate=='auto' and enddate=='auto':
+        # only send for races within one week window
+        # this causes sending DAYS_PRERACE_PREMPROMO_EMAIL in advance of the event, 
+        # but if it doesn't happen for some reason will retry for a week
+        start = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_PREMPROMO_EMAIL']) - timedelta(7))
         end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_PREMPROMO_EMAIL']))
+    
+    # verify both dates are present, check user input format is yyyy-mm-dd
     else:
-        if not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate):
-            print 'ERROR: dates must be in yyyy-mm-dd format'
+        if startdate=='auto' or enddate=='auto':
+            print 'ERROR: startdate and enddate must both be specified'
             return
+
+        if (  not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+              not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            return
+
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
         end = enddate
 
     # debug
@@ -306,7 +313,7 @@ def preraceprempromoemail(startdate, enddate):
     events = Event.query.filter(Event.date.between(start, end)).all()
 
     for event in events:
-        # ignore uncommitted events
+        # ignore events unless they're in renewed-pending state
         if event.state.state != STATE_RENEWED_PENDING: continue
 
         # don't send email if this message has already been sent or was inhibited by admin
@@ -410,7 +417,9 @@ def renewraces(startdate, enddate):
 @argument('enddate')
 def sendrenewemails(startdate, enddate):
 #----------------------------------------------------------------------
-    '''(initial deployment) Send "renewal" emails for renewed events between two dates yyyy-mm-dd'''
+    '''(initial deployment) Send "renewal" emails for renewed events between two dates yyyy-mm-dd.
+    NOTE: emails are not sent to premium promotion only events.
+    '''
 
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
