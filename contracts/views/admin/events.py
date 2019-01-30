@@ -165,6 +165,7 @@ course = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
+                                        'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                   },
                     )
 course.register()
@@ -395,6 +396,7 @@ eventexception = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
+                                        'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                   },
                     )
 eventexception.register()
@@ -460,6 +462,7 @@ client = DbCrudApiRolePermissions(
                                 'scrollX': True,
                                 'scrollXInner': "100%",
                                 'scrollY': True,
+                                'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                 },
                     )
 client.register()
@@ -505,6 +508,7 @@ race = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
+                                        'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                   },
                     )
 race.register()
