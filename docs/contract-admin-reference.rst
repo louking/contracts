@@ -15,6 +15,8 @@ to you, depending on your privilege setting.
 Admin Calendar view
 ===================
 
+**Navigation:** Calendar
+
 The main administrative interface is a calendar of the :term:`events <event>` in the
 database. The admininistrator can create a new :term:`event`, or select an :term:`event` for 
 Edit, or Delete operations.
@@ -35,6 +37,8 @@ premium promotion :term:`service`.
 
 Event Overview view
 ===================
+
+**Navigation:** Events > Table
 
 While the :ref:`admin-calendar-view` may be the easiest way to view all the :term:`events <event>`,
 this view  provides a table  of all the events in the database which can be used as well. The admin
@@ -333,10 +337,15 @@ happens [5 days] after the event.
    **Note** if the :term:`date rule` for the :term:`race` is not set, the system creates
    one automatically, based on nth day of week in month.
 
--  a :ref:`post-event-email` is sent to thank the race
+-  for :term:`events <event>` which have *finishline* or *coursemarking* services, 
+   a :ref:`post-event-email` is sent to thank the race
    director for the opportunity to provide our services, to let them
    know they’ve been penciled in for the following year, and to ask
    them to complete a short survey on how well we did
+
+-  for :term:`events <event>` which have only *premiumpromotion* service, an email is sent
+   about 120 days before the next year's event is expected to occur
+
 
 
 .. _post-event-email:
@@ -388,6 +397,15 @@ and can be changed by a superadmin.
    [end premiumpromotion]
 
    thanks,
+
+
+.. _post-event-email-reminder:
+
+Post Event email reminder
+===========================
+
+The Post Event email reminder is sent 120 days before an expected event which has not been confirmed. This
+email is similar to :ref:`post-event-email`.
 
 
 .. _agreement:
@@ -480,6 +498,8 @@ document.
 Event Exceptions view
 ======================
 
+**Navigation:** Events > Exceptions
+
 :term:`Exceptions <exception>` are required to alter the normal rules for allowing races. Normally races are allowed on weekends and not allowed on weekdays. So the first Monday of September (Labor Day) is an example of an exception because we will allow races on that day.
 
 To create a new :term:`exception`, click on New from the Event Exceptions view. To edit an :term:`exception`, click on Edit.
@@ -506,6 +526,8 @@ To create a new :term:`exception`, click on New from the Event Exceptions view. 
 
 Date Rules view
 ================
+
+**Navigation:** Date Rules
 
 For items which need to be carried from year to year (e.g., :term:`races <race>`, :term:`exceptions <exception>`) a :term:`date rule` can be created to describe how to carry over the item.
 

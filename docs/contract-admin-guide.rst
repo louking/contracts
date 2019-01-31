@@ -44,6 +44,72 @@ Event State Flow
    }
 
 
+.. _automation-flow:
+
+Event Process Flow
+======================
+
+This describes the general administrator's process flow for event management.
+
+   * When receiving a Race Services Request email
+     
+     * see :ref:`contact-new-race`
+   
+   * When receiving a reponse to the :ref:`post-event-email` or :ref:`post-event-email-reminder` 
+     from the race director 
+
+     * if the race director says that the race will not be held
+
+       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+         select the :term:`event`, click **Edit**, then click **Delete**
+
+     * if the race director says they're not sure, or they don't have all the required information yet
+
+       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+         select the :term:`event`, click **Edit**, change **State** to *tentative*, 
+         then click **Update**
+
+   * As details are learned from the race director about the :term:`event`,
+
+     * see :ref:`race-details-confirmed`
+     * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+       select the :term:`event`, click **Edit**
+     * make sure **State** is set to *tentative*
+     * update the details which are known, then click **Update**
+
+   * Once all details are known for the :term:`event`, and the race director is ready to move forward, 
+
+     * see :ref:`race-details-confirmed`
+     * click **Update and Send Contract** to generate a contract
+     * :ref:`contract-email` is automatically generated to the race director 
+
+   * About 5 days before the :term:`event`
+
+     * :ref:`pre-event-coordination-email` is automatically generated, to the race director and event :term:`lead`
+
+   * About 2 days before the :term:`event`
+     
+     * a reminder email automatically generate, just to the :term:`event` :term:`lead`
+
+   * About 5 days after the :term:`event`
+
+     * for :term:`events <event>` which have *finishline* or *coursemarking* :term:`services <service>`, 
+       :ref:`post-event-email` is automatically generated
+     * regardless of service, the :term:`event` is :term:`renewed <renew>`
+     * see :ref:`post-event-processing` for additional details
+
+   * If the :term:`event` is still in *renewed-pending* state 120 days before the expected date of the race
+
+     * :ref:`post-event-email-reminder` is automatically generated to the race director
+
+   * If the :term:`event` is still in *renewed-pending* state 30 days before the expected date of the race
+
+     * admin should delete the event manually
+     * from :ref:`admin-calendar-view` click on the :term:`event` or from 
+       :ref:`event-overview-view`, select the :term:`event`, click **Edit** to get to the :ref:`edit-event-view`, 
+       then click **Delete**
+
+
 .. _use-cases:
 
 Use Cases (What To Do...)
@@ -83,7 +149,7 @@ You can create an :term:`event` in one of two ways.
 Once the form is displayed
 
    * fill in as much information as you have available to you
-   * click Create
+   * click **Create**
 
 **If the Race has Finish Line Services** - Race directors may be contacting you with incomplete
 information, and if so you will have to chase them down  to find all the relevant bits. This may
@@ -108,20 +174,26 @@ You need to verify the current details with the race director and update the :te
 
 You can find the event to edit in one of two ways.
 
-   1. From :ref:`event-overview-view`, use the Search box at the top of the table, and enter the race name
+   1. from :ref:`event-overview-view`, use the Search box at the top of the table, and enter the race name
 
-      a. You should see all the :term:`events <event>` associated with this :term:`race`
-      b. Click on the :term:`event` for the coming year, then click **Edit**
+      * you should see all the :term:`events <event>` associated with this :term:`race`
+      * click on the :term:`event` for the coming year, then click **Edit**
 
-   2. From :ref:`admin-calendar-view`, navigate to the date of the :term:`race's <race>` :term:`event`
+   2. from :ref:`admin-calendar-view`, navigate to the date of the :term:`race's <race>` :term:`event`
 
-      a. Click on the :term:`event`
+      * click on the :term:`event`
 
 Now you can edit the :term:`event` with the current details and when ready send the contract.
 
    * fill in as much information as you have available to you
+   * change **State** to *tentative* 
+
+     * **this is very important, if you don't do this the race
+       director will receive extra confusing emails and we'll lose track of what we're doing**
+
    * click **Update**
-      * or if you're ready to generate a contract, click **Update and Send Contract**
+
+     * or if you're ready to generate a contract, click **Update and Send Contract**
 
 
 .. _race-director-questions:
@@ -140,7 +212,13 @@ gets information from them which needs to be in the database and you're not copi
 When Race Details are Confirmed by Race Director
 ------------------------------------------------
 
-When all the details are confirmed by the race director, use the :ref:`edit-event-view` to generate the contract.
+As the details are confirmed by the race director, use the :ref:`edit-event-view` to update the :term:`event`. When
+all the details are known and the race director is ready, generate the contract. 
+
+You can edit an :term:`event` in one of two ways.
+
+1. from :ref:`admin-calendar-view` navigate to the :term:`event` date and then click on the :term:`event` 
+2. from :ref:`event-overview-view` click **Edit**
 
 Before you can generate a contract for finish line services, you need at least the following:
 
@@ -152,19 +230,16 @@ Before you can generate a contract for finish line services, you need at least t
    :Client: the name of the :term:`client`
    :Services: one or more services which the client is contracting for
    :Max Participants: this is used to determine the pricing for finishline :term:`services <service>`
+   :Lead: the leader who will run the finish line operation on the day of the :term:`event`. This needs to be 
+      finalized well before the event so that emails are sent properly to all concerned
 
 Before you can generate a contract for premium promotion service (only), you need at least the following:
 
    :Race: the name of the :term:`race`
    :Date: the date of the :term:`event`
+   :Course: the :term:`course` the :term:`race` will be run on
    :Client: the name of the :term:`client`
    :Services: one or more services which the client is contracting for
-
-The other field which must be filled in soon is the following, but this doesn't need to be ready before the contract
-is sent.
-
-   :Lead: the leader who will run the finish line operation on the day of the :term:`event`. This needs to be identified 
-      well before the event so that emails are sent properly to all concerned
 
 The remaining fields are useful as well, and should be filled in if applicable and known.
 
