@@ -13,6 +13,71 @@ The race director accepts the contract through the system which generates anothe
 :term:`event` *committed*. 
 
 
+.. _event-life-cycle:
+
+Event Life Cycle
+======================
+
+This describes the life cycle for event management.
+
+   * Race director sends Race Services Request email
+     
+     * see :ref:`contact-new-race`
+   
+   * Race director responds to the :ref:`post-event-email` or :ref:`post-event-email-reminder` 
+
+     * if the race director says that the race will not be held
+
+       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+         select the :term:`event`, click **Edit**, then click **Delete**
+
+     * if the race director says they're not sure, or they don't have all the required information yet
+
+       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+         select the :term:`event`, click **Edit**, change **State** to *tentative*, 
+         then click **Update**
+
+   * Details are learned from the race director about the :term:`event`
+
+     * see :ref:`race-details-confirmed`
+     * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
+       select the :term:`event`, click **Edit**
+     * make sure **State** is set to *tentative*
+     * update the details which are known, then click **Update**
+
+   * All details are known for the :term:`event`, and the race director is ready to move forward 
+
+     * see :ref:`race-details-confirmed`
+     * click **Update and Send Contract** to generate a contract
+     * :ref:`contract-email` is automatically generated to the race director 
+
+   * About 5 days before the :term:`event`
+
+     * :ref:`pre-event-coordination-email` is automatically generated, to the race director and event :term:`lead`
+
+   * About 2 days before the :term:`event`
+     
+     * a reminder email automatically generated, just to the :term:`event` :term:`lead`
+
+   * About 5 days after the :term:`event`
+
+     * for :term:`events <event>` which have *finishline* or *coursemarking* :term:`services <service>`, 
+       :ref:`post-event-email` is automatically generated
+     * regardless of service, the :term:`event` is :term:`renewed <renew>`
+     * see :ref:`post-event-processing` for additional details
+
+   * If the :term:`event` is still in *renewed-pending* state 120 days before the expected date of the race
+
+     * :ref:`post-event-email-reminder` is automatically generated to the race director
+
+   * If the :term:`event` is still in *renewed-pending* state 30 days before the expected date of the race
+
+     * admin should delete the event manually
+     * from :ref:`admin-calendar-view` click on the :term:`event` or from 
+       :ref:`event-overview-view`, select the :term:`event`, click **Edit** to get to the :ref:`edit-event-view`, 
+       then click **Delete**
+
+
 .. _event-state-flow:
 
 Event State Flow
@@ -42,72 +107,6 @@ Event State Flow
       "manual" [color=green, style=filled]
       "automatic" [color=cyan, style=filled]
    }
-
-
-.. _automation-flow:
-
-Event Process Flow
-======================
-
-This describes the general administrator's process flow for event management.
-
-   * When receiving a Race Services Request email
-     
-     * see :ref:`contact-new-race`
-   
-   * When receiving a reponse to the :ref:`post-event-email` or :ref:`post-event-email-reminder` 
-     from the race director 
-
-     * if the race director says that the race will not be held
-
-       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-         select the :term:`event`, click **Edit**, then click **Delete**
-
-     * if the race director says they're not sure, or they don't have all the required information yet
-
-       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-         select the :term:`event`, click **Edit**, change **State** to *tentative*, 
-         then click **Update**
-
-   * As details are learned from the race director about the :term:`event`,
-
-     * see :ref:`race-details-confirmed`
-     * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-       select the :term:`event`, click **Edit**
-     * make sure **State** is set to *tentative*
-     * update the details which are known, then click **Update**
-
-   * Once all details are known for the :term:`event`, and the race director is ready to move forward, 
-
-     * see :ref:`race-details-confirmed`
-     * click **Update and Send Contract** to generate a contract
-     * :ref:`contract-email` is automatically generated to the race director 
-
-   * About 5 days before the :term:`event`
-
-     * :ref:`pre-event-coordination-email` is automatically generated, to the race director and event :term:`lead`
-
-   * About 2 days before the :term:`event`
-     
-     * a reminder email automatically generate, just to the :term:`event` :term:`lead`
-
-   * About 5 days after the :term:`event`
-
-     * for :term:`events <event>` which have *finishline* or *coursemarking* :term:`services <service>`, 
-       :ref:`post-event-email` is automatically generated
-     * regardless of service, the :term:`event` is :term:`renewed <renew>`
-     * see :ref:`post-event-processing` for additional details
-
-   * If the :term:`event` is still in *renewed-pending* state 120 days before the expected date of the race
-
-     * :ref:`post-event-email-reminder` is automatically generated to the race director
-
-   * If the :term:`event` is still in *renewed-pending* state 30 days before the expected date of the race
-
-     * admin should delete the event manually
-     * from :ref:`admin-calendar-view` click on the :term:`event` or from 
-       :ref:`event-overview-view`, select the :term:`event`, click **Edit** to get to the :ref:`edit-event-view`, 
-       then click **Delete**
 
 
 .. _use-cases:
