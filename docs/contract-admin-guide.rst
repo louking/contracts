@@ -13,6 +13,37 @@ The race director accepts the contract through the system which generates anothe
 :term:`event` *committed*. 
 
 
+.. _event-state-flow:
+
+Event State Flow
+=================
+
+.. graphviz::
+
+   digraph{
+      "renewed-pending" -> "tentative" [label="RD responds to renewal email"]
+      "(New Race)" -> "tentative" [label="RD requests date"]
+      "tentative" -> "tentative" [label="RD and admin confirm info"]
+      "tentative" -> "contract-sent" [label="Update and Send Contract"]
+      "contract-sent" -> "committed" [label="RD agrees to contract"]
+      "contract-sent" -> "canceled" [label="RD cancels race"]
+      "committed" -> "canceled" [label="RD cancels race"]
+      "committed" -> "renewed-pending" [label="5 days after event"]
+      "renewed-pending" -> "(delete)" [label="RD says no go"]
+      "tentative" -> "(delete)" [label="RD says no go"]
+      
+      "renewed-pending" [color=cyan, style=filled]
+      "tentative" [color=green, style=filled]
+      "contract-sent" [color=cyan, style=filled]
+      "committed" [color=cyan, style=filled]
+      "canceled" [color=green, style=filled]
+      "(delete)" [color=green, style=filled]
+
+      "manual" [color=green, style=filled]
+      "automatic" [color=cyan, style=filled]
+   }
+
+
 .. _use-cases:
 
 Use Cases (What To Do...)
