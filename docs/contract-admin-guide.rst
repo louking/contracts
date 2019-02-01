@@ -83,6 +83,10 @@ This describes the life cycle for event management.
 Event State Flow
 =================
 
+..
+   see https://www.graphviz.org/
+   see http://graphs.grevian.org/
+
 .. graphviz::
 
    digraph{
