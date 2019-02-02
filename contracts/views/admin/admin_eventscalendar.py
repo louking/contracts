@@ -199,7 +199,8 @@ class EventsExceptionsApi(MethodView):
                         'id'        : 'exc-{}'.format(exception.daterule.id),
                         'title'     : exception.shortDescr,
                         'start'     : date,
-                        'exception' : exception.exception
+                        'exception' : exception.exception,
+                        'className' : 'contracts-event-exception',
                     }
                     eventobjects.append( eventobject )
 

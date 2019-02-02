@@ -93,10 +93,8 @@ $( function() {
       } else if (event.hasOwnProperty('exception')) {
         if (event.exception == 'available') {
           $("td[data-date='"+dataToFind+"']").addClass('contracts-available');
-          // event itself isn't rendered for availabile exception
         } else {
           $("td[data-date='"+dataToFind+"']").addClass('contracts-unavailable');
-          // event itself isn't rendered for unavailable exception
         }
 
       }
@@ -156,6 +154,7 @@ $( function() {
     {label:'Committed - promotion', class:'contracts-event-unblocked'},
     {label:'Tentative', class:'contracts-event-uncommitted'},
     {label:'Canceled', class:'contracts-event-canceled'},
+    {label:'Exception', class:'contracts-event-exception'},
   ];
 
   create_legend_header('legend-table', 'Days');

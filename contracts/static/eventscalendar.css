@@ -81,3 +81,9 @@
     text-decoration: line-through;
 }
 
+.legend-cell.contracts-event-exception,
+.fc-event.contracts-event-exception {
+    background-color: #171a42;
+    border-color: #171a42;
+}
+
