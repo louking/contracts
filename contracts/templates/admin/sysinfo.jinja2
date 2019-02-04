@@ -10,6 +10,7 @@
       <tr>
         <td>Version</td>
         <td>{{ version }}</td>
+        <td><a href="https://github.com/louking/contracts/releases" target="_blank">release history</a></td>
         {% if configpath %}
           <tr>
             <td>app.configpath</td>
@@ -25,7 +26,11 @@
       </tr>
     </tbody>
   </table>
-  <br>
+  {% if owner %}
+    <a href="{{ url_for('testexception') }}">cause exception</a>
+  {% endif %}
+  
+  <br><br>
   {% for tablename,items in sysvars %}
     <h2>{{ tablename }}</h2>
     <br>
@@ -47,8 +52,4 @@
     </table>
     <br>
   {% endfor %}
-  {% if owner %}
-    <a href="{{ url_for('testexception') }}">cause exception</a>
-  {% endif %}
-  <a href="https://github.com/louking/contracts/releases" target="_blank">release history</a>
 {% endblock %}
