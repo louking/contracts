@@ -21,6 +21,13 @@
     width: 100%;
 }
 
+.legend-table-frontend {
+    width: 200px;
+    border: 1px solid grey;
+    margin-top: 5px;
+    margin-left: 2px;
+}
+
 .legend-header {
     font-weight: bold;
     text-align: center;

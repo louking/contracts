@@ -16,12 +16,6 @@ $( function() {
           window.location.href = servicesqueryurl;
         }
       },
-      legend: {
-        text: 'Legend',
-        click: function () {
-          $( '#legend' ).dialog( 'open' );
-        }
-      },
     },
 
     header: {
@@ -96,12 +90,8 @@ $( function() {
     {label:'Unavailable', class:'contracts-unavailable'},
   ];
 
+  create_legend_header('legend-table', "Legend")
   create_legend('legend-table', day_legend);
-
-  $( '#legend' ).dialog({
-    autoOpen: false
-  }); // $( '#legend' ).dialog({})
-
 
 })
   
