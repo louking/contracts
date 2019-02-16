@@ -39,7 +39,7 @@
     function start() {
       gapi.load('auth2', function() {
         auth2 = gapi.auth2.init({
-          client_id: '715246252211-h0to03svj4sk2ravul5uh7hdvf7lk4kk.apps.googleusercontent.com',
+          client_id: "{{ config.GOOGLE_OAUTH_CLIENT_ID }}",
           // Scopes to request in addition to 'profile' and 'email' -- space separated string
           scope: 'https://www.googleapis.com/auth/drive.file'
         });
