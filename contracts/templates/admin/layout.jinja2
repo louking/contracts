@@ -1,25 +1,71 @@
 <!doctype html>
 <head>
   <title>{{self.pagename()|striptags}}</title>
-</head>
-<body>
+  <script type="text/javascript">
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
+  
 {% set urlparts = request.url.split('/') %}
 {% set hostname = urlparts[2] %}
+{# see request.py for list of css, js files #}
+{% assets "admin_css" %}
+  <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+{% endassets %}
+{% for css in pagecssfiles %}
+  <link rel=stylesheet type=text/css href="{{ css }}">
+{% endfor %}
+<style>
+  {% if hostname[0:9] == "127.0.0.1" or hostname[0:9] == "localhost" or hostname[0:13] == "dev.localhost" %}
+    html {background: antiquewhite;}
+  {% endif %}
+  {% if hostname[0:8] == "sandbox." %}
+    html {background: lightcyan;}
+  {% endif %}
+</style>
+{% block css %}
+{% endblock %}
+
+<script>var _productname = "{{ _productname_text|safe }}";</script>
+{% assets "admin_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% for js in pagejsfiles %}
+  <script type="text/javascript" src="{{ js }}"></script>
+{% endfor %}
+{# needed for google sign-in, see https://developers.google.com/identity/sign-in/web/server-side-flow #}
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
+  <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+  <script>
+    function start() {
+      gapi.load('auth2', function() {
+        auth2 = gapi.auth2.init({
+          client_id: '715246252211-h0to03svj4sk2ravul5uh7hdvf7lk4kk.apps.googleusercontent.com',
+          // Scopes to request in addition to 'profile' and 'email' -- space separated string
+          scope: 'https://www.googleapis.com/auth/drive.file'
+        });
+      });
+    }
+  </script>
+{% block scripts %}
+{% endblock %}
+</head>
+<body>
 {% if not printerfriendly %}
   <div class=heading>
     <h1>{{_productname|safe}}
-    {% if hostname[0:9] == "127.0.0.1" %} (development){% endif %}
+    {% if hostname[0:9] == "127.0.0.1" or hostname[0:9] == "localhost" or hostname[0:13] == "dev.localhost" %} (development){% endif %}
     {% if hostname[0:8] == "sandbox." %} (sandbox){% endif %}
   </h1>
     <div class=pagename>{{self.pagename()}}</div>
     <div class=metanav>
-      <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank">Admin Guide</a>
-      {% if not session.user_id %}
-        <a href="{{ url_for('authorize') }}">log in</a>
+      <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank" class="ui-button">Admin Guide</a>
+      {% if not session._ga_google_email %}
+        {# TODO: update with google sign in button image #}
+        <button id="signinButton" class="ui-button ui-widget ui-corner-all">Google Log In</button>
       {% else %}
 {#         {{ session.user_name }}
  #}
-        <a href="{{ url_for('logout') }}">log out</a>
+        <a href="{{ url_for('logout') }}" class="ui-button">log out</a>
       {% endif %}
     </div>  
   </div>
@@ -52,36 +98,6 @@
     {{ self.body() }}
   </div>
 {% endif %}
-<script type="text/javascript">
-  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-</script>
-  
-{# see request.py for list of css, js files #}
-{% assets "admin_css" %}
-  <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
-{% endassets %}
-{% for css in pagecssfiles %}
-  <link rel=stylesheet type=text/css href="{{ css }}">
-{% endfor %}
-<style>
-  {% if hostname[0:9] == "127.0.0.1" %}
-    html {background: antiquewhite;}
-  {% endif %}
-  {% if hostname[0:8] == "sandbox." %}
-    html {background: lightcyan;}
-  {% endif %}
-</style>
-{% block css %}
-{% endblock %}
 
-<script>var _productname = "{{ _productname_text|safe }}";</script>
-{% assets "admin_js" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-{% endassets %}
-{% for js in pagejsfiles %}
-  <script type="text/javascript" src="{{ js }}"></script>
-{% endfor %}
-{% block scripts %}
-{% endblock %}
 </body>
 </html>

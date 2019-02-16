@@ -20,7 +20,7 @@ from flask.views import View
 
 # homegrown
 from contracts.dbmodel import db, User
-from loutilities.googleauth import GoogleAuth, get_credentials
+from loutilities.googleauth import GoogleAuth, get_credentials, get_email
 
 # needful constants
 APP_CRED_FOLDER = current_app.config['APP_CRED_FOLDER']
@@ -37,22 +37,29 @@ def do_login(email):
         # Log in the new local user account
         login_user(user)
         db.session.commit()
+        current_app.logger.info('successful log in for {}'.format(user.email))
+        return True
 
     else:
         flash("Your email {} was not found. If you this this is in error, please contact raceservices@steeplechasers.org".format(email), 'error')
+        current_app.logger.info('unsuccessful log in attempt for {}'.format(email))
         do_logout()
         googleauth.clear_credentials()
+        return False
 
 #----------------------------------------------------------------------
-def do_logout():
+def do_logout(email):
 #----------------------------------------------------------------------
+    if email:
+        current_app.logger.info('user log out for {}'.format(email))
+    else:
+        current_app.logger.info('user log out')
     logout_user()
     db.session.commit()
 
 #############################################
 # google auth views
-appscopes = [ 'https://www.googleapis.com/auth/plus.me',
-              'https://www.googleapis.com/auth/userinfo.email',
+appscopes = [ 'https://www.googleapis.com/auth/userinfo.email',
               'https://www.googleapis.com/auth/userinfo.profile',
               'https://www.googleapis.com/auth/drive.file' ]
 googleauth = GoogleAuth(current_app, current_app.config['APP_CLIENT_SECRETS_FILE'], appscopes, 'frontend.index', 
