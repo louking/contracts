@@ -29,12 +29,7 @@ from contracts.crudapi import DbCrudApiRolePermissions
 from daterules import daterule
 from eventscontract import EventsApi
 from tags import tag
-
-# https://www.regextester.com/93652 - modified to allow upper case
-REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
-
-# https://www.regular-expressions.info/email.html
-REGEX_EMAIL = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"
+from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
 ##########################################################################################
 # states endpoint

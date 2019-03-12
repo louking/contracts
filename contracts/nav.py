@@ -49,6 +49,7 @@ def nav_menu():
     contracts = Subgroup('Contracts')
     events    = Subgroup('Events')
     services  = Subgroup('Services')
+    sponsors  = Subgroup('Sponsors')
 
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
@@ -74,6 +75,11 @@ def nav_menu():
 
     # superadmin stuff
     if current_user.has_role('super-admin'):
+
+        navbar.items.append(sponsors)
+        sponsors.items.append(View('Races', 'admin.sponsorraces'))
+        sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
+        sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))
 
         navbar.items.append(View('Users', 'admin.users'))
         navbar.items.append(View('Roles', 'admin.roles'))

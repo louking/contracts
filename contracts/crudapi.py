@@ -33,6 +33,18 @@ SEPARATOR = ', '
 
 debug = False
 
+
+#####################################################
+# for use in validation functions
+#####################################################
+
+# https://www.regextester.com/93652 - modified to allow upper case
+REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
+
+# https://www.regular-expressions.info/email.html
+REGEX_EMAIL = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"
+
+
 #####################################################
 class DteDbRelationship():
 #####################################################

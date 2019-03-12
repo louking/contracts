@@ -20,9 +20,12 @@ def init_db(defineowner=True):
 #--------------------------------------------------------------------------
     # init the modelitems from dbinit_contracts
     from dbinit_contracts import dbinit_base, dbinit_tags, dbinit_contracts
+    from dbinit_sponsors import dbinit_sponsors
     dbinit_base()
     dbinit_tags()
     dbinit_contracts()
+    dbinit_sponsors()
+
     # must wait until user_datastore is initialized before import
     from contracts import user_datastore
 

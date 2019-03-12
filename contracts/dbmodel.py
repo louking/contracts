@@ -73,6 +73,9 @@ CONTRACK_BLOCK_LEN = 2048
 CONTRACT_BLOCK_TYPE_LEN = 20
 EXCEPTION_LEN = 50
 RULENAME_LEN = 100
+LEVEL_LEN = 50
+BENEFIT_LEN = 256
+PROVIDER_LEN = 32
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -163,8 +166,8 @@ TAG_PRERACEPREMPROMOEMAILINHIBITED = 'inhibitpreracepremoromoemail'
 TAG_RACERENEWED             = 'racerenewed'
 TAG_LEADEMAILSENT           = 'leademailsent'
 
-## these tags are used to initialize the database in dbinit_config.py, a file kept private because it
-## has personal information such as email addresses and phone numbers. That file is one time use, so changing
+## these tags are used to initialize the database in dbinit_contracts.py, 
+## That file is one time use, so changing
 ## the tags structure will have no effect after the project is deployed
 tags = [
     {'tag':TAG_PRERACEMAILSENT, 'description':'pre-race email has been sent', 'isBuiltIn':True},
@@ -228,8 +231,8 @@ class Client(Base):
     contactFirstName    = Column( String(NAME_LEN) )
     contactLastName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
-    clientPhone         = Column( String(SNAILADDR_LEN) )
-    clientAddr          = Column( String(PHONE_LEN) )
+    clientPhone         = Column( String(PHONE_LEN) )
+    clientAddr          = Column( String(SNAILADDR_LEN) )
 
 class Race(Base):
     __tablename__ = 'race'
@@ -334,9 +337,65 @@ class DateRule(Base):
                 if self.addldays and int(self.addldays):
                     self.rulename += ", {} add'l days".format(self.addldays)
 
+# sponsor races
+class SponsorRace(Base):
+    __tablename__ = 'sponsorrace'
+    id           = Column( Integer, primary_key=True )
+    race         = Column( String(RACE_LEN) )
+    raceshort    = Column( String(RACE_LEN) )
+    racedirector = Column( String(NAME_LEN) )
+    raceurl      = Column( String(URL_LEN) )
+    sponsorurl   = Column( String(URL_LEN) )
+    email        = Column( String(EMAIL_LEN) )
+    couponprovider = Column( String(PROVIDER_LEN) )
+    description  = Column( String(DESCR_LEN) )
+
+# sponsor levels / sponsor benefits
+# see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+sponsorlevelbenefit_table = Table('sponsorlevelbenefit', Base.metadata,
+    Column( 'level_id', Integer, ForeignKey('sponsorlevel.id' ) ),
+    Column( 'benefit_id', Integer, ForeignKey('sponsorbenefit.id' ), nullable=False ),
+    )
+
+# sponsor levels
+class SponsorLevel(Base):
+    __tablename__ = 'sponsorlevel'
+    id             = Column( Integer, primary_key=True )
+    level          = Column( String(LEVEL_LEN) )
+    minsponsorship = Column( Integer )
+    couponcount    = Column( Integer )
+    display        = Column( Boolean )
+    maxallowed     = Column( Integer )  # leave null if no limit
+    description    = Column( String(DESCR_LEN) )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
+    race_id        = Column( Integer, ForeignKey('sponsorrace.id') )
+    race           = relationship( 'SponsorRace', backref='levels', lazy=True )
+
+    race_short     = association_proxy('race', 'raceshort')
+
+    @hybrid_property
+    def race_level(self):
+        return self.race_short + '/' + self.level
+
+    # # expression required for filter. see https://stackoverflow.com/questions/19780178/sqlalchemy-hybrid-expression-with-relationship
+    # @race_level.expression
+    # def race_level(cls):
+    #     return self.raceshort + '/' + self.level
+
+# sponsor benefits
+class SponsorBenefit(Base):
+    __tablename__ = 'sponsorbenefit'
+    id          = Column( Integer, primary_key=True )
+    benefit     = Column( String(BENEFIT_LEN) )
+    description = Column( String(DESCR_LEN) )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+    levels       = relationship( 'SponsorLevel', secondary=sponsorlevelbenefit_table, backref='benefits', lazy=True )
+
+# user role management
 # adapted from 
 #   http://flask-dance.readthedocs.io/en/latest/backends.html#sqlalchemy
-#   
+#   TODO: flaskdance is not used, so need better reference
+   
 class RolesUsers(Base):
     __tablename__ = 'roles_users'
     id = Column(Integer(), primary_key=True)

@@ -21,4 +21,5 @@ import admin_eventscalendar
 import tags
 import daterules
 import contractviews
+import sponsors
 import sysinfo
