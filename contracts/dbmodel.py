@@ -16,8 +16,13 @@ from ConfigParser import SafeConfigParser
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import association_proxy
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import current_user, UserMixin, RoleMixin
+from flask import current_app
+
+class parameterError(Exception): pass
 
 # set up database - SQLAlchemy() must be done after app.config SQLALCHEMY_* assignments
 db = SQLAlchemy()
@@ -359,3 +364,118 @@ class User(Base, UserMixin):
     confirmed_at        = Column( DateTime() )
     roles               = relationship('Role', secondary='roles_users',
                           backref=backref('users', lazy='dynamic'))
+
+#####################################################
+class ModelItem():
+#####################################################
+    '''
+    used within dbinit_xx modules 
+
+    :param model: database model to initialize
+    :param items: list of item objects, with object keys matching column names
+        item object value may be function with no parameters to resolve at runtime
+    :param cleartable: False if items are to be merged. True if table is to be cleared before initializing.
+        default True
+    :param checkkeys: if cleartable == False, list of keys to check to decide if record is 
+        to be added. If there is a record in the table with values matching this item's for these
+        keys, the record is updated.
+        Alternately, a function can be supplied f(item) to check against db, returns the record
+        if item found, None otherwise. For convenience, scalar key can be supplied (i.e., not a list).
+
+        if key has '/', this means dbfield/itemkey, where itemkey may be dotted notation.
+        E.g., race_id/race.id
+    '''
+
+    #----------------------------------------------------------------------
+    def __init__(self, model, items, cleartable=True, checkkeys=[]):
+    #----------------------------------------------------------------------
+        self.model = model
+        self.items = items
+        self.cleartable = cleartable
+        self.checkkeys = checkkeys
+
+#----------------------------------------------------------------------
+def initdbmodels(modelitems):
+#----------------------------------------------------------------------
+    '''
+    initialize database models
+
+    :param modelitems: list of ModelItem objects
+    '''
+    # clear desired tables in reverse order to avoid constraint errors
+    clearmodels = [mi.model for mi in modelitems if mi.cleartable]
+    clearmodels.reverse()
+    for model in clearmodels:
+        db.session.query(model).delete()
+
+    # build tables
+    for modelitem in modelitems:
+        model = modelitem.model
+        items = modelitem.items
+        cleartable = modelitem.cleartable
+        checkkeys = modelitem.checkkeys
+
+        # if caller supplied function to check item existence, use it
+        if callable(checkkeys):
+            itemexists = checkkeys
+        
+        # otherwise, checkkeys is list of keys to filter, create function to check
+        else:
+            # allow scalar
+            if type(checkkeys) != list:
+                checkkeys = [checkkeys]
+
+            def itemexists(item):
+                query = {}
+                # for top level keys, just add to top level query
+                # for secondary keys add additional filters 
+                # note only allows two levels, and is a bit brute force
+                for key in checkkeys:
+                    keys = key.split('/')
+
+                    # just a key here
+                    if len(keys) == 1:
+                        query[key] = item[key]
+                    
+                    # something like race_id/race.id, where race_id is attribute of model, race is key of item, and id is attribute of race
+                    elif len(keys) == 2:
+                        modelid, dottedkeys = keys
+                        thiskey, thisattr = dottedkeys.split('.')
+                        query[modelid] = getattr(item[thiskey], thisattr)
+                    
+                    # bad configuration, like x/y/z
+                    else:
+                        raise parameterError, 'invalid key has too many parts: {}, item {}'.format(key, item)
+
+
+                # return query result
+                thisquery = model.query.filter_by(**query)
+                return thisquery.one_or_none()
+
+        for item in items:
+            resolveitem = {}
+            for key in item:
+                if not callable(item[key]):
+                    resolveitem[key] = item[key]
+                else:
+                    resolveitem[key] = item[key]()
+
+            if not cleartable:
+                thisitem = itemexists(resolveitem)
+            
+            # maybe we need to add
+            # note thisitem not initialized if cleartable
+            if cleartable or not thisitem:
+                current_app.logger.info( 'initdbmodels(): adding {}'.format(resolveitem) )
+                db.session.add( model(**resolveitem) )
+            
+            # if item exists, update it with resolved data
+            elif thisitem:
+                current_app.logger.info( 'initdbmodels(): updating old: {}, new: {}'.format(thisitem.__dict__, resolveitem) )
+                # thisitem.__dict__.update(resolveitem)
+                for key in resolveitem:
+                    setattr(thisitem, key, resolveitem[key])
+
+
+        # need to commit within loop because next model might use this model's data
+        db.session.commit()

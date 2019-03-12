@@ -14,25 +14,17 @@ dbinit - contracts database initialization
 
 # homegrown
 from dbmodel import db, Role, User
-from dbinit_config import modelitems
 
 #--------------------------------------------------------------------------
 def init_db(defineowner=True):
 #--------------------------------------------------------------------------
+    # init the modelitems from dbinit_contracts
+    from dbinit_contracts import dbinit_base, dbinit_tags, dbinit_contracts
+    dbinit_base()
+    dbinit_tags()
+    dbinit_contracts()
     # must wait until user_datastore is initialized before import
     from contracts import user_datastore
-
-    for model, items in modelitems:
-        for item in items:
-            resolveitem ={}
-            for key in item:
-                if not callable(item[key]):
-                    resolveitem[key] = item[key]
-                else:
-                    resolveitem[key] = item[key]()
-            db.session.add( model(**resolveitem) )
-        # need to commit here because next table might use this table data
-        db.session.commit()
 
     # special processing for user roles because need to remember the roles when defining the owner
     # define user roles here
