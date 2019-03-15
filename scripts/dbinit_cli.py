@@ -71,9 +71,7 @@ dbinit_cli = AppGroup('dbinit', help='initialize database table groups')
 def dbinit_sponsortables():
 #----------------------------------------------------------------------
     '''
-    initialize sponsorxx tables
-
-    flask dbinit sponsorlevels
+    initialize sponsor tables sponsorraces, sponsorlevels, sponsorbenefits
     '''
     with app.app_context():
         from contracts.dbinit_sponsors import dbinit_sponsors
@@ -84,9 +82,7 @@ def dbinit_sponsortables():
 def dbinit_sponsortables():
 #----------------------------------------------------------------------
     '''
-    initialize sponsorxx tables
-
-    flask dbinit sponsorlevels
+    initialize base tables state, course, service, etc
     '''
     with app.app_context():
         from contracts.dbinit_contracts import dbinit_base
@@ -97,9 +93,7 @@ def dbinit_sponsortables():
 def dbinit_sponsortables():
 #----------------------------------------------------------------------
     '''
-    initialize sponsorxx tables
-
-    flask dbinit sponsorlevels
+    initialize tags table
     '''
     with app.app_context():
         from contracts.dbinit_contracts import dbinit_tags
@@ -110,9 +104,7 @@ def dbinit_sponsortables():
 def dbinit_sponsortables():
 #----------------------------------------------------------------------
     '''
-    initialize sponsorxx tables
-
-    flask dbinit sponsorlevels
+    initialize contracts tables contract, template, contracttype, contractblocktype
     '''
     with app.app_context():
         from contracts.dbinit_contracts import dbinit_contracts
