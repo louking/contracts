@@ -97,8 +97,24 @@ asset_bundles = {
     'page-events-servicesquery-js' : Bundle(
         materialize_bundle_js,
         'frontend/events-servicesquery.js',
+
         filters='jsmin',
         output='gen/events-servicesquery.js',
+        ),
+
+    'page-sponsorship-query-js' : Bundle(
+        materialize_bundle_js,
+        'frontend/racesponsorship.js',
+        
+        filters='jsmin',
+        output='gen/racesponsorship.js',
+        ),
+
+    'page-sponsorship-query-css' : Bundle(
+        materialize_bundle_css,
+        'frontend/racesponsorship.css',
+        filters=['cssrewrite', 'cssmin'],
+        output='gen/racesponsorship.css',
         ),
 
     'admin_js': Bundle(
@@ -142,6 +158,7 @@ asset_bundles = {
         'admin/editor.select2.mymethods.js',
         'legend.js',
         'admin/admin_eventscalendar.js',
+        'admin/sponsorquerylog.js',
 
         output='gen/admin.js',
         filters='jsmin',

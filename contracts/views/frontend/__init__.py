@@ -18,3 +18,4 @@ bp = Blueprint('frontend', __name__.split('.')[0], url_prefix='', static_folder=
 import frontend
 import contractviews
 import eventscalendar
+import frontend_sponsors

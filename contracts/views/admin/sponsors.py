@@ -20,7 +20,7 @@ from re import match
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorBenefit
+from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorBenefit, SponsorQueryLog
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
@@ -195,4 +195,56 @@ sponsorbenefit = DbCrudApiRolePermissions(
                                   },
                     )
 sponsorbenefit.register()
+
+##########################################################################################
+# sponsorquerylogs endpoint
+###########################################################################################
+
+sponsorquerylog_dbattrs = 'id,time,organization,name,phone,city,state,street,zipcode,email,race,amount,level,comments'.split(',')
+sponsorquerylog_formfields = 'rowid,time,organization,name,phone,city,state,street,zipcode,email,race,amount,level,comments'.split(',')
+sponsorquerylog_dbmapping = dict(zip(sponsorquerylog_dbattrs, sponsorquerylog_formfields))
+sponsorquerylog_formmapping = dict(zip(sponsorquerylog_formfields, sponsorquerylog_dbattrs))
+
+sponsorquerylog = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = SponsorQueryLog, 
+                    roles_accepted = ['super-admin', 'sponsor-admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'Sponsor Query Log', 
+                    endpoint = 'admin.sponsorquerylog', 
+                    rule = '/sponsorquerylog', 
+                    dbmapping = sponsorquerylog_dbmapping, 
+                    formmapping = sponsorquerylog_formmapping, 
+                    checkrequired = True,
+                    clientcolumns = [
+                        { 'data': 'time', 'name': 'time', 'label': 'time', 'type': 'readonly' },
+                        { 'data': 'organization', 'name': 'organization', 'label': 'organization', 'type': 'readonly' },
+                        { 'data': 'name', 'name': 'name', 'label': 'name', 'type': 'readonly' },
+                        { 'data': 'phone', 'name': 'phone', 'label': 'phone', 'type': 'readonly' },
+                        { 'data': 'city', 'name': 'city', 'label': 'city', 'type': 'readonly' },
+                        { 'data': 'state', 'name': 'state', 'label': 'state', 'type': 'readonly' },
+                        { 'data': 'street', 'name': 'street', 'label': 'street', 'type': 'readonly' },
+                        { 'data': 'zipcode', 'name': 'zipcode', 'label': 'zipcode', 'type': 'readonly' },
+                        { 'data': 'email', 'name': 'email', 'label': 'email', 'type': 'readonly' },
+                        { 'data': 'race', 'name': 'race', 'label': 'race', 'type': 'readonly' },
+                        { 'data': 'amount', 'name': 'amount', 'label': 'amount', 'type': 'readonly' },
+                        { 'data': 'level', 'name': 'level', 'label': 'level', 'type': 'readonly' },
+                        { 'data': 'comments', 'name': 'comments', 'label': 'comments', 'type': 'textarea' },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = [ 
+                                'edit',
+                                'csv',
+                    ],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                        'order': [[1, 'desc']],
+                                  },
+                    )
+sponsorquerylog.register()
 

@@ -59,6 +59,10 @@ FIELD_LEN = 30
 COURSE_LEN = 100
 ROLENAME_LEN = 32
 ADDRESS_LEN = 200
+ADDRCITY_LEN = 64
+ADDRSTATE_LEN = 32
+ADDRSTREET_LEN = 128
+ADDRZIP_LEN = 10
 FEETYPE_LEN = 20
 ALGNAME_LEN = 10
 ORGANIZATION_LEN = 100
@@ -390,6 +394,24 @@ class SponsorBenefit(Base):
     description = Column( String(DESCR_LEN) )
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
     levels       = relationship( 'SponsorLevel', secondary=sponsorlevelbenefit_table, backref='benefits', lazy=True )
+
+# sponsor query log
+class SponsorQueryLog(Base):
+    __tablename__ = 'sponsorquerylog'
+    id              = Column( Integer, primary_key=True )
+    time            = Column( String(DATETIME_LEN) )
+    organization    = Column( String(ORGANIZATION_LEN) )
+    name            = Column( String(NAME_LEN) )
+    phone           = Column( String(PHONE_LEN) )
+    city            = Column( String(ADDRCITY_LEN) )
+    state           = Column( String(ADDRSTATE_LEN) )
+    street          = Column( String(ADDRSTREET_LEN) )
+    zipcode         = Column( String(ADDRZIP_LEN) )
+    email           = Column( String(EMAIL_LEN) )
+    race            = Column( String(RACE_LEN) )
+    amount          = Column( Integer )
+    level           = Column( String(LEVEL_LEN) )
+    comments        = Column( String(NOTES_LEN) )
 
 # user role management
 # adapted from 

@@ -73,10 +73,14 @@ def nav_menu():
         navbar.items.append(View('Clients', 'admin.clients-admin'))
         navbar.items.append(View('Date Rules', 'admin.daterules'))
 
+    # sponsor stuff
+    if current_user.has_role('sponsor-admin') or  current_user.has_role('super-admin'):
+        navbar.items.append(sponsors)
+        sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
+
     # superadmin stuff
     if current_user.has_role('super-admin'):
 
-        navbar.items.append(sponsors)
         sponsors.items.append(View('Races', 'admin.sponsorraces'))
         sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
         sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))

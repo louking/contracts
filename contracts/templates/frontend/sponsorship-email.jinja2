@@ -1,0 +1,14 @@
+<p>Thanks so much for signing on as a {{ formdata.level.text }} sponsor of the {{ formdata.race.text }}</p>
+    
+<table>
+  {% for field in formdata['_keyorder'] %}
+    <tr><td>{{ formdata[field].label }}</td><td>{{ formdata[field].text }}</td></tr>
+  {% endfor %}
+</table>
+
+<p>
+{{ formdata._racedirector }}, Race Director, {{ formdata.race.text }}<br/>
+Frederick Steeplechasers Running Club <br/>
+<a href="http://steeplechasers.org">https://steeplechasers.org</a>
+</p>    
+

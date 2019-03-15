@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    
+    <!-- http://materializecss.com/getting-started.html, https://github.com/dogfalo/materialize/ -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.css" media="screen,projection">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
+{% if pageassets_css %}
+    {% assets pageassets_css %}
+        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endif %}
+  </head>
+  <body>
+    
+    <form class="main" id="sponsorform" novalidate="novalidate" style="max-width: 480px;margin: 40px auto;">
+      <div id="sponsordata" class="input">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center-align steeps-blue-text">Frederick Steeplechasers Signature Race Sponsorship Registration</h5>
+            <p>Net proceeds of the Steeplechaser Signature Races benefit the Frederick community.
+            We are grateful for the generosity of our sponsors, who help us to bring quality races to the Frederick 
+            area while supporting the local community through our donations.</p>
+            <div>
+                <a href='mailto:{{ config.SPONSORSHIPQUERY_CONTACT }}' class="waves-effect waves-light btn steeps-blue-background" target="_blank" style="float: right;">Contact Us</a>
+                <p>If you just have a question, please click on CONTACT US</p>
+            </div>
+            <p style="clear:both;">For more information on the sponsor opportunities of each of our races, use the links 
+            below to visit our race websites.</p>
+            <ul class="browser-default">
+              {% for race in levels %}
+                <li>
+                  <a href='{{ races[race].sponsorurl }}' target=_blank>{{ race }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+            <p>To sign on as a sponsor of one of our races, please use this form to submit your sponsorship information.</p>
+            
+          </div>
+        </div>
+      
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="race" name="racename" class="validate" required  onchange='showRace()'>
+              <option value="" required disabled selected>Choose race to sponsor</option>
+                {% for race in levels %}
+                  <option value="{{ races[race].raceshort }}">{{ race }}</option>
+                {% endfor %}
+            </select>
+            <label>Race *</label>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="organization">Sponsor Organization *</label>
+            <input id="organization" type="text" name="Sponsor Organization" class="validate" required aria-required="true">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="name">Sponsor Contact Name *</label>
+            <input id="name" type="text" name="Sponsor Contact Name" class="validate" required aria-required="true">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="phone">Sponsor Contact Phone Number *</label>
+            <input id="phone" type="text" name="Sponsor Contact Phone Number" class="validate" required aria-required="true">
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="street">Sponsor Address Street *</label>
+            <input id="street" type="text" name="Sponsor Address Street" class="validate" required aria-required="true">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <label for="city">Sponsor Address City *</label>
+            <input id="city" type="text" name="Sponsor Address City" class="validate" required aria-required="true">
+          </div>
+          <div class="input-field col s3">
+            <label for="state">State *</label>
+            <input id="state" type="text" name="State" class="validate" required aria-required="true">
+          </div>
+          <div class="input-field col s3">
+            <label for="zipcode">Zip *</label>
+            <input id="zipcode" type="text" name="Zip" class="validate" required aria-required="true">
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="email">Sponsor Contact Email *</label>
+            <input id="email" type="email" name="Sponsor Contact Email" class="validate" required aria-required="true">
+          </div>
+        </div>
+             
+        {% for race in levels %}
+          {% set tag = races[race].raceshort %}
+          {# see http://jinja.pocoo.org/docs/2.10/templates/#assignments #}
+          {% set ns = namespace(minsponsorship = 999999) %}
+            <div id="{{ tag }}-race" class="input all-races" style="display:none">
+              <div class="row">
+                <p>Please choose your sponsorship amount based on the following sponsorship levels for {{ race }}</p>
+                <ul class="browser-default">
+                  {% for level in levels[race] %}
+                    {% if level.display %}
+                      <li>{{ level.levelname }} (min ${{ level.minsponsorship }})</li>
+                      {% if level.minsponsorship < ns.minsponsorship %}
+                        {% set ns.minsponsorship = level.minsponsorship %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+
+              <div class="input-field col s6">
+                <input id="{{ tag }}-amount" type="number" required class="validate" min={{ ns.minsponsorship }} name="{{ tag }}-amount" onchange="setLevel()">
+                <label for="{{ tag }}-amount">Sponsorship Amount (US$) *</label>
+              </div>
+              
+              <div class="input-field col s6">
+                <input disabled value="Enter amount" id="{{ tag }}-level" type="text" name="{{ tag }}-level" >
+                <label for="{{ tag }}-level">Sponsorship Level</label>
+              </div>
+        
+            </div>
+        
+          </div> <!-- <tag>-race -->
+        {% endfor %}
+      
+        <div class='amount-fields' style='display:none'>
+          <div class="input-field col s12">
+            <textarea id="comments" class="materialize-textarea"></textarea>
+            <label for="comments">Comments</label>
+          </div>
+          
+          <!-- cannot allow paypal option until workaround identified for https://github.com/paypal/paypal-checkout/issues/125
+               until paypal option is available, no need for this field
+          <div class="input-field col s12">
+            <select id="paymentoption" name="paymentoption" class="validate" required >
+              <option value="" disabled selected>Choose payment option</option>
+              <option value="paypal">Pay now with PayPal</option>
+              <option value="invoice">Invoice me</option>
+            </select>
+            <label>Payment *</label>          
+          </div>
+          -->
+          
+        </div> <!-- amount-fields -->
+
+        <div class="row">
+          <div class="input-field col s12 left-align">
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background" type="submit">NEXT</button>
+          </div>   
+        </div>
+
+      </div> <!-- sponsorform -->
+      
+      <div id="confirmation" class="input" style='display:none'>
+          <div class="row">
+            <h5 class="center-align steeps-blue-text">Frederick Steeplechasers Signature Race Sponsorship Registration</h5>
+            <p>If all the information below is correct, 
+            <span class="nopaypal">click SUBMIT to submit your registration,</span>
+            <span class="paypal">click PAYPAL Check out to pay with paypal and submit your registration,</span>
+            otherwise, click BACK to make corrections</p>            
+          </div>
+          
+        <div id="confirmation-fields">
+        </div>
+
+        <div class="row">
+          <div class="input-field col s12 left-align">
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background" type="button" onclick="backPage();">BACK</button>
+            <!-- text of next button is changed to WAIT... when clicked and reset to SUBMIT when back button clicked -->
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background nopaypal" type="submit">SUBMIT</button>
+            <span id="paypal-button" class="paypal"></span>
+          </div>   
+        </div>
+
+      </div>
+      
+      <div id="payment-wait" class="input" style="display:none">
+        <h5 class="center-align steeps-blue-text">Frederick Steeplechasers Signature Race Sponsorship Registration</h5>
+        <p>Thank you. We are submitting your sponsorship registration. Please wait for confirmation that the registration has been submitted successfully.
+        If you do not see the success page in 30 seconds, please send email to <a href="mailto:races@steeplechasers.org">races@steeplechasers.org</a></p>
+        
+        <div id="error-notification" style="display:none; color:red">
+          <p>Oops, an error occurred. </p>
+          <p>We don't want to lose track of your desire to sponsor one of our races -- please send email to 
+          <a href="mailto:races@steeplechasers.org">races@steeplechasers.org</a>, and we will get the problem sorted out.</p>
+        </div>
+      </div> <!-- success -->
+
+      <div id="footer" class="input">
+        <div class="row">
+         <p class="small-text">
+         If you have any problems submitting this form, or questions on how to use this form, 
+         send email to 
+         <a href="mailto:racesp@steeplechasers.org?subject=[Sponsor Registration Form - Help] problem or question on application form">races@steeplechasers.org</a>
+         </p>
+        </div>
+      </div> <!-- footer -->
+      
+      
+      <div id="success" style="display:none">
+        <h5 class="center-align steeps-blue-text">Frederick Steeplechasers Signature Race Sponsorship Registration</h5>
+        <p>Thank you. Your sponsorship registration has been successfully submitted. You will be receiving an invoice for your payment.</p>
+        <p>If you have any questions, please send email to <a href="mailto:races@steeplechasers.org">races@steeplechasers.org</a>.</p>
+      </div> <!-- success -->
+    </form>
+    
+    <!-- http://materializecss.com/getting-started.html, https://github.com/dogfalo/materialize/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.js"></script>
+    
+    <!-- https://jqueryvalidation.org/ -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+    
+    <!-- https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/basic-integration/ -->
+    <!-- add back when paypal available, waiting on https://github.com/paypal/paypal-checkout/issues/125 
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    -->
+    
+    <script>
+    // pass levels and races to javascript
+    var levels = {{ levels_json }}
+    var races = {{ races_json }}
+    </script>
+{% if pageassets_js %}
+    {% assets pageassets_js %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endif %}
+  </body>
+}
+</html>
+
+<!-- http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app -->
