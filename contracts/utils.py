@@ -44,7 +44,7 @@ def time24(time):
         raise parameterError, 'invalid time field {} detected'.format(time)
     
     # use 24 hour clock
-    if ampm.lower() == 'pm':
+    if ampm.lower() == 'pm' and fields[0] != 12:
         fields[0] += 12
     
     # build and return string hh:mm[:ss]
