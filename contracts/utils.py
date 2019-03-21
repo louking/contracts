@@ -46,6 +46,8 @@ def time24(time):
     # use 24 hour clock
     if ampm.lower() == 'pm' and fields[0] != 12:
         fields[0] += 12
+    if ampm.lower() == 'am' and fields[0] == 12:
+        fields[0] -= 12
     
     # build and return string hh:mm[:ss]
     fieldstrs = []
