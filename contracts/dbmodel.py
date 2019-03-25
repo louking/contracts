@@ -11,6 +11,7 @@
 # standard
 import os.path
 from ConfigParser import SafeConfigParser
+from copy import deepcopy
 
 # pypi
 from sqlalchemy import create_engine
@@ -70,16 +71,21 @@ NOTES_LEN = 1024
 DESCR_LEN = 512
 FID_LEN = 128   # not taking chance, but 44 per https://stackoverflow.com/questions/38780572/is-there-any-specific-for-google-drive-file-id
 SNAILADDR_LEN = 256
+TITLE_LEN = 64
 PHONE_LEN = 13
 CONTRACT_TYPE_LEN = 30
 TEMPLATE_TYPE_LEN = 30
-CONTRACK_BLOCK_LEN = 2048
+CONTRACT_BLOCK_LEN = 2048
 CONTRACT_BLOCK_TYPE_LEN = 20
 EXCEPTION_LEN = 50
 RULENAME_LEN = 100
 LEVEL_LEN = 50
 BENEFIT_LEN = 256
 PROVIDER_LEN = 32
+PROVIDERID_LEN = 128
+COUPONCODE_LEN = 32
+TREND_LEN = 32
+LOGOFILENAME_LEN = 128
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -118,7 +124,7 @@ class Contract(Base):
     contractBlockType   = relationship( 'ContractBlockType', backref='contracts', lazy=True )
     templateTypeId      = Column( Integer, ForeignKey('templatetype.id' ) )
     templateType        = relationship( 'TemplateType', backref='contracts', lazy=True )
-    block               = Column( String(CONTRACK_BLOCK_LEN) )
+    block               = Column( String(CONTRACT_BLOCK_LEN) )
 
 class FeeType(Base):
     __tablename__ = 'feetype'
@@ -232,11 +238,12 @@ class Client(Base):
     id                  = Column( Integer, primary_key=True ) 
     client              = Column( String(ORGANIZATION_LEN) )
     clientUrl           = Column( String(URL_LEN) )
+    clientPhone         = Column( String(PHONE_LEN) )
+    clientAddr          = Column( String(SNAILADDR_LEN) )
     contactFirstName    = Column( String(NAME_LEN) )
     contactLastName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
-    clientPhone         = Column( String(PHONE_LEN) )
-    clientAddr          = Column( String(SNAILADDR_LEN) )
+    contactTitle        = Column( String(TITLE_LEN) )
 
 class Race(Base):
     __tablename__ = 'race'
@@ -341,6 +348,41 @@ class DateRule(Base):
                 if self.addldays and int(self.addldays):
                     self.rulename += ", {} add'l days".format(self.addldays)
 
+# sponsor
+# sponsor races
+class Sponsor(Base):
+    __tablename__ = 'sponsor'
+    id           = Column( Integer, primary_key=True )
+
+    raceyear            = Column( Integer )
+    racecontact         = Column( String(NAME_LEN) )
+    amount              = Column( Integer )
+    couponcode          = Column( String(COUPONCODE_LEN) )  # or "promo code"
+    trend               = Column( String(TREND_LEN) )
+    contractDocId       = Column( String(FID_LEN) )
+    # logofilename        = Column( String(LOGOFILENAME_LEN) )
+
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
+    race_id             = Column( Integer, ForeignKey('sponsorrace.id') )
+    race                = relationship( 'SponsorRace', backref='sponsors', lazy=True )
+    client_id           = Column( Integer, ForeignKey('client.id') )
+    client              = relationship( 'Client', backref='sponsors', lazy=True )
+    state_id            = Column( Integer, ForeignKey('state.id') )
+    state               = relationship( 'State', backref='sponsors', lazy=True )
+    level_id            = Column( Integer, ForeignKey('sponsorlevel.id') )
+    level               = relationship( 'SponsorLevel', backref='sponsors', lazy=True )
+
+    datesolicited       = Column( String(DATE_LEN) )
+    dateagreed          = Column( String(DATE_LEN) )
+    invoicesent         = Column( String(DATE_LEN) )
+
+    isRegSiteUpdated    = Column( Boolean )
+    isWebsiteUpdated    = Column( Boolean )
+    isLogoReceived      = Column( Boolean )
+    isSponsorThankedFB  = Column( Boolean )
+
+    notes               = Column( String(NOTES_LEN) )
+
 # sponsor races
 class SponsorRace(Base):
     __tablename__ = 'sponsorrace'
@@ -348,11 +390,26 @@ class SponsorRace(Base):
     race         = Column( String(RACE_LEN) )
     raceshort    = Column( String(RACE_LEN) )
     racedirector = Column( String(NAME_LEN) )
+    rdphone          = Column( String(PHONE_LEN) )
+    rdemail          = Column( String(EMAIL_LEN) )
+    isRDCertified    = Column( Boolean )
     raceurl      = Column( String(URL_LEN) )
     sponsorurl   = Column( String(URL_LEN) )
     email        = Column( String(EMAIL_LEN) )
+    # logofilename = Column( String(LOGOFILENAME_LEN) )
     couponprovider = Column( String(PROVIDER_LEN) )
-    description  = Column( String(DESCR_LEN) )
+    couponproviderid = Column( String(PROVIDERID_LEN) )
+    description      = Column( String(DESCR_LEN) )
+
+# sponsor race dates
+class SponsorRaceDate(Base):
+    __tablename__ = 'sponsorracedate'
+    id           = Column( Integer, primary_key=True )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
+    race_id        = Column( Integer, ForeignKey('sponsorrace.id') )
+    race           = relationship( 'SponsorRace', backref='dates', lazy=True )
+    raceyear       = Column( Integer )
+    racedate       = Column( String(DATE_LEN) )
 
 # sponsor levels / sponsor benefits
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
@@ -379,18 +436,20 @@ class SponsorLevel(Base):
 
     @hybrid_property
     def race_level(self):
-        return self.race_short + '/' + self.level
+        return self.race.raceshort + '/' + self.level
 
     # # expression required for filter. see https://stackoverflow.com/questions/19780178/sqlalchemy-hybrid-expression-with-relationship
     # @race_level.expression
     # def race_level(cls):
-    #     return self.raceshort + '/' + self.level
+    #     from sqlalchemy.sql.functions import concat
+    #     return concat(cls.race_short, '/', cls.level)
 
 # sponsor benefits
 class SponsorBenefit(Base):
     __tablename__ = 'sponsorbenefit'
     id          = Column( Integer, primary_key=True )
     benefit     = Column( String(BENEFIT_LEN) )
+    order       = Column( Integer )
     description = Column( String(DESCR_LEN) )
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
     levels       = relationship( 'SponsorLevel', secondary=sponsorlevelbenefit_table, backref='benefits', lazy=True )
@@ -447,6 +506,18 @@ class User(Base, UserMixin):
                           backref=backref('users', lazy='dynamic'))
 
 #####################################################
+class priorityUpdater(): 
+#####################################################
+    # increment priority for each of the blocks
+    def __init__(self, initial, increment):
+        self.priority = initial - increment
+        self.increment = increment
+
+    def __call__(self):
+        self.priority += self.increment
+        return self.priority
+
+#####################################################
 class ModelItem():
 #####################################################
     '''
@@ -475,6 +546,58 @@ class ModelItem():
         self.cleartable = cleartable
         self.checkkeys = checkkeys
 
+#####################################################
+class getmodelitems():
+#####################################################
+    #----------------------------------------------------------------------
+    def __init__(self, model, queries):
+    #----------------------------------------------------------------------
+        '''
+        returns a (class) function to retrieve a model item or items based on value, at runtime
+
+        :param model: model to retrieve from
+        :param queries: query dicts to retrieve with
+            if queries is a list of dicts, returned function will return a list
+            if queries is a dict, returned function will return a value
+        '''
+        self.model = model
+        self.queries = queries
+
+    #----------------------------------------------------------------------
+    def __call__(self):
+    #----------------------------------------------------------------------
+        '''
+        class instance behaves as a function f, use f() to call
+        '''
+        # islist = isinstance(self.vals, list)
+        islist = isinstance(self.queries, list)
+
+        # will process as list now, but will remove list later
+        if islist:
+            queries = self.queries
+        else:
+            queries = [self.queries]
+
+        items = []
+        # for val in vals:
+        for query in queries:
+            thisquery = deepcopy(query)
+
+            # resolve any callable values in query
+            for attr in thisquery:
+                if callable(thisquery[attr]):
+                    thisquery[attr] = thisquery[attr]()
+
+            item = db.session.query(self.model).filter_by(**thisquery).one()
+            items.append(item)
+
+        # return list if vals was list
+        if islist:
+            return items
+        else:
+            return items[0]
+
+
 #----------------------------------------------------------------------
 def initdbmodels(modelitems):
 #----------------------------------------------------------------------
@@ -487,12 +610,26 @@ def initdbmodels(modelitems):
     clearmodels = [mi.model for mi in modelitems if mi.cleartable]
     clearmodels.reverse()
     for model in clearmodels:
-        db.session.query(model).delete()
+        for modelrow in db.session.query(model).all():
+            current_app.logger.debug('deleting id={} modelrow={}'.format(modelrow.id, modelrow.__dict__))
+            db.session.delete(modelrow)
 
     # build tables
     for modelitem in modelitems:
         model = modelitem.model
-        items = modelitem.items
+
+        # maybe items is list of strings, like csv file
+        if len(modelitem.items) > 0 and isinstance(modelitem.items[0], basestring):
+            from csv import DictReader
+            ITEMS = DictReader(modelitem.items)
+            items = []
+            for item in ITEMS:
+                items.append(item)
+        
+        # otherwise assume items are objects
+        else:
+            items = modelitem.items
+
         cleartable = modelitem.cleartable
         checkkeys = modelitem.checkkeys
 

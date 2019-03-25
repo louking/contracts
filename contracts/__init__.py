@@ -50,7 +50,7 @@ def create_app(config_obj, config_filename=None):
     '''
     apply configuration object, then configuration filename
     '''
-    app = Flask(__name__)
+    app = Flask('contracts')
     app.config.from_object(config_obj)
     if config_filename:
         appconfig = getitems(config_filename, 'app')

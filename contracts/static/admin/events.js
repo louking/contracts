@@ -16,7 +16,7 @@ function currentdate() {
 }
 
 // configure table buttons
-function configuretablebuttons( table ) {
+function event_configuretablebuttons( table ) {
     btn = table.button( 'calendar:name' );
     btn.action( function( object, dtapi, button, cnf ){ 
         window.location.href = cnf.url; 
@@ -24,7 +24,7 @@ function configuretablebuttons( table ) {
 }
 
 // configure form buttons
-function configureformbuttons( that, action ) {
+function event_configureformbuttons( that, action ) {
     // set buttons for create
     if ( action == 'create' ) {
         that.buttons( 'Create' );
@@ -99,7 +99,7 @@ var event_trigger_fields = [ 'state.id', 'contractDocId', 'invoiceSentDate' ];
 function event_settriggers( editor ) {
     // regenerate the edit buttons if certain fields change
     editor.dependent( event_trigger_fields, function( val, data, callback ) {
-        configureformbuttons( editor, editor.mode() );
+        event_configureformbuttons( editor, editor.mode() );
         return {};
     });
 
@@ -138,12 +138,12 @@ function event_cleartriggers( editor ) {
 if ( ['/admin/events'].includes(location.pathname) ) {
 // set up buttons for edit form after datatables has been initialized
 function afterdatatables() {
-    configuretablebuttons( _dt_table );
+    event_configuretablebuttons( _dt_table );
 
     // needs to be same in admin_eventscalendar.js
     editor.on('open', function( e, mode, action ) {
         // set up the buttons
-        configureformbuttons( this, action );
+        event_configureformbuttons( this, action );
 
         // special processing for contractApproverNotes field to make readonly
         editor.field( 'contractApproverNotes' ).disable();

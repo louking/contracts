@@ -1,0 +1,44 @@
+{# adapted from https://github.com/lob/examples/blob/master/letters/8.5x11-letter.html #}
+{# <html> #}
+{# <head> #}
+{# <meta charset="UTF-8"> #}
+<style type ="text/css" >
+   *, *:before, *:after {
+     -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+     box-sizing: border-box;
+   }
+   body {
+     width: 8.5in;
+     height: 11in;
+     margin: 0;
+     padding: 0;
+   }
+   .page {
+     page-break-after: always;
+     position: relative;
+     width: 8.5in;
+     height: 11in;
+   }
+   .page-content {
+     position: absolute;
+     width: 8.125in;
+     height: 10.625in;
+     left: 0.1875in;
+     top: 0.1875in;
+   }
+   p, .text {
+     position: relative;
+     left: 20px;
+     top: 20px;
+     width: 6in;
+   }
+</style>
+{% block head %}
+{% endblock %}
+{# </head> #}
+{# <body> #}
+{% block body %}
+{% endblock %}
+{# </body> #}
+{# </html> #}

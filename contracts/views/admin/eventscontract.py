@@ -35,7 +35,7 @@ class parameterError(Exception): pass
 debug = True
 
 ###########################################################################################
-class EventsApi(DbCrudApiRolePermissions):
+class EventsContract(DbCrudApiRolePermissions):
 ###########################################################################################
     '''
     extend DbCrudApiRolePermissions to handle send contract request within put() [edit] method

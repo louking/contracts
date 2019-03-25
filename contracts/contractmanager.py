@@ -21,6 +21,7 @@ from copy import deepcopy
 from csv import reader
 from shutil import rmtree
 from json import loads
+from os.path import join as pathjoin
 
 # pypy
 from docx import Document
@@ -83,6 +84,28 @@ def _evaluate(tree, subtree):
 
     # bubble up the results
     return subtree
+
+#----------------------------------------------------------------------
+def recursive_render(tpl, values):
+#----------------------------------------------------------------------
+    '''
+    recursively render jinja2 template 
+    from https://stackoverflow.com/questions/8862731/jinja-nested-rendering-on-variable-content
+
+    :param tpl: template text
+    :param values: values to be rendered
+    '''
+    # create environment
+    env = Environment(trim_blocks=True, lstrip_blocks=True, loader=current_app.jinja_env.loader)
+
+### TODO: note can only be used by html, for docx need to consider generator aspect within ContractManagerTemplate
+    prev = tpl
+    while True:
+        curr = env.from_string(prev).render(**values)
+        if curr != prev:
+            prev = curr
+        else:
+            return curr
 
 #####################################################
 class ContractManagerTemplate():
@@ -163,10 +186,14 @@ class ContractManager():
         args = dict(contractType=None,
                     templateType=None,
                     driveFolderId=None,
+                    doctype='docx', # can be docx or html
                     )
         args.update(kwargs)
         for key in args:
             setattr(self, key, args[key])
+
+        if self.doctype not in ['docx', 'html']:
+            raise parameterError, 'ContractManager(): doctype must be "docx" or "html", found {}'.format(self.doctype)
 
     #----------------------------------------------------------------------
     def create(self, filename, mergefields, addlfields={}):
@@ -177,6 +204,7 @@ class ContractManager():
         parameters:
 
         * filename - name of file to be created
+          * note different processing for .docx vs. .html
         * mergefields - flat dict with keys to be used as merge fields. If field contains 
           a function, the function is called with a single argument: the original mergefields itself
         * any fields to be added to mergefields
@@ -184,8 +212,15 @@ class ContractManager():
         returns: G Suite document id
         '''
 
-        # docx handle
-        docx = Document()
+        # create document based on doctype
+        if self.doctype == 'docx':
+            # docx handle
+            docx = Document()
+        elif self.doctype == 'html':
+            html = []
+        else:
+            raise parameterError, 'create(): bad doctype {}'.format(self.doctype)
+
 
         # retrieve contract template
         templates = (db.session.query(Contract)
@@ -209,86 +244,115 @@ class ContractManager():
         for key in addlfields:
             setattr(merge, key, addlfields[key])
 
-        # fill contents
-        for blockd in templates:
-            # retrieve block type text
-            blockType = blockd.contractBlockType.blockType
+        # fill contents for html files
+        if self.doctype == 'html':
+            for blockd in templates:
+                # retrieve block type text
+                blockType = blockd.contractBlockType.blockType
 
-            # para is a single paragraph, based on a single template
-            if blockType == 'para':
-                template = ContractManagerTemplate( blockd.block )
-                para = docx.add_paragraph( template.render( merge ) )
-
-            # sectionprops has json object containing section property assignments (see https://python-docx.readthedocs.io/en/latest/api/section.html)
-            elif blockType == 'sectionprops':
-                props = loads( blockd.block )
-                for prop in props:
-                    # try to convert property value, otherwise leave as string
-                    thisprop = props[prop]
-                    for ttype in [int, float]:
-                        try:
-                            thisprop = ttype(thisprop)
-                            break
-                        except ValueError:
-                            pass
-                    setattr(docx.sections[0], prop, thisprop)
-
-            # listitem[2] is a list item which may generate multiple lines, based on a single template
-            elif blockType in ['listitem', 'listitem2']:
-                template = ContractManagerTemplate( blockd.block )
-                for render in template.generate( merge ):
-                    listitem = docx.add_paragraph( render )
-                    if blockType == 'listitem':
-                        listitem.style = 'List Bullet'
-                    elif blockType == 'listitem2':
-                        listitem.style = 'List Bullet 2'
+                # only possibility is html
+                if blockType == 'html':
+                    html.append( recursive_render( blockd.block, merge.__dict__ ) )
+                    # template = ContractManagerTemplate( blockd.block )
+                    # html.append( template.render( merge ) )
                 
-            # pagebreak is, well, just a page break
-            elif blockType == 'pagebreak':
-                docx.add_page_break()
+                # bad configuration, or bad code
+                else:
+                    raise parameterError, 'unknown block type for {}: {}'.format(self.doctype, blockType)
+
+        # fill contents for docx files
+        elif self.doctype == 'docx':
+            for blockd in templates:
+                # retrieve block type text
+                blockType = blockd.contractBlockType.blockType
+
+                # para is a single paragraph, based on a single template
+                if blockType == 'para':
+                    template = ContractManagerTemplate( blockd.block )
+                    para = docx.add_paragraph( template.render( merge ) )
+
+                # sectionprops has json object containing section property assignments (see https://python-docx.readthedocs.io/en/latest/api/section.html)
+                elif blockType == 'sectionprops':
+                    props = loads( blockd.block )
+                    for prop in props:
+                        # try to convert property value, otherwise leave as string
+                        thisprop = props[prop]
+                        for ttype in [int, float]:
+                            try:
+                                thisprop = ttype(thisprop)
+                                break
+                            except ValueError:
+                                pass
+                        setattr(docx.sections[0], prop, thisprop)
+
+                # listitem[2] is a list item which may generate multiple lines, based on a single template
+                elif blockType in ['listitem', 'listitem2']:
+                    template = ContractManagerTemplate( blockd.block )
+                    for render in template.generate( merge ):
+                        listitem = docx.add_paragraph( render )
+                        if blockType == 'listitem':
+                            listitem.style = 'List Bullet'
+                        elif blockType == 'listitem2':
+                            listitem.style = 'List Bullet 2'
+                    
+                # pagebreak is, well, just a page break
+                elif blockType == 'pagebreak':
+                    docx.add_page_break()
+                    
+                # tablehdr causes a table to be created with the number of columns depending on how many elements
+                # this is configured as comma separated headings (no template rendering is done)
+                elif blockType == 'tablehdr':
+                    # use csv reader to parse quoted fields with commas correctly
+                    rdr = reader([blockd.block])
+                    headings = rdr.next()
+                    table = docx.add_table(rows=1, cols=len(headings))
+                    hdr_cells = table.rows[0].cells
+                    for c in range(len(headings)):
+                        run = hdr_cells[c].paragraphs[0].add_run( headings[c] )
+                        run.bold = True
+
+                # tablerow and tablerowbold define what some rows of the table look like
+                # this is configured as template with comma separated columns, optional for loop
+                elif blockType in ['tablerow', 'tablerowbold']:
+                    # get templated and create generator
+                    coltemplate = ContractManagerTemplate( blockd.block )
+                    colg = coltemplate.generate( merge )
+
+                    # collect the generated raw rows (raw means with commas embedded)
+                    rawrows = []
+                    for rawrow in colg:
+                        rawrows.append( rawrow )
+
+                    # then add row data to table using csv reader 
+                    # if there are commas in the data csv reader will parse quoted fields with commas correctly
+                    rows = reader( rawrows )
+                    for row in rows:
+                        row_cells = table.add_row().cells
+                        for c in range(len(row)):
+                            run = row_cells[c].paragraphs[0].add_run( row[c] )
+                            if blockType == 'tablerowbold':
+                                run.bold = True
                 
-            # tablehdr causes a table to be created with the number of columns depending on how many elements
-            # this is configured as comma separated headings (no template rendering is done)
-            elif blockType == 'tablehdr':
-                # use csv reader to parse quoted fields with commas correctly
-                rdr = reader([blockd.block])
-                headings = rdr.next()
-                table = docx.add_table(rows=1, cols=len(headings))
-                hdr_cells = table.rows[0].cells
-                for c in range(len(headings)):
-                    run = hdr_cells[c].paragraphs[0].add_run( headings[c] )
-                    run.bold = True
-
-            # tablerow and tablerowbold define what some rows of the table look like
-            # this is configured as template with comma separated columns, optional for loop
-            elif blockType in ['tablerow', 'tablerowbold']:
-                # get templated and create generator
-                coltemplate = ContractManagerTemplate( blockd.block )
-                colg = coltemplate.generate( merge )
-
-                # collect the generated raw rows (raw means with commas embedded)
-                rawrows = []
-                for rawrow in colg:
-                    rawrows.append( rawrow )
-
-                # then add row data to table using csv reader 
-                # if there are commas in the data csv reader will parse quoted fields with commas correctly
-                rows = reader( rawrows )
-                for row in rows:
-                    row_cells = table.add_row().cells
-                    for c in range(len(row)):
-                        run = row_cells[c].paragraphs[0].add_run( row[c] )
-                        if blockType == 'tablerowbold':
-                            run.bold = True
-            
-            else:
-                raise parameterError, 'unknown block type: {}'.format(blockType)
+                else:
+                    raise parameterError, 'unknown block type for {}: {}'.format(self.doctype, blockType)
 
         # save temporary doc file
         dirpath = mkdtemp(prefix='contracts_')
         # slugify to avoid funky characters in race name
         path = pathjoin(dirpath, slugify(filename))
-        docx.save(path)
+
+        # save file, set up for drive upload
+        drivename = filename
+        # for mimetype see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
+        if self.doctype == 'html':
+            with open(path,'w') as htmlfile:
+                htmlfile.write('\n'.join(html))
+            mimetype='text/html'
+            if drivename[-5:] == '.html': drivename = drivename[:-5]
+        elif self.doctype == 'docx':
+            docx.save(path)
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            if drivename[-5:] == '.docx': drivename = drivename[:-5]
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
         # upload to google drive
@@ -302,8 +366,6 @@ class ContractManager():
         drive = build(DRIVE_SERVICE, DRIVE_VERSION, credentials=credentials)
 
         ## upload (adapted from https://developers.google.com/drive/api/v3/manage-uploads)
-        drivename = filename
-        if drivename[-5:] == '.docx': drivename = drivename[:-5]
         file_metadata = {
             'name': drivename,
             # see https://developers.google.com/drive/api/v3/mime-types
@@ -312,8 +374,7 @@ class ContractManager():
             'parents': [current_app.config['CONTRACTS_DB_FOLDER']],
         }
         media = MediaFileUpload(path,
-            # see https://blogs.msdn.microsoft.com/vsofficedeveloper/2008/05/08/office-2007-file-format-mime-types-for-http-content-streaming-2/
-            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            mimetype=mimetype,
             resumable=True)
         file = drive.files().create(body=file_metadata,
                                     media_body=media,

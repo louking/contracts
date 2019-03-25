@@ -23,7 +23,7 @@ from dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHI
 
 from dbmodel import STATE_RENEWED_PENDING, STATE_TENTATIVE, STATE_CONTRACT_SENT, STATE_COMMITTED, STATE_CANCELED       
 
-from dbmodel import ModelItem, initdbmodels
+from dbmodel import ModelItem, initdbmodels, priorityUpdater
 
 # define templatetypes
 templatetypes = [
@@ -36,6 +36,8 @@ templatetypes = [
     {'templateType' : 'accept agreement error view', 'description' : 'accept agreement error view', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'agreement accepted view', 'description' : 'agreement accepted view', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'prempromo email', 'description' : 'premium promotion email before start of promotion', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
+    {'templateType' : 'sponsor agreement', 'description' : 'sponsor agreement', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
+    {'templateType' : 'sponsor email', 'description' : 'sponsorship agreement sponsor email', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
 ]
 
 # define contracttypes
@@ -59,16 +61,6 @@ blocktypes = [
 
 # define contracts (contract template blocks)
 RACE_AGREEMENT_HEADER = 'RACE SERVICES AGREEMENT\nFREDERICK STEEPLECHASERS RUNNING CLUB - PO BOX 681, FREDERICK, MD 21705-0681'
-
-# increment priority for each of the contract blocks
-class priorityUpdater(): 
-    def __init__(self, initial, increment):
-        self.priority = initial - increment
-        self.increment = increment
-
-    def __call__(self):
-        self.priority += self.increment
-        return self.priority
 
 contractpriority = priorityUpdater(10, 10)
 contractmailpriority = priorityUpdater(10, 10)
@@ -723,6 +715,122 @@ contracts += [
                                ])
     }, 
 ]
+
+# sponsorship agreement
+contracts += [
+    {   
+        'contractType'       : ContractType.query.filter_by(contractType='race sponsorship').one, 
+        'contractBlockType'  : ContractBlockType.query.filter_by(blockType='html').one,
+        'templateType'       : TemplateType.query.filter_by(templateType='sponsor agreement').one,
+        'blockPriority'      : 10,
+        'block'              : '\n'.join([
+                                 # '<html>',
+                                 # '<head>',
+                                 # '<meta charset="UTF-8">',
+                                 # # '<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">',
+                                 # # '<title>Lob.com Sample 8.5x11 Letter</title>',
+                                 '{% extends "google-doc.jinja2" %}'
+                                 '{% block head %}',
+                                 '<style type ="text/css" >',
+                                 '   .footer{ ',
+                                 '       position: fixed;     ',
+                                 '       bottom: 0px; ',
+                                 '       width: 100%;',
+                                 '   }  ',
+                                 # '   *, *:before, *:after {',
+                                 # '     -webkit-box-sizing: border-box;',
+                                 # '     -moz-box-sizing: border-box;',
+                                 # '     box-sizing: border-box;',
+                                 # '   }',
+                                 # '   body {',
+                                 # '     width: 8.5in;',
+                                 # '     height: 11in;',
+                                 # '     margin: 0;',
+                                 # '     padding: 0;',
+                                 # '   }',
+                                 # '   .page {',
+                                 # '     page-break-after: always;',
+                                 # '     position: relative;',
+                                 # '     width: 8.5in;',
+                                 # '     height: 11in;',
+                                 # '   }',
+                                 # '   .page-content {',
+                                 # '     position: absolute;',
+                                 # '     width: 8.125in;',
+                                 # '     height: 10.625in;',
+                                 # '     left: 0.1875in;',
+                                 # '     top: 0.1875in;',
+                                 # '     background-color: rgba(0,0,0,0.2);',
+                                 # '   }',
+                                 # '   p, .text {',
+                                 # '     position: relative;',
+                                 # '     left: 20px;',
+                                 # '     top: 20px;',
+                                 # '     width: 6in;',
+                                 # # '     font-family: \'Open Sans\';',
+                                 # # '     font-size: 30px;',
+                                 # '   }', 
+                                 '</style>',
+                                 '{% endblock %}',
+                                 # '</head>',
+                                 # '<body>',
+                                 '{% block body %}',
+                                 '<div class="page">',
+                                 '<div class="page-content">',
+                                 '<h1>{{ level.level }} Sponsor Agreement</h1>',
+                                 '<p>{{ _date_ }}</p>',
+                                 '<p>This agreement is between {{ client.client }} (sponsor) and the Frederick Steeplechasers',
+                                 'running club</p>',
+                                 '<p>{{ client.client }} agrees to a sponsorship of ${{ amount }}, corresponding to the',
+                                 '"{{ level.level }}" sponsor level for the {{ race.race }}, to be held {{ _racedate_ }} ',
+                                 'at XXXXXneed loc configXXXXX</p>',
+                                 '<p>The sponsor benefits associated with the {{ level.level }} sponsorship are:</p>',
+                                 '<ul>',
+                                 '{% for benefit in _benefits_ %}',
+                                 '  <li>{{ benefit }}</li>',
+                                 '{% endfor %}',
+                                 '</ul>',
+                                 '<p>To get your complimentary entries, please use promotion code <b>{{ couponcode }}</b> when you register', 
+                                 'for the race. </p>'
+                                 '<p>Thank you so much for agreeing to be part of this year\'s {{ race.race }}. ',
+                                 'We couldn\'t be successful in our support for the XXXXneed sponsor configXXXX without you!</p>',
+                                 '<p>',
+                                 '{{ race.racedirector }}',
+                                 '{%- if race.isRDCertified %}',
+                                 '<br>RRCA Certified Race Director',
+                                 '{%- endif %}',
+                                 '<br>Frederick Steeplechasers Running Club',
+                                 '{%- if race.rdphone %}',
+                                 '<br>{{ race.rdphone }}',
+                                 '{%- endif %}',
+                                 '<br>{{ race.rdemail }}',
+                                 '</p>',
+                                 '<p class=footer><i>The Frederick Steeplechasers Running Club is a 501(3)(c) nonprofit organization. All contributions ',
+                                 'are tax-deductible to the fullest extent allowed by law. FSRC Tax ID #51-0211400, RRCA Tax ID #23-7283854 ', 
+                                 '(group exemption #2702)</i></p>',
+                                 '</div>',  # page-content
+                                 '</div>',  # page
+                                 '{% endblock %}',
+                                 # '</body>',
+                                 # '</html>',
+                               ])
+    }, 
+    {   'contractType'       : ContractType.query.filter_by(contractType='race sponsorship').one, 
+        'contractBlockType'  : ContractBlockType.query.filter_by(blockType='html').one,
+        'templateType'       : TemplateType.query.filter_by(templateType='sponsor email').one,
+        'blockPriority'      : contractmailpriority,
+        'block'              : '<p>Hi {{ client.contactFirstName }},</p>\n'
+                               '<p>Thank you so much for your sponsorship of {{ race.race }}!</p>\n'
+                               '<p>Click to <a href={{ viewcontracturl }}>view</a> or \n'
+                               '<a href={{ downloadcontracturl }}>download</a> your Sponsorship \n'
+                               'Agreement for {{ race.race }} on {{ _racedate_ }}. This agreement contains \n'
+                               'all your benefits, including the coupon code you use to get your free entries to the race.\n'
+                               '<p>Your invoice should arrive soon.</p>\n'
+                               '<p>thanks again,<br>\n'
+                               '{{ race.racedirector }}<br>\n'
+                               'Race Director, {{ race.race }}\n'
+                               'Frederick Steeplechasers Running Club</p>\n'
+    }, ]
 
 # define courses here
 courses = [

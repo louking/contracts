@@ -16,6 +16,7 @@ bp = Blueprint('admin', __name__.split('.')[0], url_prefix='/admin', static_fold
 # import views
 import login
 import userrole
+import common
 import events
 import admin_eventscalendar
 import tags

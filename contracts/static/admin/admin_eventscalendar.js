@@ -15,7 +15,7 @@ $( function() {
   // needs to be same in events.js
   editor.on('open', function( e, mode, action ) {
       // set up the buttons
-      configureformbuttons( this, action );
+      event_configureformbuttons( this, action );
 
       // special processing for contractApproverNotes field to make readonly
       editor.field( 'contractApproverNotes' ).disable();
@@ -102,7 +102,7 @@ $( function() {
 
     dayClick: function( date, jsEvent, view ) {
       editor.title('Create new entry').buttons('Create').create();
-      configureformbuttons( editor, 'create' );
+      event_configureformbuttons( editor, 'create' );
       editor.set( 'date', date.format() );
       // editor.field( 'race.id' ).focus();
 
@@ -120,7 +120,7 @@ $( function() {
       $.each( editor.order(), function( i, field ) {
         editor.set( field, _.get(event.data, field ) );
       })
-      configureformbuttons( editor, 'edit' );
+      event_configureformbuttons( editor, 'edit' );
 
       // special processing for contractApproverNotes field to make readonly
       editor.field( 'contractApproverNotes' ).disable();
