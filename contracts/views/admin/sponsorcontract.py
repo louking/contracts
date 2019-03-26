@@ -14,6 +14,7 @@ sponsorscontract - handle contract management for race services contract
 # standard
 from datetime import date
 from copy import deepcopy
+from os.path import join as pathjoin
 
 # pypi
 from flask import current_app, url_for, request
@@ -82,14 +83,18 @@ class SponsorContract(DbCrudApiRolePermissions):
 
                     # generate contract
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) sponsordb.__dict__={}'.format(sponsordb.__dict__))
-                    docid = cm.create('{}-{}-{}-sponsor-agreement.html'.format(
-                                        sponsordb.raceyear, sponsordb.race.race, sponsordb.client.client
+                    docid = cm.create('{} {} {} Sponsor Agreement'.format(
+                                        sponsordb.raceyear, sponsordb.race.raceshort, sponsordb.client.client
                                       ), 
                                       sponsordb, 
                                       addlfields={
-                                                  '_date_'      : humandt.dt2asc(date.today()),
-                                                  '_racedate_'  : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
-                                                  '_benefits_'  : benefits,
+                                                  '_date_'            : humandt.dt2asc(date.today()),
+                                                  '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
+                                                  '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
+                                                  '_raceheader_'      : 'XXX race header image tag XXX',
+                                                  '_benefits_'        : benefits,
+                                                  '_raceloc_'         : 'XXX race loc config XXX',
+                                                  '_racebeneficiary_' : 'XXX race beneficiary config XXX',
                                                  })
                     
                     # update database to show contract sent/agreed

@@ -36,6 +36,7 @@ from contracts.dbmodel import db, Contract, ContractType, TemplateType
 from loutilities import timeu
 from loutilities.googleauth import get_credentials
 from contracts.views.admin.login import APP_CRED_FOLDER
+from html2docx import convert
 
 class parameterError(Exception): pass
 
@@ -338,21 +339,27 @@ class ContractManager():
 
         # save temporary doc file
         dirpath = mkdtemp(prefix='contracts_')
-        # slugify to avoid funky characters in race name
-        path = pathjoin(dirpath, slugify(filename))
 
         # save file, set up for drive upload
         drivename = filename
+
         # for mimetype see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
         if self.doctype == 'html':
-            with open(path,'w') as htmlfile:
-                htmlfile.write('\n'.join(html))
-            mimetype='text/html'
             if drivename[-5:] == '.html': drivename = drivename[:-5]
+            htmlpath = pathjoin(dirpath, slugify(drivename)) + '.html'
+            with open(htmlpath,'w') as htmlfile:
+                htmlfile.write('\n'.join(html))
+            # converted docx file gets uploaded to drive
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            # mimetype='text/html'
+            path = pathjoin(dirpath, slugify(drivename)) + '.docx'
+            convert(htmlpath, path, title=drivename)
         elif self.doctype == 'docx':
+            if drivename[-5:] == '.docx': drivename = drivename[:-5]
+            # slugify to avoid funky characters in race name
+            path = pathjoin(dirpath, slugify(drivename)) + '.docx'
             docx.save(path)
             mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            if drivename[-5:] == '.docx': drivename = drivename[:-5]
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
         # upload to google drive
@@ -406,7 +413,8 @@ class ContractManager():
 
         # remove temporary folder
         # NOTE: in windows at least, this gets an error because file is still in use
-        rmtree(dirpath, ignore_errors=True)
+        # TODO: uncomment
+        # rmtree(dirpath, ignore_errors=True)
 
         # send email
 
