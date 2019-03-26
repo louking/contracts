@@ -12,7 +12,7 @@ sponsorscontract - handle contract management for race services contract
 ===========================================================================
 '''
 # standard
-from datetime import date
+from datetime import date, timedelta
 from copy import deepcopy
 from os.path import join as pathjoin
 
@@ -91,10 +91,12 @@ class SponsorContract(DbCrudApiRolePermissions):
                                                   '_date_'            : humandt.dt2asc(date.today()),
                                                   '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
                                                   '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
-                                                  '_raceheader_'      : 'XXX race header image tag XXX',
+                                                  '_raceheader_'      : '<img src="{}" width=6in>'.format(pathjoin(current_app.static_folder, 
+                                                                            '{}-header.png'.format(sponsordb.race.raceshort.lower()))),
                                                   '_benefits_'        : benefits,
                                                   '_raceloc_'         : 'XXX race loc config XXX',
                                                   '_racebeneficiary_' : 'XXX race beneficiary config XXX',
+                                                  '_coupondate_'      : humandt.dt2asc(dt.asc2dt(racedate.racedate) - timedelta(3)),
                                                  })
                     
                     # update database to show contract sent/agreed

@@ -38,6 +38,8 @@ class HTML2Docx(HTMLParser):
         self.doc.core_properties.title = title
 
         self.p = None
+        self.header = None
+        self.footer = None
         self.runs = []
         self.list_style = []
         self.bold = 0
@@ -72,7 +74,6 @@ class HTML2Docx(HTMLParser):
             self.underline += 1
         elif tag == "img":
             dattrs = dict(attrs)
-            print('dattrs={}'.format(dattrs))
             width = dattrs.get('width')
             height = dattrs.get('height')
             if width:
@@ -81,19 +82,26 @@ class HTML2Docx(HTMLParser):
             if height:
                 m = LEN_RE.match(dattrs['height'])
                 width = csslen2docx[m.group(2)](float(m.group(1)))
-            self.doc.add_picture(dattrs['src'], width=width, height=height)
+            if self.header:
+                run = self.p.add_run()
+                run.add_picture(dattrs['src'], width=width, height=height)
+            elif self.footer:
+                run = self.p.add_run()
+                run.add_picture(dattrs['src'], width=width, height=height)
+            else:
+                self.doc.add_picture(dattrs['src'], width=width, height=height)
         
         # non-standard tag for header, footer - these act like p tag
         elif tag == "header":
             self.finish()
             section = self.doc.sections[0]
-            header = section.header
-            self.p = header.paragraphs[0]
+            self.header = section.header
+            self.p = self.header.paragraphs[0]
         elif tag == "footer":
             self.finish()
             section = self.doc.sections[0]
-            footer = section.footer
-            self.p = footer.paragraphs[0]
+            self.footer = section.footer
+            self.p = self.footer.paragraphs[0]
 
     def handle_endtag(self, tag):
         if tag in ["p", "div", "li"] or self.header_re.match(tag):
@@ -112,9 +120,11 @@ class HTML2Docx(HTMLParser):
         elif tag == "header":
             self.finish()
             self.p = None
+            self.header = None
         elif tag == "footer":
             self.finish()
             self.p = None
+            self.footer = None
 
     def handle_data(self, data):
         if self.p or data.strip():
