@@ -260,6 +260,12 @@ sponsorbenefits += [
     },
     {
      'order'        : benefitpriority(),
+     'benefit'      : 'Three (3) complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
+    },
+    {
+     'order'        : benefitpriority(),
      'benefit'      : 'Logo on Race Bib',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
@@ -295,7 +301,7 @@ sponsorbenefits += [
     },
     {
      'order'        : benefitpriority(),
-     'benefit'      : 'Logo incorporated into artwork on front of Frace Shirt (commit by August 1)',
+     'benefit'      : 'Logo incorporated into artwork on front of race Shirt (commit by August 1)',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
@@ -337,9 +343,27 @@ sponsorbenefits += [
     },
     {
      'order'        : benefitpriority(),
-     'benefit'      : 'Complementary Race Entries',
+     'benefit'      : 'Five (5) complimentary race entries  - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}, {'race_short': 'MSM', 'level': 'Silver'}, {'race_short': 'MSM', 'level': 'Bronze'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
+    },
+    {
+     'order'        : benefitpriority(),
+     'benefit'      : 'Three (3) complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Gold'}])
+    },
+    {
+     'order'        : benefitpriority(),
+     'benefit'      : 'Two (2) complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Silver'}])
+    },
+    {
+     'order'        : benefitpriority(),
+     'benefit'      : 'One (1) complimentary race entry - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Bronze'}])
     },
     {
      'order'        : benefitpriority(),

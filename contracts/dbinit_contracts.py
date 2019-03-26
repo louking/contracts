@@ -728,7 +728,7 @@ contracts += [
                                  '<h1>{{ level.level }} Sponsor Agreement</h1>',
                                  '<p>{{ _date_ }}</p>',
                                  '<p>This agreement is between {{ client.client }} (sponsor) and the Frederick Steeplechasers',
-                                 'running club.</p>',
+                                 'Running Club.</p>',
                                  '<p>{{ client.client }} agrees to a sponsorship of ${{ amount }}, corresponding to the',
                                  '"{{ level.level }}" sponsor level for the {{ race.race }}, to be held {{ _racedate_ }} ',
                                  'at {{ _raceloc_ }}.</p>',
@@ -738,8 +738,6 @@ contracts += [
                                  '  <li>{{ benefit }}</li>',
                                  '{% endfor %}',
                                  '</ul>',
-                                 '<p>To get your complimentary entries, please use promotion code <b>{{ couponcode }}</b> when you register', 
-                                 'for the race. </p>'
                                  '<p>Thank you so much for agreeing to be part of this year\'s {{ race.race }}. ',
                                  'We couldn\'t be successful in our support for the {{ _racebeneficiary_ }} without you!</p>',
                                  '<p>',
