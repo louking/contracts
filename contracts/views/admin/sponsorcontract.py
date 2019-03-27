@@ -78,6 +78,13 @@ class SponsorContract(DbCrudApiRolePermissions):
                 benefitsdb = SponsorBenefit.query.join(SponsorBenefit.levels).filter(SponsorLevel.id == sponsordb.level.id).order_by(SponsorBenefit.order).all()
                 benefits = [b.benefit for b in benefitsdb]
 
+                # get coupon date for agreement and email
+                # TODO: retrieve from database
+                coupondate = humandt.dt2asc(dt.asc2dt(racedate.racedate) - timedelta(3))
+                ncoupons = sponsordb.level.couponcount
+                wcoupons = 'zero one two three four five six seven eight nine'.split()[ncoupons]
+                couponcount = '{} ({})'.format(wcoupons, ncoupons) if ncoupons else None
+
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
 
@@ -96,7 +103,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                                                   '_benefits_'        : benefits,
                                                   '_raceloc_'         : 'XXX race loc config XXX',
                                                   '_racebeneficiary_' : 'XXX race beneficiary config XXX',
-                                                  '_coupondate_'      : humandt.dt2asc(dt.asc2dt(racedate.racedate) - timedelta(3)),
+                                                  '_coupondate_'      : coupondate,
+                                                  '_couponcount_'     : couponcount.capitalize(), # ok to assume first word in sentence
                                                  })
                     
                     # update database to show contract sent/agreed
@@ -115,7 +123,7 @@ class SponsorContract(DbCrudApiRolePermissions):
                 else:
                     docid = sponsordb.contractDocId
 
-                # prepare agreement accepted email 
+                # prepare agreement email (new contract or resending)
                 templatestr = (db.session.query(Contract)
                                .filter(Contract.contractTypeId==ContractType.id)
                                .filter(ContractType.contractType=='race sponsorship')
@@ -137,11 +145,13 @@ class SponsorContract(DbCrudApiRolePermissions):
                 # mergefields['_race_'] = sponsordb.race.race
                 racedate = SponsorRaceDate.query.filter_by(race_id=sponsordb.race.id, raceyear=sponsordb.raceyear).one()
                 mergefields['_racedate_'] = humandt.dt2asc(dt.asc2dt(racedate.racedate))
-                # mergefields['_racedirector_'] = race.racedirector
+                mergefields['_coupondate_'] = coupondate
+                mergefields['_couponcount_'] = couponcount
 
 
                 html = template.render( mergefields )
                 tolist = sponsordb.client.contactEmail
-                cclist = current_app.config['SPONSORSHIPQUERY_CC']
+                rdemail = '{} <{}>'.format(sponsordb.race.racedirector, sponsordb.race.rdemail)
+                cclist = current_app.config['SPONSORSHIPQUERY_CC'] + [rdemail]
                 fromlist = '{} <{}>'.format(sponsordb.race.race, current_app.config['SPONSORSHIPQUERY_CONTACT'])
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
