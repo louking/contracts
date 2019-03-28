@@ -127,12 +127,21 @@ sponsor = SponsorContract(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'edit', 'remove', 
+                               {
+                                    'extend': 'csv',
+                                    'text': 'CSV',
+                                    'exportOptions': {
+                                        'columns': ':gt(0)',    # skip first column
+                                    }
+                                }
+                            ],
                     dtoptions = {
                                     'scrollCollapse': True,
                                     'scrollX': True,
                                     'scrollXInner': "100%",
                                     'scrollY': True,
+                                    'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                     'fixedColumns': {
                                                       'leftColumns': 3,
                                                     },
