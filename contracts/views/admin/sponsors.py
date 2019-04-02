@@ -37,6 +37,101 @@ sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contrac
 sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
 sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
 
+## yadcf external filters
+filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race Year</span>",
+            "        <span id='external-filter-raceyear' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>State(s)</span>",
+            "        <span id='external-filter-state' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Level(s)</span>",
+            "        <span id='external-filter-levels' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+raceyearcol = 1
+racecol = 2
+statecol = 4
+levelcol = 5
+yadcf_options = [
+          {
+           'column_number': raceyearcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '100px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race year', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-raceyear',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+           'column_number': statecol, 
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '150px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select states', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-state',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+            'column_number': levelcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select levels', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-levels',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
 sponsor = SponsorContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
@@ -48,6 +143,7 @@ sponsor = SponsorContract(
                     rule = '/sponsors', 
                     dbmapping = sponsor_dbmapping, 
                     formmapping = sponsor_formmapping, 
+                    pretablehtml = filters,
                     checkrequired = True,
                     clientcolumns = [
                         { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
@@ -150,6 +246,7 @@ sponsor = SponsorContract(
                                     'template':'#customForm',
                                     'formOptions': { 'main': { 'focus': None } },
                                 },
+                    yadcfoptions = yadcf_options,
                     )
 sponsor.register()
 

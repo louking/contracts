@@ -84,21 +84,30 @@ function sponsor_cleartriggers( editor ) {
 
 // only define afterdatatables if needed
 if ( ['/admin/sponsors'].includes(location.pathname) ) {
-// set up buttons for edit form after datatables has been initialized
-function afterdatatables() {
-    // needs to be same in admin_eventscalendar.js
-    editor.on('open', function( e, mode, action ) {
-        // set up the buttons
-        sponsor_configureformbuttons( this, action );
+    // set up registered filters
+    var d = new Date();
+    var year = d.getFullYear().toString();
+    fltr_register('external-filter-raceyear', year, true);
+    fltr_register('external-filter-race', null, false);
 
-        return true;
-    });
+    // set up buttons for edit form after datatables has been initialized
+    function afterdatatables() {
+        // needs to be same in admin_eventscalendar.js
+        editor.on('open', function( e, mode, action ) {
+            // set up the buttons
+            sponsor_configureformbuttons( this, action );
 
-    // set the triggers which case the form buttons to change
-    sponsor_settriggers( editor );
+            return true;
+        });
 
-    // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
-    $.ui.dialog.prototype._focusTabbable = $.noop;
-}
+        // set the triggers which case the form buttons to change
+        sponsor_settriggers( editor );
+
+        // initialize filters
+        fltr_init();
+
+        // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
+        $.ui.dialog.prototype._focusTabbable = $.noop;
+    }
 } // if [].includes(location.pathname)
 
