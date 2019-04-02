@@ -79,11 +79,23 @@ class SponsorContract(DbCrudApiRolePermissions):
                 benefits = [b.benefit for b in benefitsdb]
 
                 # get coupon date for agreement and email
-                # TODO: retrieve from database
+                # TODO: retrieve coupon deadline from database
                 coupondate = humandt.dt2asc(dt.asc2dt(racedate.racedate) - timedelta(3))
+
+                # calculate display for coupon count. word (num) if less than 10, otherwise num
+                # but note there may not be a coupon count
+                # ccouponcount is capitalized
                 ncoupons = sponsordb.level.couponcount
-                wcoupons = 'zero one two three four five six seven eight nine'.split()[ncoupons]
-                couponcount = '{} ({})'.format(wcoupons, ncoupons) if ncoupons else None
+                if ncoupons:
+                    if ncoupons < 10:
+                        wcoupons = 'zero one two three four five six seven eight nine'.split()[ncoupons]
+                        couponcount = '{} ({})'.format(wcoupons, ncoupons) if ncoupons else None
+                    else:
+                        couponcount = str(ncoupons)
+                    ccouponcount = couponcount.capitalize()
+                else:
+                    couponcount = None
+                    ccouponcount = None
 
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
@@ -104,7 +116,7 @@ class SponsorContract(DbCrudApiRolePermissions):
                                                   '_raceloc_'         : 'XXX race loc config XXX',
                                                   '_racebeneficiary_' : 'XXX race beneficiary config XXX',
                                                   '_coupondate_'      : coupondate,
-                                                  '_couponcount_'     : couponcount.capitalize(), # ok to assume first word in sentence
+                                                  '_couponcount_'     : ccouponcount, # ok to assume first word in sentence
                                                  })
                     
                     # update database to show contract sent/agreed
