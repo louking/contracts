@@ -84,6 +84,7 @@ def nav_menu():
     if current_user.has_role('super-admin'):
 
         sponsors.items.append(View('Races', 'admin.sponsorraces'))
+        sponsors.items.append(View('Race Variables', 'admin.sponsorracevbls'))
         sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
         sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))
 

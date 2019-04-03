@@ -44,6 +44,8 @@ REGEX_URL = r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]
 # https://www.regular-expressions.info/email.html
 REGEX_EMAIL = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"
 
+# https://stackoverflow.com/questions/17564088/how-to-form-a-regex-to-recognize-correct-declaration-of-variable-names
+REGEX_VBL = r"^[a-zA-Z_$][a-zA-Z_$0-9]*$"
 
 #####################################################
 class DteDbRelationship():

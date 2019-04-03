@@ -21,10 +21,10 @@ from re import match
 # homegrown
 from . import bp
 from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit
-from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate
+from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from contracts.dbmodel import Client, State
 from contracts.crudapi import DbCrudApiRolePermissions
-from contracts.crudapi import REGEX_URL, REGEX_EMAIL
+from contracts.crudapi import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 from common import client
 from sponsorcontract import SponsorContract
 
@@ -38,7 +38,7 @@ sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
 sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
 
 ## yadcf external filters
-filters = '\n'.join([
+sponsor_filters = '\n'.join([
             "<div class='external-filter filter-container'>",
             "    <div class='filter-item'>",
             "        <span class='label'>Race Year</span>",
@@ -67,7 +67,7 @@ raceyearcol = 1
 racecol = 2
 statecol = 4
 levelcol = 5
-yadcf_options = [
+sponsor_yadcf_options = [
           {
            'column_number': raceyearcol,
             'select_type': 'select2',
@@ -143,7 +143,6 @@ sponsor = SponsorContract(
                     rule = '/sponsors', 
                     dbmapping = sponsor_dbmapping, 
                     formmapping = sponsor_formmapping, 
-                    pretablehtml = filters,
                     checkrequired = True,
                     clientcolumns = [
                         { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
@@ -246,7 +245,8 @@ sponsor = SponsorContract(
                                     'template':'#customForm',
                                     'formOptions': { 'main': { 'focus': None } },
                                 },
-                    yadcfoptions = yadcf_options,
+                    pretablehtml = sponsor_filters,
+                    yadcfoptions = sponsor_yadcf_options,
                     )
 sponsor.register()
 
@@ -400,8 +400,8 @@ sponsorlevel.register()
 # sponsorracedates endpoint
 ###########################################################################################
 
-sponsorracedate_dbattrs = 'id,race,raceyear,racedate'.split(',')
-sponsorracedate_formfields = 'rowid,race,raceyear,racedate'.split(',')
+sponsorracedate_dbattrs = 'id,race,raceyear,racedate,beneficiary,raceloc'.split(',')
+sponsorracedate_formfields = 'rowid,race,raceyear,racedate,beneficiary,raceloc'.split(',')
 sponsorracedate_dbmapping = dict(zip(sponsorracedate_dbattrs, sponsorracedate_formfields))
 sponsorracedate_formmapping = dict(zip(sponsorracedate_formfields, sponsorracedate_dbattrs))
 
@@ -431,6 +431,12 @@ sponsorracedate = DbCrudApiRolePermissions(
                           'className': 'field_req',
                           'ed':{ 'label': 'Race Date (yyyy-mm-dd)' },
                         },
+                        { 'data': 'beneficiary', 'name': 'beneficiary', 'label': 'Beneficiary', 
+                          'className': 'field_req',
+                        },
+                        { 'data': 'raceloc', 'name': 'raceloc', 'label': 'Race Location', 
+                          'className': 'field_req',
+                        },
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
@@ -446,13 +452,135 @@ sponsorracedate = DbCrudApiRolePermissions(
 sponsorracedate.register()
 
 ##########################################################################################
+# sponsorracevbls endpoint
+###########################################################################################
+
+def vbl_validate(action, formdata):
+    results = []
+
+    # regex patterns from http://www.noah.org/wiki/RegEx_Python#URL_regex_pattern
+    for field in ['variable']:
+        if formdata[field] and not match(REGEX_VBL, formdata[field]):
+            results.append({ 'name' : field, 'status' : 'invalid variable: start with letter, then letters, digits, _ or $, no spaces ' })
+
+    return results
+
+sponsorracevbl_dbattrs = 'id,race,variable,value'.split(',')
+sponsorracevbl_formfields = 'rowid,race,variable,value'.split(',')
+sponsorracevbl_dbmapping = dict(zip(sponsorracevbl_dbattrs, sponsorracevbl_formfields))
+sponsorracevbl_formmapping = dict(zip(sponsorracevbl_formfields, sponsorracevbl_dbattrs))
+
+## yadcf external filters
+sponsorracevbl_filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+racecol = 1
+sponsorracevbl_yadcf_options = [
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
+sponsorracevbl = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = SponsorRaceVbl, 
+                    roles_accepted = ['super-admin', 'sponsor-admin'],
+                    template = 'datatables.jinja2',
+                    pagename = 'Sponsor Race Variables', 
+                    endpoint = 'admin.sponsorracevbls', 
+                    rule = '/sponsorracevbls', 
+                    dbmapping = sponsorracevbl_dbmapping, 
+                    formmapping = sponsorracevbl_formmapping, 
+                    checkrequired = True,
+                    validate = vbl_validate,
+                    clientcolumns = [
+                        { 'data': 'race', 'name': 'race', 'label': 'Race',
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
+                                                              'dbfield':'race', 'uselist':False, 'searchbox':True,
+                           } }
+                        },
+                        { 'data': 'variable', 'name': 'variable', 'label': 'Variable', 
+                          'className': 'field_req',
+                        },
+                        { 'data': 'value', 'name': 'value', 'label': 'Value', 
+                          'className': 'field_req',
+                        },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['create', 'edit', 'remove'],
+                    dtoptions = {
+                                        'scrollCollapse': True,
+                                        'scrollX': True,
+                                        'scrollXInner': "100%",
+                                        'scrollY': True,
+                                        'order': [[1, 'asc'], [2, 'desc']],
+                                  },
+                    pretablehtml = sponsorracevbl_filters,
+                    yadcfoptions = sponsorracevbl_yadcf_options,
+                    )
+sponsorracevbl.register()
+
+##########################################################################################
 # sponsorbenefits endpoint
 ###########################################################################################
 
-sponsorbenefit_dbattrs = 'id,order,benefit,description,levels'.split(',')
-sponsorbenefit_formfields = 'rowid,order,benefit,description,levels'.split(',')
+sponsorbenefit_dbattrs = 'id,race,order,benefit,description,levels'.split(',')
+sponsorbenefit_formfields = 'rowid,race,order,benefit,description,levels'.split(',')
 sponsorbenefit_dbmapping = dict(zip(sponsorbenefit_dbattrs, sponsorbenefit_formfields))
 sponsorbenefit_formmapping = dict(zip(sponsorbenefit_formfields, sponsorbenefit_dbattrs))
+
+## yadcf external filters
+sponsorbenefit_filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+racecol = 1
+sponsorbenefit_yadcf_options = [
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
 
 sponsorbenefit = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -467,6 +595,12 @@ sponsorbenefit = DbCrudApiRolePermissions(
                     formmapping = sponsorbenefit_formmapping, 
                     checkrequired = True,
                     clientcolumns = [
+                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
+                                                              'dbfield':'race', 'uselist':False, 'searchbox':True,
+                           } }
+                        },
                         { 'data': 'benefit', 'name': 'benefit', 'label': 'Benefit Name', 
                           'className': 'field_req',
                         },
@@ -489,9 +623,12 @@ sponsorbenefit = DbCrudApiRolePermissions(
                                         'scrollCollapse': True,
                                         'scrollX': True,
                                         'scrollXInner': "100%",
+                                        'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                         'scrollY': True,
-                                        'order': [[2, 'asc']],
+                                        'order': [[3, 'asc']],
                                   },
+                    pretablehtml = sponsorbenefit_filters,
+                    yadcfoptions = sponsorbenefit_yadcf_options,
                     )
 sponsorbenefit.register()
 

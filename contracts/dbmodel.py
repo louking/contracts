@@ -86,6 +86,10 @@ PROVIDERID_LEN = 128
 COUPONCODE_LEN = 32
 TREND_LEN = 32
 LOGOFILENAME_LEN = 128
+BENEFICIARY_LEN = 128
+RACELOC_LEN = 128
+SLUG_LEN = 32
+VALUE_LEN = 128
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -410,6 +414,17 @@ class SponsorRaceDate(Base):
     race           = relationship( 'SponsorRace', backref='dates', lazy=True )
     raceyear       = Column( Integer )
     racedate       = Column( String(DATE_LEN) )
+    beneficiary    = Column( String(BENEFICIARY_LEN) )
+    raceloc        = Column( String(RACELOC_LEN) )
+
+# sponsor race dates
+class SponsorRaceVbl(Base):
+    __tablename__ = 'sponsorracevbl'
+    id           = Column( Integer, primary_key=True )
+    variable     = Column( String(SLUG_LEN) )
+    value        = Column( String(VALUE_LEN) )
+    race_id      = Column( Integer, ForeignKey('sponsorrace.id') )
+    race         = relationship( 'SponsorRace', backref='variables', lazy=True )
 
 # sponsor levels / sponsor benefits
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
@@ -448,6 +463,8 @@ class SponsorLevel(Base):
 class SponsorBenefit(Base):
     __tablename__ = 'sponsorbenefit'
     id          = Column( Integer, primary_key=True )
+    race_id     = Column( Integer, ForeignKey('sponsorrace.id') )
+    race        = relationship( 'SponsorRace', backref='benefits', lazy=True )
     benefit     = Column( String(BENEFIT_LEN) )
     order       = Column( Integer )
     description = Column( String(DESCR_LEN) )

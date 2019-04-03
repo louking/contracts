@@ -22,6 +22,7 @@ from jinja2 import Template
 
 # homegrown
 from contracts.dbmodel import db, State, Sponsor, SponsorRaceDate, SponsorBenefit, SponsorLevel
+from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED
 from contracts.crudapi import DbCrudApiRolePermissions
@@ -78,10 +79,6 @@ class SponsorContract(DbCrudApiRolePermissions):
                 benefitsdb = SponsorBenefit.query.join(SponsorBenefit.levels).filter(SponsorLevel.id == sponsordb.level.id).order_by(SponsorBenefit.order).all()
                 benefits = [b.benefit for b in benefitsdb]
 
-                # get coupon date for agreement and email
-                # TODO: retrieve coupon deadline from database
-                coupondate = humandt.dt2asc(dt.asc2dt(racedate.racedate) - timedelta(3))
-
                 # calculate display for coupon count. word (num) if less than 10, otherwise num
                 # but note there may not be a coupon count
                 # ccouponcount is capitalized
@@ -97,6 +94,22 @@ class SponsorContract(DbCrudApiRolePermissions):
                     couponcount = None
                     ccouponcount = None
 
+                # pick up variables
+                variablesdb = SponsorRaceVbl.query.filter_by(race_id=sponsordb.race.id).all()
+                variables = {v.variable:v.value for v in variablesdb}
+                addlfields={
+                                  '_date_'            : humandt.dt2asc(date.today()),
+                                  '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
+                                  '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
+                                  '_raceheader_'      : '<img src="{}" width=6in>'.format(pathjoin(current_app.static_folder, 
+                                                            '{}-header.png'.format(sponsordb.race.raceshort.lower()))),
+                                  '_benefits_'        : benefits,
+                                  '_raceloc_'         : racedate.raceloc,
+                                  '_racebeneficiary_' : racedate.beneficiary,
+                                  '_couponcount_'     : ccouponcount, # ok to assume this is first word in sentence
+                                 }
+                addlfields.update(variables)
+
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
 
@@ -106,18 +119,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                                         sponsordb.raceyear, sponsordb.race.raceshort, sponsordb.client.client
                                       ), 
                                       sponsordb, 
-                                      addlfields={
-                                                  '_date_'            : humandt.dt2asc(date.today()),
-                                                  '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
-                                                  '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
-                                                  '_raceheader_'      : '<img src="{}" width=6in>'.format(pathjoin(current_app.static_folder, 
-                                                                            '{}-header.png'.format(sponsordb.race.raceshort.lower()))),
-                                                  '_benefits_'        : benefits,
-                                                  '_raceloc_'         : 'XXX race loc config XXX',
-                                                  '_racebeneficiary_' : 'XXX race beneficiary config XXX',
-                                                  '_coupondate_'      : coupondate,
-                                                  '_couponcount_'     : ccouponcount, # ok to assume first word in sentence
-                                                 })
+                                      addlfields=addlfields,
+                                     )
                     
                     # update database to show contract sent/agreed
                     sponsordb.state = State.query.filter_by(state=STATE_COMMITTED).one()
@@ -157,7 +160,7 @@ class SponsorContract(DbCrudApiRolePermissions):
                 # mergefields['_race_'] = sponsordb.race.race
                 racedate = SponsorRaceDate.query.filter_by(race_id=sponsordb.race.id, raceyear=sponsordb.raceyear).one()
                 mergefields['_racedate_'] = humandt.dt2asc(dt.asc2dt(racedate.racedate))
-                mergefields['_coupondate_'] = coupondate
+                mergefields['_coupondate_'] = variables['_coupondate_']
                 mergefields['_couponcount_'] = couponcount
 
 

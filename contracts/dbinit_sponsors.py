@@ -14,7 +14,7 @@ dbinit_sponsors - contracts database initialization configuration - sponsor tabl
 Initializion for sponsorraces, sponsorlevels, sponsorbenefits tables
 '''
 from dbmodel import db
-from dbmodel import SponsorRace, SponsorLevel, SponsorBenefit
+from dbmodel import SponsorRace, SponsorLevel, SponsorBenefit, SponsorRaceVbl
 from dbmodel import ModelItem, initdbmodels, getmodelitems, priorityUpdater
 
 sponsorraces = [
@@ -242,29 +242,42 @@ sponsorlevels = [
 
 # sponsor benefits
 sponsorbenefits = []
+benefitvariables = []
 
 # TEST sponsorship
+benefitvariables += [
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Test Race'}),
+        'variable'  : '_coupondate_',
+        'value'     : '*TEST coupon deadline*',
+    },
+]
+
 benefitpriority = priorityUpdater(10, 10)   # reset
 sponsorbenefits += [
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Test Race'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on Race Postcards, Posters (commit by April 1)',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Test Race'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on home page of Race Website',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Test Race'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Three (3) complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Test Race'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on Race Bib',
      'description'  : None,
@@ -273,87 +286,124 @@ sponsorbenefits += [
 ]
 
 # MSM sponsorship
+benefitvariables += [
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+        'variable'  : '_coupondate_',
+        'value'     : 'Sep 11',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+        'variable'  : '_shirtfrontdate_',
+        'value'     : 'Aug 1',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+        'variable'  : '_shirtbackdate_',
+        'value'     : 'Aug 15',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+        'variable'  : '_posterdate_',
+        'value'     : 'Apr 1',
+    },
+]
+
 benefitpriority = priorityUpdater(10, 10)   # reset
 sponsorbenefits += [
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
-     'benefit'      : 'Logo on Race Postcards, Posters (commit by April 1)',
+     'benefit'      : 'Logo on Race Postcards, Posters (commit by {{ _posterdate_ }})',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on home page of Race Website',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on Race Bib',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Opportunity to speak at Awards Ceremony',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
-     'benefit'      : 'Logo incorporated into artwork on front of race Shirt (commit by August 1)',
+     'benefit'      : 'Logo incorporated into artwork on front of race Shirt (commit by {{ _shirtfrontdate_ }})',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Logo on Race Registration Page',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Included on Race Promotion mass email',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Race Day Announcements Recognition',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
-     'benefit'      : 'Logo on back of Race Shirt (commit by August 15)',
+     'benefit'      : 'Logo on back of Race Shirt (commit by {{ _shirtbackdate_ }})',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}, {'race_short': 'MSM', 'level': 'Silver'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : '3\' x 6\' Race Day Banner (supplied by us)',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Shared Race Day Banner (supplied by us)',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Gold'}, {'race_short': 'MSM', 'level': 'Silver'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : '{{ _couponcount_ }} complimentary race entries  - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}, {'race_short': 'MSM', 'level': 'Silver'}, {'race_short': 'MSM', 'level': 'Bronze'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Dedicated Thank You/Recognition on Facebook',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Shared Thank You/Recognition on Facebook',
      'description'  : None,
@@ -365,6 +415,7 @@ benefitpriority = priorityUpdater(10, 10)   # reset
 # WDF sponsorship
 sponsorbenefits += [
     {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
      'order'        : benefitpriority(),
      'benefit'      : '5\' x 10\' Race Day Banner (supplied by us)',
      'description'  : None,
@@ -376,6 +427,7 @@ sponsorbenefits += [
 sponsormodelitems = [
     ModelItem(SponsorRace, sponsorraces, False, 'race'),
     ModelItem(SponsorLevel, sponsorlevels, False, ['race_id/race.id', 'level']),
+    ModelItem(SponsorRaceVbl, benefitvariables, False, ['race_id/race.id', 'variable']),
     ModelItem(SponsorBenefit, sponsorbenefits, True),
 ]
 
