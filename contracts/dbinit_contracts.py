@@ -739,7 +739,7 @@ contracts += [
                                  '{% endfor %}',
                                  '</ul>',
                                  '<p>Thank you so much for agreeing to be part of this year\'s {{ race.race }}. ',
-                                 'We couldn\'t be successful in our support for the {{ _racebeneficiary_ }} without you!</p>',
+                                 'We couldn\'t be successful in our support for {{ _racebeneficiary_ }} without you!</p>',
                                  '<p>',
                                  '{{ race.racedirector }}',
                                  '{%- if race.isRDCertified %}',

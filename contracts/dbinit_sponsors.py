@@ -14,7 +14,7 @@ dbinit_sponsors - contracts database initialization configuration - sponsor tabl
 Initializion for sponsorraces, sponsorlevels, sponsorbenefits tables
 '''
 from dbmodel import db
-from dbmodel import SponsorRace, SponsorLevel, SponsorBenefit, SponsorRaceVbl
+from dbmodel import SponsorRace, SponsorLevel, SponsorBenefit, SponsorRaceDate, SponsorRaceVbl
 from dbmodel import ModelItem, initdbmodels, getmodelitems, priorityUpdater
 
 sponsorraces = [
@@ -177,7 +177,7 @@ sponsorlevels = [
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
-     'level'            : 'Platinum-Plus: Feed 15 children',
+     'level'            : 'Platinum-Plus',
      'minsponsorship'   : 1500,
      'maxallowed'       : 3,
      'couponcount'      : 4,
@@ -185,7 +185,7 @@ sponsorlevels = [
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
-     'level'            : 'Platinum: Feed 10 children',
+     'level'            : 'Platinum',
      'minsponsorship'   : 1000,
      'maxallowed'       : None,
      'couponcount'      : 3,
@@ -193,7 +193,7 @@ sponsorlevels = [
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
-     'level'            : 'Gold: Feed 5 children',
+     'level'            : 'Gold',
      'minsponsorship'   : 500,
      'maxallowed'       : None,
      'couponcount'      : 2,
@@ -201,11 +201,19 @@ sponsorlevels = [
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
-     'level'            : 'Silver: Feed 3 children',
+     'level'            : 'Silver',
      'minsponsorship'   : 300,
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : True,
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'level'            : 'Water Stop',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : 1,
+     'display'          : False,
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -272,7 +280,7 @@ sponsorbenefits += [
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Test Race'}),
      'order'        : benefitpriority(),
-     'benefit'      : 'Three (3) complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'TEST', 'level': 'Gold'}])
     },
@@ -356,7 +364,7 @@ sponsorbenefits += [
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
-     'benefit'      : 'Included on Race Promotion mass email',
+     'benefit'      : 'Email Promotion: Inclusion on mass emails (over 12,000 recipients)',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}])
     },
@@ -391,7 +399,7 @@ sponsorbenefits += [
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'order'        : benefitpriority(),
-     'benefit'      : '{{ _couponcount_ }} complimentary race entries  - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
      'description'  : None,
      'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'MSM', 'level': 'Premier'}, {'race_short': 'MSM', 'level': 'Gold'}, {'race_short': 'MSM', 'level': 'Silver'}, {'race_short': 'MSM', 'level': 'Bronze'}])
     },
@@ -411,15 +419,470 @@ sponsorbenefits += [
     }
 ]
 
-benefitpriority = priorityUpdater(10, 10)   # reset
 # WDF sponsorship
+benefitpriority = priorityUpdater(10, 10)   # reset
+benefitvariables += [
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+        'variable'  : '_coupondate_',
+        'value'     : 'July 31',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+        'variable'  : '_shirtbackdate_',
+        'value'     : 'June 20',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+        'variable'  : '_posterdate_',
+        'value'     : 'Apr 1',
+    },
+]
+
 sponsorbenefits += [
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
      'order'        : benefitpriority(),
      'benefit'      : '5\' x 10\' Race Day Banner (supplied by us)',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short': 'WDF', 'level': 'Premier'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '3\' x 6\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '2\' x 6\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '2\' x 5\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Shared Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on home page of Race Website',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on Race Postcards, Posters',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Opportunity to speak at Awards Ceremony',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Call-out in published press releases',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on Race Bib',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Race Day Expo Booth Prime Location',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Race Day Water Stop with Branding',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Email Promotion: Inclusion on mass emails (over 12,000 recipients)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo/Link on Race Registration Page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Sponsor-supplied materials included in race bags',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Gold'}])
+    },
+        {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on race shirt (commit by {{ _shirtfrontdate_ }})',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Race Day Expo Space (10\'x10\')',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Gold'},{'race_short':'WDF', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Dedicated Thank you Facebook Page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Shared Thank you on Facebook Page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Gold'},{'race_short':'WDF', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on race website sponsor page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Gold'},{'race_short':'WDF', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'WDF', 'level': 'Premier'},{'race_short':'WDF', 'level': 'Platinum-Plus'},{'race_short':'WDF', 'level': 'Platinum'},{'race_short':'WDF', 'level': 'Gold'},{'race_short':'WDF', 'level': 'Silver'}])
+    },
+]
+
+# SS8K sponsorship
+benefitpriority = priorityUpdater(10, 10)   # reset
+benefitvariables += [
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+        'variable'  : '_coupondate_',
+        'value'     : 'June 10',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+        'variable'  : '_shirtbackdate_',
+        'value'     : 'May 16',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+        'variable'  : '_posterdate_',
+        'value'     : 'Apr 1',
+    },
+]
+
+sponsorbenefits += [
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Feed 25 Children for One Year',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Feed 15 Children for One Year',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Feed 10 Children for One Year',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Feed 5 Children for One Year',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Feed 3 Children for One Year',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Name/Logo on race website banner, Race Flyer and Poster',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on Race Bib',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Opportunity to Speak at Awards Ceremony',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Unique Venue Recognition (Contact us for Details)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Start/Finish Line Banner on Arch',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on Race Sign-up Page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Logo on race website (sponsor section)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Email Promotion - Mass Mailing (12,000 recipients)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Race Day Expo Space (10\' x 10\' with table)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '3\'x6\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '2\'x6\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '2\'x5\' Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Shared Race Day Banner (supplied by us)',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Name/Logo on race shirt (Must commit by {{ _shirtbackdate_ }})',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'},{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Race Day Recognition',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'},{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b> by {{ _coupondate_ }}',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'},{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Promotional Material on Shared Table',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'},{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Dedicated Facebook Thank You/Recognition',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Premier'},{'race_short':'SS8K', 'level': 'Platinum-Plus'},{'race_short':'SS8K', 'level': 'Platinum'},{'race_short':'SS8K', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Shared Facebook Thank You/Recognition',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'SS8K', 'level': 'Silver'},{'race_short':'SS8K', 'level': 'Water Stop'}])
+    },
+]
+
+# RICK'S sponsorship
+benefitpriority = priorityUpdater(10, 10)   # reset
+benefitvariables += [
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+        'variable'  : '_coupondate_',
+        'value'     : 'Sep 19',
+    },
+    {
+        'race'      : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+        'variable'  : '_shirtbackdate_',
+        'value'     : 'Aug 15',
+    },
+]
+
+sponsorbenefits += [
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Name included on race venue signage',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Dedicated large banner at race venue',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Name/Logo on race website',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Acknowledgment on race facebook page',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Option to set up booth/tent at race venue',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Acknowledgment at FCPS Awards Ceremony',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b>',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+    },
+    {
+     'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'order'        : benefitpriority(),
+     'benefit'      : 'Recognized in email listing reaching thousands of runners',
+     'description'  : None,
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+    },
+]
+
+# initial sponsor race dates
+sponsorracedates = [
+    {
+        'raceyear'      : 2019,
+        'race'          : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+        'racedate'      : '2019-09-14',
+        'beneficiary'   : 'Advocates for Homeless Families and Lincoln Elementary School Panther Running Club',
+        'raceloc'       : 'the YMCA, 1000 N. Market St., Frederick',
+    },
+    {
+        'raceyear'      : 2019,
+        'race'          : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+        'racedate'      : '2019-08-03',
+        'beneficiary'   : 'Women\'s Giving Circle of Frederick County',
+        'raceloc'       : 'Frederick Community College, 7932 Opossumtown Pike, Frederick',
+    },
+    {
+        'raceyear'      : 2019,
+        'race'          : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+        'racedate'      : '2019-06-15',
+        'beneficiary'   : 'Frederick chapter of Blessings in a Backpack',
+        'raceloc'       : 'the Walkersville Fire Hall, 79 West Frederick St, Walkersville',
+    },
+    {
+        'raceyear'      : 2019,
+        'race'          : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+        'racedate'      : '2019-09-22',
+        'beneficiary'   : 'Frederick Steeplechasers Memorial Scholarship',
+        'raceloc'       : 'Greenbrier State Park, Boonsboro',
     },
 ]
 
@@ -428,6 +891,7 @@ sponsormodelitems = [
     ModelItem(SponsorRace, sponsorraces, False, 'race'),
     ModelItem(SponsorLevel, sponsorlevels, False, ['race_id/race.id', 'level']),
     ModelItem(SponsorRaceVbl, benefitvariables, False, ['race_id/race.id', 'variable']),
+    ModelItem(SponsorRaceDate, sponsorracedates, False, ['race_id/race.id', 'raceyear']),
     ModelItem(SponsorBenefit, sponsorbenefits, True),
 ]
 
