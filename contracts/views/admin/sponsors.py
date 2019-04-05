@@ -132,6 +132,19 @@ sponsor_yadcf_options = [
           },
     ]
 
+def sponsor_validate(action, formdata):
+    results = []
+
+    # verify some fields were supplied
+    for field in ['couponcode']:
+        level = SponsorLevel.query.filter_by(id=formdata['level']['id']).one_or_none()
+        if level and level.couponcount and level.couponcount > 0:
+            if not formdata[field]:
+                results.append({ 'name' : field, 'status' : 'please supply'})
+
+    return results
+
+
 sponsor = SponsorContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
@@ -144,6 +157,7 @@ sponsor = SponsorContract(
                     dbmapping = sponsor_dbmapping, 
                     formmapping = sponsor_formmapping, 
                     checkrequired = True,
+                    validate = sponsor_validate,
                     clientcolumns = [
                         { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
                           'className': 'field_req',
@@ -180,7 +194,6 @@ sponsor = SponsorContract(
                           'className': 'field_req',
                         },
                         { 'data': 'couponcode', 'name': 'couponcode', 'label': 'Coupon Code', 
-                          'className': 'field_req',
                         },
                         { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'select2',
                           'className': 'field_req',
