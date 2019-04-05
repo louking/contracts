@@ -23,7 +23,7 @@ jq_ui_ver = '1.12.1'
 
 # dataTables
 dt_datatables_ver = '1.10.18'
-dt_editor_ver = '1.8.1'
+dt_editor_ver = '1.9.0'
 dt_buttons_ver = '1.5.4'
 dt_colvis_ver = '1.5.4'
 dt_fixedcolumns_ver = '3.2.5'
