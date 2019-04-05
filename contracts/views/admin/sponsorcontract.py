@@ -28,6 +28,8 @@ from contracts.dbmodel import STATE_COMMITTED
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from contracts.mailer import sendmail
+from contracts.runsignup import RunSignUp
+
 from loutilities.tables import get_request_data
 from loutilities.timeu import asctime
 
@@ -134,9 +136,28 @@ class SponsorContract(DbCrudApiRolePermissions):
                             resprow['dateagreed'] = sponsordb.dateagreed
                             resprow['contractDocId'] = sponsordb.contractDocId
 
+                    # configure coupon provider with coupon code (supported providers)
+                    if sponsordb.race.couponprovider and sponsordb.level.couponcount and sponsordb.level.couponcount > 0:
+                        expiration = racedate.racedate
+                        numregistrations = sponsordb.level.couponcount
+                        clientname = sponsordb.client.client
+                        raceid = sponsordb.race.couponproviderid
+                        couponcode = sponsordb.couponcode
+                        start = sponsordb.dateagreed
+                        if sponsordb.race.couponprovider.lower() == 'runsignup':
+                            with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET'], debug=debug) as rsu:
+                                coupons = rsu.getcoupons(raceid, couponcode)
+                                if coupons:
+                                    coupon = coupons[-1]     # should be only one entry, but last is the current one (?)
+                                    coupon_id = coupon['coupon_id']
+                                else:
+                                    coupon_id = None
+                                rsu.setcoupon(raceid, couponcode, start, expiration, numregistrations, clientname, coupon_id=coupon_id)
+
                 # if we are just resending current version of the contract
                 else:
                     docid = sponsordb.contractDocId
+
 
                 # prepare agreement email (new contract or resending)
                 templatestr = (db.session.query(Contract)

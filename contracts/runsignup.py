@@ -20,6 +20,7 @@ from json import dumps
 import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
+from flask import current_app
 
 # github
 
@@ -59,6 +60,8 @@ class RunSignUp():
         """
         initialize
         """
+
+        self.debug = debug
 
         # does user want to debug?
         logging.basicConfig() # you need to initialize logging, otherwise you will not see anything from requests
@@ -149,6 +152,9 @@ class RunSignUp():
         :param coupon_code: coupon code for specific coupon, None for all coupons
         """
         
+        if self.debug:
+            current_app.logger.debug('getcoupons({}, coupon_code={})'.format(race_id, coupon_code))
+
         # max number of coupons in coupon list is 100, so need to loop, collecting
         # BITESIZE coupons at a time.  These are all added to coupons list, and final
         # list is returned to the caller
@@ -194,6 +200,10 @@ class RunSignUp():
         :param coupon_id: optional coupon_id for edit, None for add
         """
         
+        if self.debug:
+            current_app.logger.debug('setcoupon({}, {}, {}, {}, {}, {}, coupon_id={})'.format(
+                        race_id, coupon_code, start, expiration, numregistrations, clientname, coupon_id))
+
         params = {
             'race_id'           : race_id,
             'request_format'    : 'json',
@@ -206,7 +216,6 @@ class RunSignUp():
                     "percentage": 100,
                     "fixed_discount_in_cents": 0,
                     "discount_type": "E",
-                    # TODO: should there be an argument with startdate?
                     "start_date": "{} 00:00:00".format(start),
                     "end_date": "{} 23:59:59".format(expiration),
                     
