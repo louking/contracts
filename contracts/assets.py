@@ -159,6 +159,7 @@ asset_bundles = {
         'admin/sponsors.js',    # must be after events
         'admin/sponsorracevbls.js',    # must be after events
         'admin/sponsorbenefits.js',    # must be after events
+        'admin/sponsorlevels.js',    # must be after events
         'admin/editor.select2.mymethods.js',
         'legend.js',
         'admin/admin_eventscalendar.js',

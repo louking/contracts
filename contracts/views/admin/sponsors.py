@@ -371,6 +371,36 @@ sponsorlevel_formfields = 'rowid,race,level,minsponsorship,couponcount,maxallowe
 sponsorlevel_dbmapping = dict(zip(sponsorlevel_dbattrs, sponsorlevel_formfields))
 sponsorlevel_formmapping = dict(zip(sponsorlevel_formfields, sponsorlevel_dbattrs))
 
+## yadcf external filters
+sponsorlevel_filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+racecol = 1
+sponsorlevel_yadcf_options = [
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
 sponsorlevel = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
@@ -418,6 +448,8 @@ sponsorlevel = DbCrudApiRolePermissions(
                                         'scrollY': True,
                                         'order': [[1, 'asc'], [2, 'desc']],
                                   },
+                    pretablehtml = sponsorlevel_filters,
+                    yadcfoptions = sponsorlevel_yadcf_options,
                     )
 sponsorlevel.register()
 
@@ -605,7 +637,6 @@ sponsorbenefit_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
     ]
-
 
 sponsorbenefit = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
