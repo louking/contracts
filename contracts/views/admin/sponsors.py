@@ -23,7 +23,7 @@ from . import bp
 from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit
 from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from contracts.dbmodel import Client, State
-from contracts.crudapi import DbCrudApiRolePermissions
+from contracts.crudapi import DbCrudApiRolePermissions, DteDbDependent
 from contracts.crudapi import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 from common import client
 from sponsorcontract import SponsorContract
@@ -166,7 +166,19 @@ sponsor = SponsorContract(
                           'className': 'field_req',
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
                                                               'dbfield':'race', 'uselist':False, 'searchbox':True,
-                           } }
+                           } },
+                           '_update' : {'options': 
+                                DteDbDependent(
+                                               model=SponsorRace, 
+                                               modelfield='id',
+                                               depmodel=SponsorLevel, 
+                                               depmodelref='race_id',
+                                               depmodelfield='race_level', 
+                                               depformfield='level.id', # <dependentfield>.<relationship valuefield, default 'id'>
+                                               depvaluefield='id', 
+                                               )
+                           },
+
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Client', 
                           'className': 'field_req',
@@ -612,7 +624,18 @@ sponsorbenefit = DbCrudApiRolePermissions(
                           'className': 'field_req',
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
                                                               'dbfield':'race', 'uselist':False, 'searchbox':True,
-                           } }
+                           } },
+                           '_update' : {'options': 
+                                DteDbDependent(
+                                               model=SponsorRace, 
+                                               modelfield='id',
+                                               depmodel=SponsorLevel, 
+                                               depmodelref='race_id',
+                                               depmodelfield='race_level', 
+                                               depformfield='levels.id', # <dependentfield>.<relationship valuefield, default 'id'>
+                                               depvaluefield='id', 
+                                               )
+                           },
                         },
                         { 'data': 'benefit', 'name': 'benefit', 'label': 'Benefit Name', 
                           'className': 'field_req',

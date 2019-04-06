@@ -13,6 +13,7 @@
 //                   if not present, yadcf will not be configured
 
 var editor, _dt_table;
+var opttree = {};
 
 function checkeval(obj) {
     // loop thru arrays
@@ -37,6 +38,22 @@ function checkeval(obj) {
     } else {
         return obj
     }
+}
+
+// handle any updates of dependent fields.
+// opttree is set in datatables() if (options.updateopts !== undefined).
+// opttree has a key for each field with dependency, and for each possible value
+// of that field has object like that described in https://editor.datatables.net/reference/api/dependent()
+// under Return options / JSON
+function dependent_option( val, data ) {
+    options = {}
+    for (var field in opttree) {
+        if (opttree.hasOwnProperty(field)) {
+            $.extend(true, options, opttree[field][data.values[field]]);
+        }
+    }
+
+    return options;
 }
 
 function datatables(data, buttons, options, files) {
@@ -81,10 +98,19 @@ function datatables(data, buttons, options, files) {
 
         if (options.updateopts !== undefined) {
             for (i=0; i<options.updateopts.length; i++) {
-                if (options.updateopts[i].on == 'open') {
-                    editor.dependent( options.updateopts[i].name, options.updateopts[i].url, {event:'focus'} )
-                } else if (options.updateopts[i].on == 'change') {
-                    editor.dependent( options.updateopts[i].name, options.updateopts[i].url, {event:'change'} )
+                updateopt = options.updateopts[i]
+                // handle option trees
+                if (updateopt.options != undefined) {
+                    opttree[updateopt.name] = updateopt.options;
+                    editor.dependent( updateopt.name, dependent_option );
+                    
+                // handle ajax update options
+                } else {
+                    if (updateopt.on == 'open') {
+                        editor.dependent( updateopt.name, updateopt.url, {event:'focus'} )
+                    } else if (options.updateopts[i].on == 'change') {
+                        editor.dependent( updateopt.name, updateopt.url, {event:'change'} )
+                    }
                 }
             }
         }

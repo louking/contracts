@@ -247,6 +247,97 @@ class DteDbBool():
         return [{'label':self.truedisplay,'value':self.truedisplay}, {'label':self.falsedisplay, 'value':self.falsedisplay}]
 
 #####################################################
+class DteDbDependent():
+#####################################################
+    '''
+    define dependent options between fields
+
+    * model - which when changed uses options from dependent model
+    * modelfield - field within model to drive changes in dependent model - default 'id'
+    * depmodel - dependent model
+    * depmodelref - field which refers back to model
+    * depmodelfield - field in dependent model which are displayed to user
+    * depvaluefield - field in dependent model which is used as value for select and to retrieve record, passed on Editor interface
+        default 'id' - needs to be a key for model record
+
+    e.g.,
+        class Parent(Base):
+            __tablename__ = 'parent'
+            id = Column(Integer, primary_key=True)
+            child_id = Column(Integer, ForeignKey('child.id'))
+            child = relationship("Child", backref="parent")
+
+        class Child(Base):
+            __tablename__ = 'child'
+            name = Column(String)
+            id = Column(Integer, primary_key=True)
+            parent_id = Column( Integer, ForeignKey('parent.id') )
+            parent    = relationship( 'Parent', backref='children', lazy=True )
+
+        TODO: add more detail here -- this is confusing
+
+        children = DteDbDependent(model=Parent, 
+                                  modelfield='id',
+                                  depmodel=Child, 
+                                  depmodelref='parent',
+                                  depmodelfield='name', 
+                                  depformfield='formfieldname',
+                                  depvaluefield='id', 
+                                 )
+
+        children is callable function which returns tree suitable for tables.CrudApi _update.options
+    '''
+    #----------------------------------------------------------------------
+    def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
+        # the args dict has default values for arguments added by this class
+        # caller supplied keyword args are used to update these
+        # all arguments are made into attributes for self by the inherited class
+        args = dict(model=None,
+                    modelfield='id', 
+                    depmodel=None,
+                    defmodelref=None,
+                    depmodelfield=None,
+                    depformfield=None,
+                    depvaluefield ='id',
+                    )
+        args.update(kwargs)
+
+        # some of the args are required
+        reqdfields = ['model', 'modelfield', 'depmodel', 'depmodelfield', 'depvaluefield']
+        for field in reqdfields:
+            if not args[field]:
+                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+
+        # set arguments as class attributes
+        for key in args:
+            setattr(self, key, args[key])
+
+    #----------------------------------------------------------------------
+    def __call__(self):
+    #----------------------------------------------------------------------
+
+        dbvals = self.model.query.all()
+        vals = [getattr(v, self.modelfield) for v in dbvals]
+
+        retoptions = {}
+        for val in vals:
+            retoptions[val] = {'options':{}}
+            # make convenient handle
+            formoptions = retoptions[val]['options'][self.depformfield] = []
+
+            # retrieve all dependent rows which refer to val
+            query = {self.depmodelref:val}
+            dbopts = self.depmodel.query.filter_by(**query).all()
+
+            # add these to the options
+            for dbopt in dbopts:
+                formoptions.append({'label':getattr(dbopt, self.depmodelfield), 
+                                    'value':getattr(dbopt, self.depvaluefield)})
+
+        return retoptions
+
+#####################################################
 class DbCrudApi(CrudApi):
 #####################################################
     '''
