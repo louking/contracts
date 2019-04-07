@@ -76,6 +76,7 @@ def nav_menu():
     # sponsor stuff
     if current_user.has_role('sponsor-admin') or  current_user.has_role('super-admin'):
         navbar.items.append(sponsors)
+        sponsors.items.append(View('Summary', 'admin.sponsorsummary'))
         sponsors.items.append(View('Sponsors', 'admin.sponsors'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
         sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))

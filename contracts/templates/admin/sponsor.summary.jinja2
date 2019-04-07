@@ -1,0 +1,92 @@
+{% extends "datatables.jinja2" %}
+{% block css %}
+  {{ super() }}
+  <style type="text/css">
+    #datatable_wrapper { 
+        display: none; 
+    }
+
+    .flex-container {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    .flex-item {
+      padding: 5px;
+      /*width: 200px;*/
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }    
+
+    #summary-race-year-select {
+        width: 100px;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        /*margin-right: 10px;
+        margin-bottom: 10px;
+        padding: 2px;*/
+    }
+
+    th, td {
+        padding: 3px;
+    }
+
+    tfoot {
+        font-weight: bold;
+    }
+
+    #levels tr td:first-child + td {
+        text-align: center;
+    }
+
+    #trends tr td:first-child + td {
+        text-align: center;
+    }
+    #trends tr td:first-child + td + td {
+        text-align: right;
+    }
+    #yearly tr td {
+        text-align: center;
+    }
+
+  </style>
+{% endblock %}
+{% block body %}
+  {{ super() }}
+  <div class=flex-container>
+    <table id=levels class=flex-item {# style="width:200px;" #}>
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+    <table id=trends class=flex-item {# style="width:200px;" #}>
+        <thead>
+            <tr>
+                <th>Trend</th>
+                <th>Count</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+    <table id=yearly class=flex-item border="1">
+        <thead></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+    <table id=weekly class=flex-item border="1">
+        <thead></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+  </div>
+{% endblock %}

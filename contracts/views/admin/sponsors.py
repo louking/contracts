@@ -276,6 +276,125 @@ sponsor = SponsorContract(
 sponsor.register()
 
 ##########################################################################################
+# sponsorsummarys endpoint
+###########################################################################################
+
+sponsorsummary_dbattrs = 'id,raceyear,racecontact,amount,trend,race,client,state,level,datesolicited,dateagreed,invoicesent'.split(',')
+sponsorsummary_formfields = 'rowid,raceyear,racecontact,amount,trend,race,client,state,level,datesolicited,dateagreed,invoicesent'.split(',')
+sponsorsummary_dbmapping = dict(zip(sponsorsummary_dbattrs, sponsorsummary_formfields))
+sponsorsummary_formmapping = dict(zip(sponsorsummary_formfields, sponsorsummary_dbattrs))
+
+## yadcf external filters
+sponsorsummary_filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            # the year filter is not handled by yadcf, check sponsor-summary.js
+            "    <div class='filter-item'>",
+            "        <span class='label'>Year</span>",
+            "        <span id='summary-race-year' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+racecol = 2
+sponsorsummary_yadcf_options = [
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
+sponsorsummary = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = Sponsor, 
+                    roles_accepted = ['super-admin', 'sponsor-admin'],
+                    template = 'sponsor.summary.jinja2',
+                    pagename = 'Sponsor Summary', 
+                    endpoint = 'admin.sponsorsummary', 
+                    rule = '/sponsorsummary', 
+                    dbmapping = sponsorsummary_dbmapping, 
+                    formmapping = sponsorsummary_formmapping, 
+                    checkrequired = True,
+                    clientcolumns = [
+                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
+                          'className': 'field_req',
+                        },
+                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
+                                                              'dbfield':'race', 'uselist':False, 'searchbox':True,
+                           } },
+                        },
+                        { 'data': 'client', 'name': 'client', 'label': 'Client', 
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 
+                                                              'dbfield':'client', 'uselist':False, 'searchbox':True,
+                                                              'editable' : { 'api':client },
+                           } },
+                        },
+                        { 'data': 'state', 'name': 'state', 'label': 'State', 
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
+                        },
+                        { 'data': 'level', 'name': 'level', 'label': 'sponsorsummaryship Level', 
+                          'className': 'field_req',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorLevel, 'labelfield':'race_level', 'formfield':'level', 
+                                                              'dbfield':'level', 'uselist':False, 'searchbox':True,
+                           } }
+                        },
+                        { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
+                          'className': 'field_req',
+                        },
+                        { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'select2',
+                          'className': 'field_req',
+                          'options':['new','same','up','down','lost'], 
+                        },
+                        { 'data': 'datesolicited', 'name': 'datesolicited', 'label': 'Date Solicited', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
+                            'ed':{ 'label': 'Date Solicited (yyyy-mm-dd)' }
+                        },
+                        { 'data': 'dateagreed', 'name': 'dateagreed', 'label': 'Date Agreed', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
+                            'ed':{ 'label': 'Date Agreed (yyyy-mm-dd)' }
+                        },
+                        { 'data': 'invoicesent', 'name': 'invoicesent', 'label': 'Invoice Sent', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
+                            'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
+                        },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = [],
+                    dtoptions = {
+                                    'scrollCollapse': True,
+                                    'scrollX': True,
+                                    'scrollXInner': "100%",
+                                    'scrollY': True,
+                                    'lengthMenu': [ [-1], ["All"] ],
+                                    'fixedColumns': {
+                                                      'leftColumns': 3,
+                                                    },
+                                    'drawCallback': { 'eval' : 'summary_drawcallback'  }
+                                  },
+                    pretablehtml = sponsorsummary_filters,
+                    yadcfoptions = sponsorsummary_yadcf_options,
+                    )
+sponsorsummary.register()
+
+##########################################################################################
 # sponsorraces endpoint
 ###########################################################################################
 
