@@ -150,6 +150,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                                 if coupons:
                                     coupon = coupons[-1]     # should be only one entry, but last is the current one (?)
                                     coupon_id = coupon['coupon_id']
+                                    # override start with the date portion of start_date
+                                    start = coupon['start_date'].split(' ')[0]
                                 else:
                                     coupon_id = None
                                 rsu.setcoupon(raceid, couponcode, start, expiration, numregistrations, clientname, coupon_id=coupon_id)
