@@ -31,7 +31,7 @@ function sponsor_configureformbuttons( that, action ) {
                     }
                 },
                 {
-                    text: 'Update and Send Agreement',
+                    text: 'Send Agreement',
                     className: ( contractsent ) ? 'disabled' : 'enabled',
                     action: function () {
                         if ( ! contractsent ) {
