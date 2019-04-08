@@ -99,21 +99,28 @@ class SponsorContract(DbCrudApiRolePermissions):
                 # pick up variables
                 variablesdb = SponsorRaceVbl.query.filter_by(race_id=sponsordb.race.id).all()
                 variables = {v.variable:v.value for v in variablesdb}
-                addlfields={
-                                  '_date_'            : humandt.dt2asc(date.today()),
-                                  '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
-                                  '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
-                                  '_raceheader_'      : '<img src="{}" width=6in>'.format(pathjoin(current_app.static_folder, 
-                                                            '{}-header.png'.format(sponsordb.race.raceshort.lower()))),
-                                  '_benefits_'        : benefits,
-                                  '_raceloc_'         : racedate.raceloc,
-                                  '_racebeneficiary_' : racedate.beneficiary,
-                                  '_couponcount_'     : ccouponcount, # ok to assume this is first word in sentence
-                                 }
-                addlfields.update(variables)
 
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
+
+                    # set up dateagreed, if not already there
+                    if not sponsordb.dateagreed:
+                        sponsordb.dateagreed = dt.dt2asc( date.today() )
+
+
+                    # additional fields for contract
+                    addlfields={
+                                      '_date_'            : humandt.dt2asc(dt.asc2dt(sponsordb.dateagreed)),
+                                      '_racedate_'        : humandt.dt2asc(dt.asc2dt(racedate.racedate)),
+                                      '_rdcertlogo_'      : pathjoin(current_app.static_folder, 'rd-cert-logo.png'),
+                                      '_raceheader_'      : '<img src="{}" width=6in>'.format(pathjoin(current_app.static_folder, 
+                                                                '{}-header.png'.format(sponsordb.race.raceshort.lower()))),
+                                      '_benefits_'        : benefits,
+                                      '_raceloc_'         : racedate.raceloc,
+                                      '_racebeneficiary_' : racedate.beneficiary,
+                                      '_couponcount_'     : ccouponcount, # ok to assume this is first word in sentence
+                                     }
+                    addlfields.update(variables)
 
                     # generate contract
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) sponsordb.__dict__={}'.format(sponsordb.__dict__))
@@ -126,7 +133,6 @@ class SponsorContract(DbCrudApiRolePermissions):
                     
                     # update database to show contract sent/agreed
                     sponsordb.state = State.query.filter_by(state=STATE_COMMITTED).one()
-                    sponsordb.dateagreed = dt.dt2asc( date.today() )
                     sponsordb.contractDocId = docid
                     
                     # find index with correct id and show database updates
