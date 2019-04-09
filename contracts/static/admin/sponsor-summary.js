@@ -151,7 +151,7 @@ function summary_drawcallback( settings ) {
         $.each( races, function(thisrace, sponsors)  {
             $.each( sponsors, function(sponsor, rec) {
                 // handle records for focused year
-                var thisrace = rec.thisrace;
+                var thisrace = rec.race;
                 if (rec.raceyear == summary_focusyear) {
                     thisyear = rec;
                     prevyear = trends[summary_focusyear-1][thisrace];
