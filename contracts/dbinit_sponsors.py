@@ -280,7 +280,7 @@ sponsorlevels = [
      'display'          : True,
     },
     {
-     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'level'            : 'none',
      'minsponsorship'   : 0,
      'maxallowed'       : None,
