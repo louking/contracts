@@ -58,7 +58,7 @@ sponsorraces = [
      'description'      : None,
     },
     {'race'             : 'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge', 
-     'raceshort'        : 'RICK\'S', 
+     'raceshort'        : 'RICKS', 
      'racedirector'     : 'Crista Horn', 
      'rdphone'          : None,
      'rdemail'          : 'crista.horn@steeplechasers.org',
@@ -95,6 +95,14 @@ sponsorlevels = [
      'display'          : True,
     },
     {
+     'race'             : getmodelitems(SponsorRace,{'race':'Test Race'}),
+     'level'            : 'none',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+    },
+    {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
      'level'            : 'Premier',
      'minsponsorship'   : 2000,
@@ -125,6 +133,14 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : True,
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+     'level'            : 'none',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -166,6 +182,14 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 2,
      'display'          : True,
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'level'            : 'none',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -216,6 +240,14 @@ sponsorlevels = [
      'display'          : False,
     },
     {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'level'            : 'none',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+    },
+    {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'level'            : 'Bronze',
      'minsponsorship'   : 150,
@@ -246,7 +278,16 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 3,
      'display'          : True,
-    },]
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'level'            : 'none',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+    },
+]
 
 # sponsor benefits
 sponsorbenefits = []
@@ -801,56 +842,56 @@ sponsorbenefits += [
      'order'        : benefitpriority(),
      'benefit'      : 'Name included on race venue signage',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Silver'},{'race_short':'RICKS', 'level': 'Bronze'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Dedicated large banner at race venue',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Name/Logo on race website',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'},{'race_short':'RICKS', 'level': 'Silver'},{'race_short':'RICKS', 'level': 'Bronze'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Acknowledgment on race facebook page',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'},{'race_short':'RICKS', 'level': 'Silver'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Option to set up booth/tent at race venue',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'},{'race_short':'RICKS', 'level': 'Silver'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Acknowledgment at FCPS Awards Ceremony',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : '{{ _couponcount_ }} complimentary race entries - use coupon code <b>{{ couponcode }}</b>',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'},{'race_short':'RICKS', 'level': 'Silver'}])
     },
     {
      'race'         : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
      'order'        : benefitpriority(),
      'benefit'      : 'Recognized in email listing reaching thousands of runners',
      'description'  : None,
-     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICK\'S', 'level': 'Platinum'},{'race_short':'RICK\'S', 'level': 'Gold'},{'race_short':'RICK\'S', 'level': 'Silver'},{'race_short':'RICK\'S', 'level': 'Bronze'}])
+     'levels'       : getmodelitems(SponsorLevel,[{'race_short':'RICKS', 'level': 'Platinum'},{'race_short':'RICKS', 'level': 'Gold'},{'race_short':'RICKS', 'level': 'Silver'},{'race_short':'RICKS', 'level': 'Bronze'}])
     },
 ]
 

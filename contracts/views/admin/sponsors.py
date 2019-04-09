@@ -407,7 +407,7 @@ def race_validate(action, formdata):
     results = []
 
     # regex patterns from http://www.noah.org/wiki/RegEx_Python#URL_regex_pattern
-    for field in ['url']:
+    for field in ['raceurl','sponsorurl']:
         if formdata[field] and not match(REGEX_URL, formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
