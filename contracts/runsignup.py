@@ -215,7 +215,7 @@ class RunSignUp():
                     "coupon_code": coupon_code,
                     "percentage": 100,
                     "fixed_discount_in_cents": 0,
-                    "discount_type": "E",
+                    "discount_type": "R",
                     "start_date": "{} 00:00:00".format(start),
                     "end_date": "{} 23:59:59".format(expiration),
                     
