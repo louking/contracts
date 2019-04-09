@@ -258,6 +258,7 @@ function summary_drawcallback( settings ) {
         $('#yearly tbody').append(stat_body);
     });
     var cdf = {};
+    var today = moment();
     for (week = loweeknum; week <= hiweeknum; week++) {
         var m = moment().year(summary_focusyear)
         var dates = m.week(week).day(0).format('MM/DD') 
@@ -268,7 +269,11 @@ function summary_drawcallback( settings ) {
                 cdf[year] = 0;
             if (week in years[year].weeks)
                 cdf[year] += years[year].weeks[week].amount;
-            date_body += '<td>$' + cdf[year] + '</td>';
+            // don't show stats for weeks after today
+            if (year == today.year() && week > today.week())
+                date_body += '<td></td>'
+            else
+                date_body += '<td>$' + cdf[year] + '</td>';
         }
         date_body += '</tr>';
         $('#yearly tbody').append(date_body);
