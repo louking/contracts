@@ -196,6 +196,6 @@ class SponsorContract(DbCrudApiRolePermissions):
                 html = template.render( mergefields )
                 tolist = sponsordb.client.contactEmail
                 rdemail = '{} <{}>'.format(sponsordb.race.racedirector, sponsordb.race.rdemail)
-                cclist = current_app.config['SPONSORSHIPQUERY_CC'] + [rdemail]
+                cclist = current_app.config['SPONSORSHIPAGREEMENT_CC'] + [rdemail]
                 fromlist = '{} <{}>'.format(sponsordb.race.race, current_app.config['SPONSORSHIPQUERY_CONTACT'])
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
