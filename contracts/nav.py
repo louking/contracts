@@ -70,16 +70,18 @@ def nav_menu():
             events.items.pop()
             events.items.append(View('Tags', 'admin.super-tags'))
 
-        navbar.items.append(View('Clients', 'admin.clients-admin'))
         navbar.items.append(View('Date Rules', 'admin.daterules'))
 
     # sponsor stuff
-    if current_user.has_role('sponsor-admin') or  current_user.has_role('super-admin'):
+    if current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
         navbar.items.append(sponsors)
         sponsors.items.append(View('Summary', 'admin.sponsorsummary'))
         sponsors.items.append(View('Sponsors', 'admin.sponsors'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
         sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))
+
+    if current_user.has_role('event-admin') or current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
+        navbar.items.append(View('Clients', 'admin.clients-admin'))
 
     # superadmin stuff
     if current_user.has_role('super-admin'):
