@@ -6,15 +6,6 @@
 Welcome to contractility's documentation!
 =========================================
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Contents:
-
-   contract-admin-guide
-   contract-admin-reference
-   contract-user-reference
-   contract-definitions
-
 The previous method of tracking race support business involves
 maintenance of a Google Sheet (tab per year, row per weekend date). The
 columns track all of the information required to generate the contract,
@@ -45,8 +36,9 @@ Tool’s secondary goal: support other agreements between FSRC and clients, e.g.
 
 This document shows the race services contract flow.
 
-The administrator should read :doc:`contract-admin-guide` and follow the specific use case they are interested 
-in. Admininstrator and user process flows can be found within :doc:`contract-admin-reference` and 
+The administrator should read :doc:`contract-admin-guide` and follow the
+specific use case they are interested  in. Administrator and user process flows
+can be found within :doc:`contract-admin-reference` and 
 :doc:`contract-user-reference` respectively. 
 
 In addition to the admin and user process flows mentioned above, there
@@ -59,6 +51,16 @@ are some automated processes:
 **Notes**
 
 -  in this document the terms “contract” and “agreement” are used interchangeably.
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+
+   contract-admin-guide
+   contract-admin-reference
+   contract-user-reference
+   contract-definitions
+
 
 Indices and tables
 ==================

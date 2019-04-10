@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'contractility'
-copyright = u'2018, Lou King'
+copyright = u'2018,2019 Lou King'
 author = u'Lou King'
 
 # The short X.Y version
@@ -103,6 +103,8 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+# see https://stackoverflow.com/questions/18969093/how-to-include-the-toctree-in-the-sidebar-of-each-page
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

@@ -18,7 +18,7 @@ Admin Calendar view
 **Navigation:** Calendar
 
 The main administrative interface is a calendar of the :term:`events <event>` in the
-database. The admininistrator can create a new :term:`event`, or select an :term:`event` for 
+database. The administrator can create a new :term:`event`, or select an :term:`event` for 
 Edit, or Delete operations.
 
 To create a new :term:`event`, click on a date. To edit an :term:`event`, click on the event.
@@ -78,7 +78,7 @@ which are in a particular :term:`State`, within a Date Range, or which has contr
 Create Event view
 =================
 
-The Create Event view is one way a race entry is created in the tool. Generally this is used when a
+The Create Event view is one way a race entry is created in the tool. Generally, this is used when a
 request is received for a new race. See  :ref:`post-event-processing` for details on how existing
 races are automatically “renewed” for the following year.
 
@@ -128,16 +128,17 @@ and to generate a contract.
 
 Click **Update** to update any changed fields in the :term:`event`.
 
-Click **Update and Send Contract** button to generate the contract and send the :ref:`contract-email` 
-to the race director (Contact email), treasurer, and raceservices. The event state 
-is automatically set to *contract-sent*.
+Click **Update and Send Contract** button to generate the contract and send the
+:ref:`contract-email`  to the race director (Contact email), treasurer, and
+raceservices. The event state  is automatically set to *contract-sent*.
 
-The **Resend Contract** button is only active if contact has been sent. If in *contract-sent* :term:`state`
-:ref:`contract-email` will be resent. If in *committed* :term:`state`, :ref:`agreement-accepted-email`
-will be resent.
+The **Resend Contract** button is only active if contact has been sent. If in
+*contract-sent* :term:`state`, :ref:`contract-email` will be resent. If in
+*committed* :term:`state`, :ref:`agreement-accepted-email` will be resent.
 
-If the :term:`event` needs to be deleted, click **Delete**. You will be asked for confirmation before the 
-:term:`event` is deleted. Note another option is to change the :term:`event` :term:`state` to *canceled*.
+If the :term:`event` needs to be deleted, click **Delete**. You will be asked
+for confirmation before the :term:`event` is deleted. Note another option is to
+change the :term:`event` :term:`state` to *canceled*.
 
 .. image:: images/edit-event-view.*
 
@@ -245,12 +246,12 @@ and can be changed by a superadmin.
    mailings at http://eepurl.com/bMW_Wf, and be sure to check the
    Frederick Area Featured Races option.
 
-   After your race, please send email addresses of your participants to
-   communications@steeplechasers.org. These folks will be included in
-   our mailings about Frederick area local races. As a reminder, you
-   have agreed to include a statement in your waiver as follows, “I
+   After your race, please send email addresses of your participants to 
+   communications@steeplechasers.org. These folks will be included in 
+   our mailings about Frederick area local races. As a reminder, you 
+   have agreed to include a statement in your waiver as follows, "I 
    understand that I may receive emails about this race and other races
-   promoted by the Frederick Steeplechasers Running Club.”
+   promoted by the Frederick Steeplechasers Running Club."
 
    [end premiumpromotion]
 
@@ -265,7 +266,7 @@ and can be changed by a superadmin.
 Pre Event Coordination email
 ==============================
 
-Before the :term:`event`, an email is sent to to assure proper coordination.
+Before the :term:`event`, an email is sent to assure proper coordination.
 
 If the race director contracted for finishline and/or for coursemarking, [5 days]
 prior to the race, the Pre Event Coordination email is sent.
@@ -404,8 +405,8 @@ and can be changed by a superadmin.
 Post Event email reminder
 ===========================
 
-The Post Event email reminder is sent 120 days before an expected event which has not been confirmed. This
-email is similar to :ref:`post-event-email`.
+The Post Event email reminder is sent 120 days before an expected event which has not been 
+confirmed. This email is similar to :ref:`post-event-email`.
 
 
 .. _agreement:

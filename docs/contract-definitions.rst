@@ -11,8 +11,7 @@ Definitions
         'Contact Email' for approval.
 
     course
-        The course has an address where the finish line will be set up. Generally we work with loop courses, so
-        this is the same as the starting line.
+        The course has an address where the finish line will be set up. Generally, we work with loop courses, so this is the same as the starting line.
 
     date rule
         A rule which defines a date on which a :term:`race` or :term:`exception` is created. E.g., Third Sat Aug is
