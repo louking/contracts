@@ -249,6 +249,10 @@ class Client(Base):
     contactEmail        = Column( String(EMAIL_LEN) )
     contactTitle        = Column( String(TITLE_LEN) )
 
+    @hybrid_property
+    def name(self):
+        return self.contactFirstName + ' ' + self.contactLastName
+
 class Race(Base):
     __tablename__ = 'race'
     id                  = Column( Integer, primary_key=True ) 

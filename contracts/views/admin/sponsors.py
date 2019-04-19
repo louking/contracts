@@ -32,8 +32,8 @@ from sponsorcontract import SponsorContract
 # sponsors endpoint
 ###########################################################################################
 
-sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
-sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
+sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
+sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
 sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
 sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
 
@@ -199,10 +199,14 @@ sponsor = SponsorContract(
                                                               'dbfield':'level', 'uselist':False, 'searchbox':True,
                            } }
                         },
-                        { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
+                        { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
                           'className': 'field_req',
                         },
-                        { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
+                        { 'data': 'client_name', 'name': 'client_name', 'label': 'Client Name', 'type': 'readonly',
+                        },
+                        { 'data': 'client_email', 'name': 'client_email', 'label': 'Client Email', 'type': 'readonly',
+                        },
+                        { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
                           'className': 'field_req',
                         },
                         { 'data': 'couponcode', 'name': 'couponcode', 'label': 'Coupon Code', 

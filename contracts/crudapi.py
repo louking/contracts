@@ -189,6 +189,86 @@ class DteDbRelationship():
         return items
 
 #####################################################
+class DteDbSubrec():
+#####################################################
+    '''
+    define subfield relationship for datatables editor db - form interface
+
+    for relationships defined like
+    class model()
+        field            = relationship( 'mappingmodel', backref=tablemodel, lazy=True )
+
+    * model - model comprises the subrec
+    * dbfield - field in model which is used to be displayed to the user
+    * formfield - field name on form associated with this db field
+
+    e.g.,
+        class Parent(Base):
+            __tablename__ = 'parent'
+            id = Column(Integer, primary_key=True)
+            child_id = Column(Integer, ForeignKey('child.id'))
+            child = relationship("Child", backref="parents")
+
+        class Child(Base):
+            __tablename__ = 'child'
+            name = Column(String)
+            id = Column(Integer, primary_key=True)
+
+        TODO: add more detail here -- this is confusing
+
+        reln = DteDbSubrec(model=Child, dbfield='name', formfield='name')
+    '''
+    #----------------------------------------------------------------------
+    def __init__(self, **kwargs):
+    #----------------------------------------------------------------------
+        # the args dict has default values for arguments added by this class
+        # caller supplied keyword args are used to update these
+        # all arguments are made into attributes for self by the inherited class
+        args = dict(model=None,
+                    field=None,
+                    subfield=None, 
+                    formfield=None,
+                    )
+        args.update(kwargs)
+
+        # some of the args are required
+        reqdfields = ['model', 'field', 'subfield', 'formfield']
+        for field in reqdfields:
+            if not args[field]:
+                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+
+        # set arguments as class attributes
+        for key in args:
+            setattr(self, key, args[key])
+
+    #----------------------------------------------------------------------
+    def set(self, formrow):
+    #----------------------------------------------------------------------
+        # set database from form
+        itemvalue = formrow[self.formfield] if formrow[self.formfield] else None
+        queryfilter = itemvalue
+        thisitem = self.model.query.filter_by(**queryfilter).one_or_none()
+        return thisitem
+
+    #----------------------------------------------------------------------
+    def get(self, dbrow_or_id):
+    #----------------------------------------------------------------------
+        # check if id supplied, if so retrieve dbrow
+        if type(dbrow_or_id) in [int, str]:
+            dbrow = self.model.query().filter_by(id=dbrow_or_id).one()
+        else:
+            dbrow = dbrow_or_id
+
+        # get from database to form
+        # get the attribute if specified
+        if getattr(dbrow, self.field):
+            item = getattr( getattr(dbrow, self.field), self.subfield)
+            return item
+        # otherwise return None
+        else:
+            return None
+
+#####################################################
 class DteDbBool():
 #####################################################
     '''
@@ -469,6 +549,29 @@ class DbCrudApi(CrudApi):
                 if args['serverside']:
                     self.servercolumns.append( ColumnDT(getattr(args['model'], dbattr), mData=formfield, **columndt_args) )
             
+                # special processing if db attribute implies subrecord
+                # only know how to handle two levels now
+                branches = dbattr.split('.')
+                if len(branches) == 2:
+                    # submodel is one level down
+                    submodelname = branches[0]
+                    submodel = type(getattr(args['model'],submodelname))
+                    subfield = branches[1]
+                    thisreln = DteDbSubrec(model=submodel, field=submodelname, subfield=subfield, formfield=formfield)
+                    if not args['serverside']:
+                        self.formmapping[formfield] = thisreln.get
+
+                    # server side tables adds ColumnDT (untested)
+                    else:
+                        self.servercolumns.append( ColumnDT( thisreln.get(getattr(submodel, 'id')) , mData=formfield, **columndt_args) )                        
+
+                    # db processing section
+                    ## save handler, set data to db using handler set function
+                    ## for now, make this a noop, and readonly. See loutilities.tables.DataTablesEditor.set_dbrow()
+                    # self.dbmapping[dbattr] = thisreln.set        #TODO: doesn't work
+                    self.dbmapping[dbattr] = '__readonly__' # won't be found so no db update to this field will be made
+                    col['type'] = 'readonly'                # force column to be readonly on form
+
             # special treatment required
             else:
                 if type(treatment) != dict or len(treatment) != 1 or treatment.keys()[0] not in ['boolean', 'relationship']:
@@ -489,7 +592,7 @@ class DbCrudApi(CrudApi):
                     if not args['serverside']:
                         self.formmapping[formfield] = booleanform[formfield].get
 
-                    # server side tables adds ColumnDT to handle boolean values
+                    # server side tables adds ColumnDT to handle boolean values (untested)
                     else:
                         self.servercolumns.append( ColumnDT( func.thisbool.get(getattr(thisbool.tablemodel, 'id')) , mData=formfield, **columndt_args) )                        
 
@@ -522,7 +625,7 @@ class DbCrudApi(CrudApi):
                     if not args['serverside']:
                         self.formmapping[formfield] = thisreln.get
 
-                    # server side tables adds ColumnDT to handle boolean values
+                    # server side tables adds ColumnDT (untested)
                     else:
                         # TODO: maybe need to do something with {formfield : {'id': xx, label: yy}} or maybe this will just work?
                         self.servercolumns.append( ColumnDT(func.thisreln.get(getattr(thisreln.tablemodel, 'id')) , mData=formfield, **columndt_args))
