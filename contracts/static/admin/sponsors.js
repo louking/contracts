@@ -83,7 +83,7 @@ function sponsor_cleartriggers( editor ) {
 }
 
 // only define afterdatatables if needed
-if ( ['/admin/sponsors'].includes(location.pathname) ) {
+if ( ['/admin/sponsorships'].includes(location.pathname) ) {
     // set up registered filters
     var d = new Date();
     var year = d.getFullYear().toString();

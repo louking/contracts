@@ -49,7 +49,7 @@ def nav_menu():
     contracts = Subgroup('Contracts')
     events    = Subgroup('Events')
     services  = Subgroup('Services')
-    sponsors  = Subgroup('Sponsors')
+    sponsors  = Subgroup('Sponsorships')
 
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
@@ -76,7 +76,7 @@ def nav_menu():
     if current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
         navbar.items.append(sponsors)
         sponsors.items.append(View('Summary', 'admin.sponsorsummary'))
-        sponsors.items.append(View('Sponsors', 'admin.sponsors'))
+        sponsors.items.append(View('Sponsorships', 'admin.sponsorships'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
         sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))
 
