@@ -29,8 +29,8 @@ from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 # clients endpoint
 ###########################################################################################
 
-client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr'.split(',')
-client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr'.split(',')
+client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
+client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
 client_dbmapping = dict(zip(client_dbattrs, client_formfields))
 client_formmapping = dict(zip(client_formfields, client_dbattrs))
 
@@ -78,6 +78,7 @@ client = DbCrudApiRolePermissions(
                         },
                         { 'data': 'clientPhone', 'name': 'clientPhone', 'label': 'Client Phone' },
                         { 'data': 'clientAddr', 'name': 'clientAddr', 'label': 'Client Address', 'type': 'textarea' },
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type': 'textarea' },
                     ], 
                     validate = client_validate,
                     servercolumns = None,  # not server side

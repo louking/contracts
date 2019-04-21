@@ -32,8 +32,8 @@ from sponsorcontract import SponsorContract
 # sponsors endpoint
 ###########################################################################################
 
-sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
-sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,isRegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
+sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
+sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
 sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
 sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
 
@@ -225,10 +225,11 @@ sponsor = SponsorContract(
                         { 'data': 'invoicesent', 'name': 'invoicesent', 'label': 'Invoice Sent', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
                         },
-                        { 'data': 'isRegSiteUpdated', 'name': 'isRegSiteUpdated', 'label': 'Registration Site Updated', 
-                          'className': 'field_req',
-                          '_treatment' : {'boolean':{'formfield':'isRegSiteUpdated', 'dbfield':'isRegSiteUpdated'}},
+                        { 'data': 'RegSiteUpdated', 'name': 'RegSiteUpdated', 'label': 'Registration Site Updated', 
+                          'type': 'select2',
+                          'options':['no', 'yes', 'n/a'], 
                           'ed':{ 'def': 'no' }, 
+                          'className': 'field_req',
                         },
                         { 'data': 'isWebsiteUpdated', 'name': 'isWebsiteUpdated', 'label': 'Website Updated', 
                           'className': 'field_req',

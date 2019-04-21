@@ -248,6 +248,7 @@ class Client(Base):
     contactLastName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
     contactTitle        = Column( String(TITLE_LEN) )
+    notes               = Column( String(NOTES_LEN) )
 
     @hybrid_property
     def name(self):
@@ -384,7 +385,7 @@ class Sponsor(Base):
     dateagreed          = Column( String(DATE_LEN) )
     invoicesent         = Column( String(DATE_LEN) )
 
-    isRegSiteUpdated    = Column( Boolean )
+    RegSiteUpdated      = Column( Enum('no',  'yes', 'n/a') )
     isWebsiteUpdated    = Column( Boolean )
     isLogoReceived      = Column( Boolean )
     isSponsorThankedFB  = Column( Boolean )
