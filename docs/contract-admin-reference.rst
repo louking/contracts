@@ -5,9 +5,36 @@ Administrator's Reference
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
+   
 
 This page has views and emails used by the administrator. Note some of the views may not be visible
 to you, depending on your privilege setting.
+
+
+.. _client-management:
+
+
+Client Management
+-------------------
+
+A :term:`client` can either be an :term:`event` race director or a :term:`signature race` sponsor.
+
+
+.. _create-client-view:
+
+Create Client view
+======================
+
+.. image:: images/create-client-view.*
+
+
+
+
+.. _event-management:
+
+
+Event Management
+-----------------
 
 
 .. _admin-calendar-view:
@@ -59,11 +86,6 @@ action.
    :CSV: download a csv file of the currently filtered events. **Note** only the displayed events will be downloaded, 
       so if there are multiple pages of events, some may be missing.
 
-   :Delete: (requires single selection) shows popup “are you sure”, and if you click OK delete the :term:`event`
-
-      **Note:** if you don't want the event deleted because (e.g., the race owes or paid money we want to 
-      track), change the :term:`state` to *canceled*
-
    :Calendar: switch to the :ref:`admin-calendar-view`
 
 The top row of controls provides a way to filter the table display down to only show the events
@@ -108,14 +130,6 @@ Create Course view
 ===================
 
 .. image:: images/create-course-view.*
-
-
-.. _create-client-view:
-
-Create Client view
-======================
-
-.. image:: images/create-client-view.*
 
 
 .. _edit-event-view:
@@ -411,10 +425,11 @@ confirmed. This email is similar to :ref:`post-event-email`.
 
 .. _agreement:
 
-Agreement
-=========
+Event Agreement
+==================
 
-The agreement will be similar to the following. Note this is configured in the system and can be changed by a superadmin.
+The :term:`event` agreement will be similar to the following. Note this is configured in the system and 
+can be changed by a superadmin.
 
 When viewing, this will
 be a google doc published view, and when downloading this will be a pdf
@@ -568,5 +583,147 @@ To create a new :term:`date rule`, click on New from the Date Rules view. To edi
 
 
 
+.. _sponsorship-management:
 
 
+Sponsorship Management
+-----------------------------
+
+
+.. _sponsorship-overview-view:
+
+Sponsorship Overview view
+===========================
+
+**Navigation:** Sponsorships > Sponsorships
+
+This view  provides a table  of all the :term:`sponsorships <sponsorship>`  in the database. The
+admin can create a new :term:`sponsorship`, or  select an :term:`sponsorship` for various 
+operations.
+
+Notice the :term:`State` column. The :term:`State` may be updated automatically by the tool or the
+admin can update it through the administrative interface. See :term:`state` for a description of the
+states and whether they are set by the tool or by the administrator.
+
+Clicking the buttons at the top will take you to specific views or perform some
+action.
+
+   :New: takes you to :ref:`create-event-view`
+
+   :Edit: (requires single selection) takes you to :ref:`edit-event-view`
+
+   :CSV: download a csv file of the currently filtered events. **Note** only the displayed events will be downloaded, 
+      so if there are multiple pages of events, some may be missing.
+
+The top row of controls provides a way to filter the table display down to only show the events
+which are in a particular race year, for a particular :term:`race <signature race>`, which are in one or
+more :term:`states <state>`, or are at one or more :term:`sponsor levels <sponsor level>`.
+
+Setting race year will be "sticky" when navigating in the same browser tab, and setting race will be "sticky" 
+when navigating within this tab or to other tabs.
+
+.. image:: images/sponsorship-overview.*
+
+
+.. _create-sponsorship-view:
+
+Create Sponsorship view
+=========================
+
+The Create Sponsorship view is one way a :term:`sponsorship` entry is created in the tool.
+Generally, this is used when a new sponsor (:term:`client`) is being solicited. See 
+:ref:`post-sponsorship-processing` for details on how existing sponsorships are automatically
+"renewed" for the following year.
+
+Notice the :term:`State` field. The :term:`State` may be updated automatically by the tool or the
+admin can update it through the administrative interface. See :term:`state` for a description of the
+states and whether they are set by the tool or by the administrator.
+
+When selecting **Client**, a search box is displayed. You can start typing to find the sponsor
+:term:`client` if they were previously stored. If a new sponsor :term:`client` is needed, click on the
+*<new>* entry and the  :ref:`create-client-view` will be displayed so the sponsor can be created.
+
+.. image:: images/create-sponsorship-view.*
+
+
+
+.. _edit-sponsorship-view:
+
+Edit Sponsorship view
+========================
+
+The Edit Sponsorship view can be used to update the specifics about the sponsorship,
+and to generate a agreement.
+
+Click **Update** to update any changed fields in the :term:`sponsorship`.
+
+Click **Send Agreement** button to generate the agreement and send the
+to the sponsor :term:`client`'s contact email, treasurer, and
+races. The event state  is automatically set to *committed*.
+
+The **Resend Agreement** button is only active if agreement has been sent. The
+agreement email will be resent.
+
+If the :term:`sponsorship` needs to be deleted, click **Delete**. You will be asked
+for confirmation before the :term:`sponsorship` is deleted. Note a better option is to
+change the :term:`sponsorship` :term:`state` to *canceled*.
+
+.. image:: images/edit-sponsorship-view.*
+
+
+
+.. _post-sponsorship-processing:
+
+Post Sponsorship Processing
+=============================
+
+After the :term:`signature race` associated with a :term:`sponsorship`, an 
+automated task take place. This processing happens [5 days] after the race.
+
+-  :term:`Sponsorship` is automatically "renewed" meaning a *renewed-pending* :term:`sponsorship`
+   is created for the following year.
+
+
+.. _sponsor-query-form:
+
+Sponsor Query Form
+=====================
+
+The sponsor :term:`client` can indicate their desire to sponsor a :term:`signature race`
+using the Sponsor Query Form.
+
+.. image:: images/sponsor-query-form.*
+
+
+.. _sponsor-query-log:
+
+Sponsor Query Log
+=====================
+
+**Navigation:** Sponsorships > Query Log
+
+When a sponsor :term:`client` fills out the :ref:`sponsor-query-form`, the contents of the form are 
+saved in the Sponsor Query Log.
+
+.. image:: images/sponsor-query-log.*
+
+
+
+.. _sponsor-race-dates-overview:
+
+Sponsor Race Dates Overview
+===============================
+
+**Navigation:** Sponsorships > Race Dates [super-admin only]
+
+.. image:: images/sponsor-race-dates-overview.*
+
+
+.. _sponsor-race-variables-overview:
+
+Sponsor Race Variables Overview
+===============================
+
+**Navigation:** Sponsorships > Race Variables [super-admin only]
+
+.. image:: images/sponsor-race-variables-overview.*

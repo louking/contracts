@@ -5,7 +5,7 @@ Race Contract Administrator's Guide
 ===========================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Contents:
 
 The system is used to manage bookings and contracts for the Steeplechasers race services 
@@ -55,7 +55,7 @@ Summary:
 #. Race Director and FSRC Race Lead receive automated emails 5 days before 
    event with logistical information
 #. Race Director receives email after event with link to survey
-#. Race is automatically renewed for following year and placed in tentative 
+#. Race is automatically renewed for following year and placed in renewed pending 
    state until FSRC and race director resume correspondence
 
 Detail:
@@ -139,7 +139,7 @@ Event State Flow
       "renewed-pending" -> "tentative" [label="RD responds to renewal email"]
       "(New Race)" -> "tentative" [label="RD requests date"]
       "tentative" -> "tentative" [label="RD and admin confirm info"]
-      "tentative" -> "contract-sent" [label="Update and Send Contract"]
+      "tentative" -> "contract-sent" [label="Send Contract"]
       "contract-sent" -> "committed" [label="RD agrees to contract"]
       "contract-sent" -> "canceled" [label="RD cancels race"]
       "committed" -> "canceled" [label="RD cancels race"]
@@ -161,24 +161,8 @@ Event State Flow
 
 .. _use-cases:
 
-Use Cases (What To Do...)
-=========================
-
-
-.. _log-in:
-
-When You Want to Log In
--------------------------
-From the contractility home page, click on `log in` in the upper right corner. You will be shown a google sign in 
-challenge similar to below. Sign in with your steeplechasers.org account.
-
-.. image:: images/choose-account.*
-   :align: center
-
-If this is your first time using the application, you be shown the following, which will give the application permission to create files in G Suite on your behalf. Click Allow
-
-.. image:: images/sign-in-challenge.*
-   :align: center
+Event Use Cases (What To Do...)
+==================================
 
 
 .. _contact-new-race:

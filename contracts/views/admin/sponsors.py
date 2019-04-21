@@ -251,7 +251,7 @@ sponsor = SponsorContract(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove', 
+                    buttons = ['create', 'edit', 
                                {
                                     'extend': 'csv',
                                     'text': 'CSV',
@@ -329,7 +329,7 @@ sponsorsummary = DbCrudApiRolePermissions(
                     model = Sponsor, 
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'sponsor.summary.jinja2',
-                    pagename = 'Sponsor Summary', 
+                    pagename = 'Sponsorship Summary', 
                     endpoint = 'admin.sponsorsummary', 
                     rule = '/sponsorsummary', 
                     dbmapping = sponsorsummary_dbmapping, 
