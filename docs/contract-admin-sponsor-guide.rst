@@ -8,7 +8,7 @@ Race Sponsor Administrator's Guide
    :maxdepth: 4
    :caption: Contents:
 
-The system is ued to manage sponsors for the Steeplechasers signature races. The primary functions 
+The system is used to manage sponsors for the Steeplechasers signature races. The primary functions 
 provided by the system include:
 
 * maintain database of benefits for sponsor levels
