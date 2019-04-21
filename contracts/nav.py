@@ -78,7 +78,6 @@ def nav_menu():
         sponsors.items.append(View('Summary', 'admin.sponsorsummary'))
         sponsors.items.append(View('Sponsorships', 'admin.sponsorships'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
-        sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))
 
     if current_user.has_role('event-admin') or current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
         navbar.items.append(View('Clients', 'admin.clients-admin'))
@@ -87,6 +86,7 @@ def nav_menu():
     if current_user.has_role('super-admin'):
 
         sponsors.items.append(View('Races', 'admin.sponsorraces'))
+        sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))
         sponsors.items.append(View('Race Variables', 'admin.sponsorracevbls'))
         sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
         sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))
