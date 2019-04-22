@@ -154,7 +154,6 @@ asset_bundles = {
         'admin/layout.js',
         'admin/crudapi.js',
         'admin/datatables.js',
-        'admin/datatables-height.js',
         'filters.js',
         'admin/events.js',
         'admin/sponsors.js',    # must be after events
