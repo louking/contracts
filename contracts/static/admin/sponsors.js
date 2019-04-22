@@ -106,6 +106,9 @@ if ( ['/admin/sponsorships'].includes(location.pathname) ) {
         // initialize filters
         fltr_init();
 
+        // adjust scrolling to fit window
+        firstDataTableScrollAdjust();
+        
         // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
         $.ui.dialog.prototype._focusTabbable = $.noop;
     }
