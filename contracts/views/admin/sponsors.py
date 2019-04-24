@@ -59,6 +59,11 @@ sponsor_filters = '\n'.join([
             "        <span class='label'>Level(s)</span>",
             "        <span id='external-filter-levels' class='filter'></span>",
             "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Trend(s)</span>",
+            "        <span id='external-filter-trends' class='filter'></span>",
+            "    </div>",
             "</div>",
             ])
 
@@ -67,6 +72,7 @@ raceyearcol = 1
 racecol = 2
 statecol = 4
 levelcol = 5
+trendcol = 11
 sponsor_yadcf_options = [
           {
            'column_number': raceyearcol,
@@ -126,6 +132,23 @@ sponsor_yadcf_options = [
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-levels',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+            'column_number': trendcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select trends', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-trends',
             'column_data_type': 'text',
             'text_data_delimiter': ', ',
             'filter_reset_button_text': False, # hide yadcf reset button
