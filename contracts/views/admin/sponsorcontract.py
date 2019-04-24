@@ -24,11 +24,12 @@ from jinja2 import Template
 from contracts.dbmodel import db, State, Sponsor, SponsorRaceDate, SponsorBenefit, SponsorLevel
 from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
-from contracts.dbmodel import STATE_COMMITTED, STATE_CANCELED, STATE_TENTATIVE, STATE_RENEWED_PENDING
+from contracts.dbmodel import STATE_COMMITTED
 from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from contracts.mailer import sendmail
 from contracts.runsignup import RunSignUp
+from contracts.trends import calculateTrend
 
 from loutilities.tables import get_request_data
 from loutilities.timeu import asctime
@@ -39,60 +40,6 @@ humandt = asctime('%B %d, %Y')
 class parameterError(Exception): pass
 
 debug = True
-
-#----------------------------------------------------------------------
-def calculateTrend(thisyeardb):
-#----------------------------------------------------------------------
-    '''
-    calculate and updated trend in a sponsor record. caller must commit db changes.
-
-    :param thisyeardb: Sponsor record
-    '''
-    # *** note the logic here must match that in sponsor-summary.js ***
-
-    thisyear = int(thisyeardb.raceyear)
-    race_id = thisyeardb.race_id
-    client_id = thisyeardb.client_id
-    prevyeardb = Sponsor.query.filter_by(race_id=race_id, raceyear=thisyear-1, client_id=client_id).one_or_none()
-    nextyeardb = Sponsor.query.filter_by(race_id=race_id, raceyear=thisyear+1, client_id=client_id).one_or_none()
-
-    # new or potentially new sponsorship
-    if not prevyeardb or prevyeardb.state.state != STATE_COMMITTED:
-        thisyeardb.trend = 'new'
-
-    # last year exists and was committed
-    else:
-        thisamount = int(thisyeardb.amount)
-        prevamount = int(prevyeardb.amount)
-        if debug: current_app.logger.debug('calculateTrend(): year={} thisyear.amount={} prevyear.amount={}'.format(
-            thisyeardb.raceyear, thisamount, prevamount
-            ))
-        if thisyeardb.state.state == STATE_COMMITTED:
-            if thisamount == prevamount:
-                thisyeardb.trend = 'same'
-
-            elif thisamount > prevamount:
-                thisyeardb.trend = 'up'
-
-            elif thisamount < prevamount:
-                thisyeardb.trend = 'down'
-
-        elif thisyeardb.state.state == STATE_CANCELED:
-            thisyeardb.trend = 'lost'
-
-    if thisyeardb.state.state == STATE_TENTATIVE:
-        thisyeardb.trend = 'solicited'
-
-    elif thisyeardb.state.state == STATE_RENEWED_PENDING:
-        thisyeardb.trend = 'pending'
-
-    # maybe we're adding an old year, need to update the following year
-    if nextyeardb:
-        calculateTrend(nextyeardb)
-
-    if debug: current_app.logger.debug('calculateTrend(): race="{}" year={} client="{}" trend={}'.format(
-            thisyeardb.race.race, thisyeardb.raceyear, thisyeardb.client.client, thisyeardb.trend
-        ))
 
 ###########################################################################################
 class SponsorContract(DbCrudApiRolePermissions):

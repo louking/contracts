@@ -27,7 +27,7 @@ from flask.cli import AppGroup
 from click import argument
 
 # homegrown
-from contracts.dbmodel import db
+from contracts.dbmodel import db, Sponsor
 from contracts.settings import Production
 from contracts.applogging import setlogging
 from loutilities.configparser import getitems
@@ -109,6 +109,19 @@ def dbinit_sponsortables():
     with app.app_context():
         from contracts.dbinit_contracts import dbinit_contracts
         dbinit_contracts()
+
+#----------------------------------------------------------------------
+@dbinit_cli.command('trends')
+def dbinit_sponsortables():
+#----------------------------------------------------------------------
+    '''
+    initialize trends in sponsors table
+    '''
+    with app.app_context():
+        from contracts.trends import calculateTrend
+        for sponsorrec in Sponsor.query.all():
+            calculateTrend(sponsorrec)
+        db.session.commit()
 
 # must be at end
 app.cli.add_command(dbinit_cli)
