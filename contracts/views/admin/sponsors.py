@@ -211,10 +211,7 @@ sponsor = SponsorContract(
                         },
                         { 'data': 'couponcode', 'name': 'couponcode', 'label': 'Coupon Code', 
                         },
-                        { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'select2',
-                          'className': 'field_req',
-                          'options':['new','same','up','down'], 
-                          'opts' : { 'minimumResultsForSearch': 'Infinity' },
+                        { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'readonly',
                         },
                         { 'data': 'datesolicited', 'name': 'datesolicited', 'label': 'Date Solicited', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Date Solicited (yyyy-mm-dd)' }

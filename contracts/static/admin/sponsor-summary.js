@@ -65,8 +65,6 @@ function summary_drawcallback( settings ) {
         var thisrow = data[i];
         // console.log('data['+i+']='+JSON.stringify(data[i]));
 
-        // state must be committed to track
-        // if (thisrow.state.state != 'committed') continue;
         var state = thisrow.state.state;
 
         // track levels for committed sponsorships
@@ -147,6 +145,8 @@ function summary_drawcallback( settings ) {
         pending: {count:0, amount:0},
     }
 
+    // calculate trend
+    // *** note logic here must match that in sponsorcontract.py ***
     $.each( trends, function(raceyear, races ) {
         $.each( races, function(thisrace, sponsors)  {
             $.each( sponsors, function(sponsor, rec) {
