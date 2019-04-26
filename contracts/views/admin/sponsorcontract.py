@@ -64,7 +64,7 @@ class SponsorContract(DbCrudApiRolePermissions):
             sponsordb = Sponsor.query.filter_by(id=thisid).one_or_none()
 
             # if we're creating, we just flushed the row, but the id in the form was 0
-            # retrieve the created row through saved ide
+            # retrieve the created row through saved id
             if not sponsordb:
                 thisid = self.created_id
                 sponsordb = Sponsor.query.filter_by(id=thisid).one()
