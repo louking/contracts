@@ -301,6 +301,182 @@ sponsor = SponsorContract(
 sponsor.register()
 
 ##########################################################################################
+# sponsorviews endpoint
+###########################################################################################
+
+sponsorview_dbattrs = 'id,raceyear,racecontact,amount,trend,contractDocId,race.race,client.client,state.state,level.race_level,notes'.split(',')
+sponsorview_formfields = 'rowid,raceyear,racecontact,amount,trend,contractDocId,race,client,state,level,notes'.split(',')
+sponsorview_dbmapping = dict(zip(sponsorview_dbattrs, sponsorview_formfields))
+sponsorview_formmapping = dict(zip(sponsorview_formfields, sponsorview_dbattrs))
+
+## yadcf external filters
+sponsorview_filters = '\n'.join([
+            "<div class='external-filter filter-container'>",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race Year</span>",
+            "        <span id='external-filter-raceyear' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Race</span>",
+            "        <span id='external-filter-race' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>State(s)</span>",
+            "        <span id='external-filter-state' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Level(s)</span>",
+            "        <span id='external-filter-levels' class='filter'></span>",
+            "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Trend(s)</span>",
+            "        <span id='external-filter-trends' class='filter'></span>",
+            "    </div>",
+            "</div>",
+            ])
+
+## options for yadcf
+raceyearcol = 1
+racecol = 2
+statecol = 4
+levelcol = 5
+trendcol = 8
+sponsorview_yadcf_options = [
+          {
+           'column_number': raceyearcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '100px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race year', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-raceyear',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+           'column_number': racecol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '300px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select race', 
+                },
+            },
+            'filter_type': 'select',
+            'filter_container_id': 'external-filter-race',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+           'column_number': statecol, 
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '150px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text': 'Select states', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-state',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+            'column_number': levelcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select levels', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-levels',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+          {
+            'column_number': trendcol,
+            'select_type': 'select2',
+            'select_type_options': {
+                'width': '200px',
+                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                'placeholder': {
+                    'id' : -1,
+                    'text' : 'Select trends', 
+                },
+            },
+            'filter_type': 'multi_select',
+            'filter_container_id': 'external-filter-trends',
+            'column_data_type': 'text',
+            'text_data_delimiter': ', ',
+            'filter_reset_button_text': False, # hide yadcf reset button
+          },
+    ]
+
+sponsorview = DbCrudApiRolePermissions(
+                    app = bp,   # use blueprint instead of app
+                    db = db,
+                    model = Sponsor, 
+                    roles_accepted = [],
+                    template = 'datatables.jinja2',
+                    pagename = 'Sponsorships View', 
+                    endpoint = 'admin.sponsorshipsview', 
+                    rule = '/sponsorshipsview42',   # NOTE: need to change sponsorshipsview.js if this changes
+                    dbmapping = sponsorview_dbmapping, 
+                    formmapping = sponsorview_formmapping, 
+                    clientcolumns = [
+                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
+                        },
+                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                        },
+                        { 'data': 'client', 'name': 'client', 'label': 'Sponsor', 
+                        },
+                        { 'data': 'state', 'name': 'state', 'label': 'State', 
+                        },
+                        { 'data': 'level', 'name': 'level', 'label': 'Sponsorship Level', 
+                        },
+                        { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
+                        },
+                        { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
+                        },
+                        { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'readonly',
+                        },
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea'
+                        },
+                    ], 
+                    servercolumns = None,  # not server side
+                    idSrc = 'rowid', 
+                    buttons = ['csv'],
+                    dtoptions = {
+                                    'scrollCollapse': True,
+                                    'scrollX': True,
+                                    'scrollXInner': "100%",
+                                    'scrollY': True,
+                                    'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
+                                    'fixedColumns': {
+                                                      'leftColumns': 3,
+                                                    },
+                                  },
+                    pretablehtml = sponsorview_filters,
+                    yadcfoptions = sponsorview_yadcf_options,
+                    )
+sponsorview.register()
+
+##########################################################################################
 # sponsorsummarys endpoint
 ###########################################################################################
 

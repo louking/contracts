@@ -157,6 +157,7 @@ asset_bundles = {
         'filters.js',
         'admin/events.js',
         'admin/sponsors.js',    # must be after events
+        'admin/sponsorshipsview.js',    # must be after events
         'admin/sponsorracevbls.js',    # must be after sponsors
         'admin/sponsorbenefits.js',    # must be after sponsors
         'admin/sponsorlevels.js',    # must be after sponsors
