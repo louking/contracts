@@ -1016,6 +1016,9 @@ class DbCrudApi(CrudApi):
         self.db.session.flush()
         if debug: current_app.logger.debug('createrow(): flushed dbrow={}'.format(dbrow.__dict__))
 
+        # kludge to allow access to this new db row within editor_method_posthook()
+        self.created_id = dbrow.id
+
         # prepare response
         thisrow = self.dte.get_response_data(dbrow)
         return thisrow

@@ -61,7 +61,13 @@ class SponsorContract(DbCrudApiRolePermissions):
         # pull record(s) from database and save as flat dotted record
         data = get_request_data(form)
         for thisid in data:
-            sponsordb = Sponsor.query.filter_by(id=thisid).one()
+            sponsordb = Sponsor.query.filter_by(id=thisid).one_or_none()
+
+            # if we're creating, we just flushed the row, but the id in the form was 0
+            # retrieve the created row through saved ide
+            if not sponsordb:
+                thisid = self.created_id
+                sponsordb = Sponsor.query.filter_by(id=thisid).one()
 
             # the following can be true only for put() [edit] method
             if 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract']:
