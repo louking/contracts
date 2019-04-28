@@ -24,6 +24,7 @@ from datatables import DataTables, ColumnDT
 from sqlalchemy import func
 
 # home grown
+# from contracts.tables import CrudApi, DataTablesEditor
 from loutilities.tables import CrudApi, DataTablesEditor
 
 class parameterError(Exception): pass
@@ -965,6 +966,9 @@ class DbCrudApi(CrudApi):
     #----------------------------------------------------------------------
         if debug: current_app.logger.debug('DbCrudApi.validatedb({})'.format(action))
 
+        # no validatation done if refresh action
+        if action == 'refresh': return []
+
         # check results of caller's validation
         results = self.callervalidate( action, formdata )
 
@@ -1059,6 +1063,23 @@ class DbCrudApi(CrudApi):
         self.db.session.delete(dbrow)
 
         return []
+
+    #----------------------------------------------------------------------
+    def refreshrows(self, ids):
+    #----------------------------------------------------------------------
+        '''
+        refresh row(s) from database
+        
+        :param ids: comma separated ids of row to be refreshed
+        :rtype: list of returned rows for rendering, e.g., from DataTablesEditor.get_response_data()
+        '''
+        theseids = ids.split(',')
+        responsedata = []
+        for thisid in theseids:
+            dbrow = self.model.query.filter_by(id=thisid).one()
+            responsedata.append( self.dte.get_response_data(dbrow) )
+
+        return responsedata
 
     #----------------------------------------------------------------------
     def commit(self):

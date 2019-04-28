@@ -656,7 +656,7 @@ event = EventsContract(
                     ], 
                     validate = event_validate,
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'csv',
+                    buttons = ['create', 'editRefresh', 'csv',
                                # would use url_for('.calendar'), but this can't be done until bp created
                                {'name':'calendar', 'text':'Calendar', 'url':'/admin/calendar'},
                     ],

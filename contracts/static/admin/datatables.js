@@ -185,7 +185,7 @@ function datatables(data, buttons, options, files) {
     var button_options = [];
     for (i=0; i<buttons.length; i++) {
         button = buttons[i];
-        if ($.inArray(button, ['create', 'edit', 'remove']) >= 0) {
+        if ($.inArray(button, ['create', 'edit', 'editRefresh', 'remove']) >= 0) {
             button_options.push({extend:button, editor:editor});
         } else {
             button_options.push(button);

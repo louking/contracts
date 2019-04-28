@@ -83,7 +83,7 @@ client = DbCrudApiRolePermissions(
                     validate = client_validate,
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                 'scrollCollapse': True,
                                 'scrollX': True,

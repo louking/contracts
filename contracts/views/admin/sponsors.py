@@ -272,7 +272,7 @@ sponsor = SponsorContract(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 
+                    buttons = ['create', 'editRefresh', 
                                {
                                     'extend': 'csv',
                                     'text': 'CSV',
@@ -460,7 +460,15 @@ sponsorview = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['csv'],
+                    buttons = [
+                               {
+                                    'extend': 'csv',
+                                    'text': 'CSV',
+                                    'exportOptions': {
+                                        'columns': ':gt(0)',    # skip first column
+                                    }
+                                }
+                    ],
                     dtoptions = {
                                     'scrollCollapse': True,
                                     'scrollX': True,
