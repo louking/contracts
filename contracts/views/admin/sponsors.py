@@ -172,6 +172,7 @@ sponsor = SponsorContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Sponsor, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'sponsors.jinja2',
                     pagename = 'Sponsorships', 
@@ -630,6 +631,7 @@ sponsorrace = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorRace, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsor Races', 
@@ -677,7 +679,7 @@ sponsorrace = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -733,6 +735,7 @@ sponsorlevel = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorLevel, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsor Levels', 
@@ -768,7 +771,7 @@ sponsorlevel = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -794,6 +797,7 @@ sponsorracedate = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorRaceDate, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsor Race Dates', 
@@ -825,7 +829,7 @@ sponsorracedate = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -889,6 +893,7 @@ sponsorracevbl = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorRaceVbl, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsor Race Variables', 
@@ -914,7 +919,7 @@ sponsorracevbl = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -970,6 +975,7 @@ sponsorbenefit = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorBenefit, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsor Benefits', 
@@ -1013,7 +1019,7 @@ sponsorbenefit = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -1066,7 +1072,7 @@ sponsorquerylog = DbCrudApiRolePermissions(
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
                     buttons = [ 
-                                'edit',
+                                'editRefresh',
                                 'csv',
                     ],
                     dtoptions = {

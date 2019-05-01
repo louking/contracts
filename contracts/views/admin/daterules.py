@@ -65,6 +65,7 @@ daterule = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = DateRule, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Date Rules', 
@@ -94,7 +95,7 @@ daterule = DbCrudApiRolePermissions(
                     validate = daterule_validate,
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,

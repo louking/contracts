@@ -31,6 +31,7 @@ tag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Tag, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'tags', 
@@ -77,6 +78,7 @@ super_tag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Tag, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'super tags', 
@@ -100,7 +102,7 @@ super_tag = DbCrudApiRolePermissions(
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
                     # TODO: no edit now due to #123, but logic could be added to edit tags which have isBuiltIn==False
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,

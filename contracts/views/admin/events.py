@@ -45,6 +45,7 @@ lead = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Lead, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'leads', 
@@ -66,7 +67,7 @@ lead = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -92,6 +93,7 @@ course = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Course, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'courses', 
@@ -114,7 +116,7 @@ course = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -138,6 +140,7 @@ feetype = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = FeeType, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Fee Types', 
@@ -156,7 +159,7 @@ feetype = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -179,6 +182,7 @@ feebasedon = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = FeeBasedOn, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Fee Based On', 
@@ -201,7 +205,7 @@ feebasedon = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -225,6 +229,7 @@ addon = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = AddOn, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Add-Ons', 
@@ -246,7 +251,7 @@ addon = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -269,6 +274,7 @@ service = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Service, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'services', 
@@ -293,7 +299,7 @@ service = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -316,6 +322,7 @@ eventexception = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = EventAvailabilityException, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'event exceptions', 
@@ -345,7 +352,7 @@ eventexception = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -369,6 +376,7 @@ race = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Race, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'races', 
@@ -391,7 +399,7 @@ race = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -535,6 +543,7 @@ event = EventsContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Event, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     serverside = False,
                     pagename = 'events', 
                     roles_accepted = ['super-admin', 'event-admin'],

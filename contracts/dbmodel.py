@@ -98,11 +98,21 @@ class Lead(Base):
     email       = Column( String(EMAIL_LEN) )
     phone       = Column( String(PHONE_LEN) )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 class ContractType(Base):
     __tablename__ = 'contracttype'
     id                 = Column( Integer, primary_key=True )
     contractType       = Column( String(CONTRACT_TYPE_LEN) )
     description        = Column( String(DESCR_LEN) )
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
     
 class TemplateType(Base):
     __tablename__ = 'templatetype'
@@ -112,11 +122,21 @@ class TemplateType(Base):
     contractTypeId  = Column( Integer, ForeignKey('contracttype.id' ) )
     contractType    = relationship( 'ContractType', backref='contracttypes', lazy=True )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 class ContractBlockType(Base):
     __tablename__ = 'contractblocktype'
     id              = Column( Integer, primary_key=True )
     blockType       = Column( String(CONTRACT_BLOCK_TYPE_LEN) )
     description     = Column( String(DESCR_LEN) )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
     
 class Contract(Base):
     __tablename__ = 'contract'
@@ -129,6 +149,10 @@ class Contract(Base):
     templateTypeId      = Column( Integer, ForeignKey('templatetype.id' ) )
     templateType        = relationship( 'TemplateType', backref='contracts', lazy=True )
     block               = Column( String(CONTRACT_BLOCK_LEN) )
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 class FeeType(Base):
     __tablename__ = 'feetype'
@@ -136,6 +160,11 @@ class FeeType(Base):
     feeType     = Column( String(FEETYPE_LEN) ) # e.g., fixed, basedOnField, addOn
     # feeHandling = Column( String(ALGNAME_LEN) ) # e.g., fixed, basedOnField, addOn
     description = Column( String(DESCR_LEN) )
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
 eventservice_table = Table('eventservice', Base.metadata,
@@ -154,6 +183,11 @@ class Service(Base):
     fee               = Column( Integer )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
 eventtag_table = Table('eventtag', Base.metadata,
     Column( 'event_id', Integer, ForeignKey('event.id' ) ),
@@ -167,6 +201,11 @@ class Tag(Base):
     tag               = Column( String(TAG_LEN) )
     description       = Column( String(DESCR_LEN) )
     isBuiltIn         = Column( Boolean )   # True if tag configured below
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 ## as the built in tag text is used in code and will be stored in the database, these can't be changed by user
 ## (or in the code without very careful consideration of the migration plan)
@@ -204,12 +243,22 @@ class FeeBasedOn(Base):
     fieldValue = Column( Integer )
     fee        = Column( Integer )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 class Course(Base):
     __tablename__ = 'course'
     id          = Column( Integer, primary_key=True ) 
     course      = Column( String(COURSE_LEN) )
     address     = Column( String(ADDRESS_LEN) )
     isStandard  = Column( Boolean ) # true if standard city course
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
 eventaddon_table = Table('eventaddon', Base.metadata,
@@ -224,6 +273,11 @@ class AddOn(Base):
     longDescr   = Column( String(NOTES_LEN) )
     fee         = Column( Integer )
     # eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 # system tag text
 STATE_RENEWED_PENDING   = 'renewed-pending'
@@ -236,6 +290,11 @@ class State(Base):
     id          = Column( Integer, primary_key=True ) 
     state       = Column( String(STATE_LEN) )
     description = Column( String(DESCR_LEN) )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 class Client(Base):
     __tablename__ = 'client'
@@ -249,6 +308,11 @@ class Client(Base):
     contactEmail        = Column( String(EMAIL_LEN) )
     contactTitle        = Column( String(TITLE_LEN) )
     notes               = Column( String(NOTES_LEN) )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
     @hybrid_property
     def name(self):
@@ -261,6 +325,11 @@ class Race(Base):
     daterule_id         = Column( Integer, ForeignKey('daterule.id') )
     daterule            = relationship( 'DateRule', backref='racerules', lazy=True )
     notes               = Column( String(NOTES_LEN) )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 class Event(Base):
     __tablename__ = 'event'
@@ -310,6 +379,11 @@ class Event(Base):
     # tags
     tags                = relationship( 'Tag', secondary=eventtag_table, backref='events', lazy=True )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 class EventAvailabilityException(Base):
     __tablename__ = 'eventavailabilityexception'
     id            = Column( Integer, primary_key=True )
@@ -319,6 +393,11 @@ class EventAvailabilityException(Base):
     daterule      = relationship( 'DateRule', backref='eventexceptions', lazy=True )
     exception     = Column( Enum( 'available',  'unavailable' ) )
     notes         = Column( String(NOTES_LEN) )
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 class DateRule(Base):
     __tablename__ = 'daterule'
@@ -335,6 +414,11 @@ class DateRule(Base):
                                                 # positive if the next days are included 
                                                 # negative if previous days are included
     year        = Column( Integer ) # 0/null means yearly; specified for specific year applicability
+    
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
     # build rulename automatically unless overridden
     def __init__(self, **kwargs):
@@ -392,6 +476,11 @@ class Sponsor(Base):
 
     notes               = Column( String(NOTES_LEN) )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 # sponsor races
 class SponsorRace(Base):
     __tablename__ = 'sponsorrace'
@@ -410,6 +499,11 @@ class SponsorRace(Base):
     couponproviderid = Column( String(PROVIDERID_LEN) )
     description      = Column( String(DESCR_LEN) )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 # sponsor race dates
 class SponsorRaceDate(Base):
     __tablename__ = 'sponsorracedate'
@@ -422,6 +516,11 @@ class SponsorRaceDate(Base):
     beneficiary    = Column( String(BENEFICIARY_LEN) )
     raceloc        = Column( String(RACELOC_LEN) )
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
 # sponsor race dates
 class SponsorRaceVbl(Base):
     __tablename__ = 'sponsorracevbl'
@@ -430,6 +529,11 @@ class SponsorRaceVbl(Base):
     value        = Column( String(VALUE_LEN) )
     race_id      = Column( Integer, ForeignKey('sponsorrace.id') )
     race         = relationship( 'SponsorRace', backref='variables', lazy=True )
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 # sponsor levels / sponsor benefits
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
@@ -454,6 +558,11 @@ class SponsorLevel(Base):
 
     race_short     = association_proxy('race', 'raceshort')
 
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
     @hybrid_property
     def race_level(self):
         return self.race.raceshort + '/' + self.level
@@ -475,6 +584,11 @@ class SponsorBenefit(Base):
     description = Column( String(DESCR_LEN) )
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
     levels       = relationship( 'SponsorLevel', secondary=sponsorlevelbenefit_table, backref='benefits', lazy=True )
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 # sponsor query log
 class SponsorQueryLog(Base):

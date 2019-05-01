@@ -17,6 +17,7 @@ crudapi - CRUD api for this application
 from urllib import urlencode
 from json import dumps
 from copy import deepcopy, copy
+from threading import RLock
 
 # pypi
 from flask import request, current_app, make_response, url_for, jsonify
@@ -28,6 +29,7 @@ from sqlalchemy import func
 from loutilities.tables import CrudApi, DataTablesEditor
 
 class parameterError(Exception): pass
+class staleData(Exception): pass
 
 # separator for select2 tag list
 SEPARATOR = ', '
@@ -432,6 +434,7 @@ class DbCrudApi(CrudApi):
         formmapping: mapping dict with key for each form row, value is key in db row or function(form)
         queryparms: dict of query parameters relevant to this table to retrieve table or rows
         dtoptions: datatables options to override / add
+        version_id_col: name of column which contains version id
 
         **dbmapping** is dict like {'dbattr_n':'formfield_n', 'dbattr_m':f(form), ...}
         **formmapping** is dict like {'formfield_n':'dbattr_n', 'formfield_m':f(dbrow), ...}
@@ -481,6 +484,17 @@ class DbCrudApi(CrudApi):
 
         **serverside** - if present table will be displayed through ajax get calls
 
+        **version_id_col** - if present edits to this table are protected using optimistic concurrency control
+          * see https://en.wikipedia.org/wiki/Optimistic_concurrency_control
+          * also https://martinfowler.com/eaaCatalog/optimisticOfflineLock.html
+          * this column is automaticalled added to dbmapping, formmapping and clientcolumns
+          * e.g., for version_id_col='version_id', database model for this table should have code like
+                ```
+                version_id          = Column(Integer, nullable=False)
+                __mapper_args__ = {
+                    'version_id_col' : version_id
+                }
+                ```
     '''
 
     # class specific imports here so users of other classes do not need to install
@@ -497,6 +511,7 @@ class DbCrudApi(CrudApi):
                     model = None,
                     dbmapping = {},
                     formmapping = {},
+                    version_id_col = None,
                     serverside = False, # duplicated here and in CrudApi because test before super() called
                     queryparams = {},
                     dtoptions = {},
@@ -517,6 +532,24 @@ class DbCrudApi(CrudApi):
 
         # keep track of columns which must be unique in the database
         self.uniquecols = []
+
+        # update parameters if version_col_id is specified
+        version_id_col = args['version_id_col']
+        if version_id_col:
+            self.occupdate = False
+            self.formmapping[version_id_col] = version_id_col
+            self.dbmapping[version_id_col] = lambda form: int(form['version_id']) if form['version_id'] else 0
+            versioncol = {
+                'name' : version_id_col,
+                'data' : version_id_col,
+                'ed'   : {'type' : 'hidden'},
+                'dt'   : {'visible' : False},
+            }
+            # this code comes through multiple times so need to prevent from being added twice
+            # should consider alternative of deepcopy() like mapping arguments
+            if version_id_col not in [c['name'] for c in args['clientcolumns']]:
+                args['clientcolumns'].append(versioncol)
+
 
         # for serverside processing, self.servercolumns is built up from column data, always starts with model.id
         if args['serverside']:
@@ -1039,15 +1072,38 @@ class DbCrudApi(CrudApi):
         '''
         if debug: current_app.logger.debug('updaterow({},{})'.format(thisid, formdata))
 
-        # edit item
-        dbrow = self.model.query.filter_by(id=thisid).one()
-        if debug: current_app.logger.debug('editing id={} dbrow={}'.format(thisid, dbrow.__dict__))
-        self.dte.set_dbrow(formdata, dbrow)
-        if debug: current_app.logger.debug('after edit id={} dbrow={}'.format(thisid, dbrow.__dict__))
+        # critical region
+        lock = RLock()
+        with lock:
+            # edit item
+            queryparams = {
+                'id' : thisid,
+            }
+            if self.version_id_col:
+                queryparams[self.version_id_col] = formdata[self.version_id_col]
+            dbrow = self.model.query.filter_by(**queryparams).one_or_none()
 
-        # prepare response
-        thisrow = self.dte.get_response_data(dbrow)
-        return thisrow
+            # found correct version
+            if dbrow:
+                if debug: current_app.logger.debug('editing id={} dbrow={}'.format(thisid, dbrow.__dict__))
+                self.dte.set_dbrow(formdata, dbrow)
+                if debug: current_app.logger.debug('after edit id={} dbrow={}'.format(thisid, dbrow.__dict__))
+
+                # prepare response
+                thisrow = self.dte.get_response_data(dbrow)
+                return thisrow
+
+            # someone else edited the row
+            else:
+                self._error = 'Someone updated this record while your edit form was open -- close the form and try your edit again'
+                raise staleData
+
+        # couldn't get this to work -- was getting weird error during update about State (or other records)
+        # not being boolean
+        ## updatefields = self.dte.set_dbrow_update(formdata)
+        ## print 'updatefields = {}'.format(updatefields)
+        ## self.model.query.filter_by(id=thisid).update(updatefields)
+        ## updatedrow = self.model.query.filter_by(id=thisid).one()
 
     #----------------------------------------------------------------------
     def deleterow(self, thisid):
@@ -1162,4 +1218,66 @@ class DbCrudApiRolePermissions(DbCrudApi):
         
         return allowed
 
+
+# #####################################################
+# class TestDataTablesEditor(DataTablesEditor):
+# #####################################################
+
+#     #----------------------------------------------------------------------
+#     def set_dbrow(self, inrow, dbrow):
+#     #----------------------------------------------------------------------
+#         '''
+#         update database entry from form entry
+
+#         :param inrow: input row
+#         :param dbrow: database entry (model object)
+#         '''
+
+#         for dbattr in self.dbmapping:
+#             # call the function to fill dbrow.<dbattr>
+#             if hasattr(self.dbmapping[dbattr], '__call__'):
+#                 callback = self.dbmapping[dbattr]
+#                 setattr(dbrow, dbattr, callback(inrow))
+
+#             # simple map from inrow field
+#             else:
+#                 key = self.dbmapping[dbattr]
+#                 if key in inrow:
+#                     setattr(dbrow, dbattr, inrow[key])
+#                     if self.null2emptystring and getattr(dbrow, dbattr) == '':
+#                         setattr(dbrow, dbattr, None)
+#                 else:
+#                     # ignore -- leave dbrow unchanged for this dbattr
+#                     pass
+
+#     #----------------------------------------------------------------------
+#     def set_dbrow_update(self, inrow):
+#     #----------------------------------------------------------------------
+#         '''
+#         update database entry from form entry
+
+#         :param inrow: input row
+#         :returns: update dict for database row
+#         '''
+
+#         updatefields = {}
+
+#         for dbattr in self.dbmapping:
+#             # call the function to fill dbrow.<dbattr>
+#             if hasattr(self.dbmapping[dbattr], '__call__'):
+#                 callback = self.dbmapping[dbattr]
+#                 updatefields[dbattr] = callback(inrow)
+
+#             # simple map from inrow field
+#             else:
+#                 key = self.dbmapping[dbattr]
+#                 if key in inrow:
+#                     updatefields[dbattr] = inrow[key]
+#                     if self.null2emptystring and updatefields[dbattr] == '':
+#                         updatefields[dbattr] = None
+#                 else:
+#                     # ignore -- leave dbrow unchanged for this dbattr
+#                     pass
+
+#         return updatefields
 

@@ -52,6 +52,7 @@ client = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Client, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     pagename = 'clients', 
                     roles_accepted = ['event-admin', 'sponsor-admin', 'super-admin'],
                     template = 'datatables.jinja2',
@@ -107,6 +108,7 @@ state = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = State, 
+                    version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'states', 
@@ -125,7 +127,7 @@ state = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'edit', 'remove'],
+                    buttons = ['create', 'editRefresh', 'remove'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
