@@ -27,6 +27,8 @@ $( function() {
   // note this affects subforms as well as event form
   $.ui.dialog.prototype._focusTabbable = $.noop;
 
+  var dayclickevent = null;
+
   $('#calendar').fullCalendar({
     defaultView: 'month',
     themeSystem: 'jquery-ui',
@@ -115,10 +117,20 @@ $( function() {
       // noop for now for exceptions
       if ( event.hasOwnProperty( 'exception' ) ) return;
 
-      // event_cleartriggers( editor );
-      editor.title('Edit entry').buttons('Update').edit( event.data.rowid );
+      // refetch events before edit (overkill as we only need this one, but convenient)
+      dayclickevent = event;
+      $('#calendar').fullCalendar( 'refetchEvents' );
+      // when this is done, eventAfterAllRender will fire
+    },  // eventClick: function() {
+
+    eventAfterAllRender: function( view ) {
+      if (dayclickevent == null) return;
+      refreshed_event = $('#calendar').fullCalendar( 'clientEvents', dayclickevent.id )[0];
+      dayclickevent = null;
+
+      editor.title('Edit entry').buttons('Update').edit( refreshed_event.data.rowid );
       $.each( editor.order(), function( i, field ) {
-        editor.set( field, _.get(event.data, field ) );
+        editor.set( field, _.get(refreshed_event.data, field ) );
       })
       event_configureformbuttons( editor, 'edit' );
 
@@ -134,7 +146,7 @@ $( function() {
       // force services class initial setup
       editor.field( 'services.id' ).set( editor.field( 'services.id' ).get() );
       
-    },  // eventClick: function() {
+    },  // eventAfterAllRender: function() {
 
   })  // $('#calendar').fullCalendar(
 
