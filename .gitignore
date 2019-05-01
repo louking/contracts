@@ -113,6 +113,9 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# pycharm
+.idea/
+
 # examples
 *.xlsx
 *.docx
