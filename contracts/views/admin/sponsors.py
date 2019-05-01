@@ -288,7 +288,7 @@ sponsor = SponsorContract(
                                     'scrollY': True,
                                     'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                     'fixedColumns': {
-                                                      'leftColumns': 3,
+                                                      'leftColumns': 4,
                                                     },
                                   },
                     edoptions = {
