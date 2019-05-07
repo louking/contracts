@@ -79,7 +79,7 @@ def dbinit_sponsortables():
 
 #----------------------------------------------------------------------
 @dbinit_cli.command('base')
-def dbinit_sponsortables():
+def dbinit_basetables():
 #----------------------------------------------------------------------
     '''
     initialize base tables state, course, service, etc
@@ -90,7 +90,7 @@ def dbinit_sponsortables():
 
 #----------------------------------------------------------------------
 @dbinit_cli.command('tags')
-def dbinit_sponsortables():
+def dbinit_tagtables():
 #----------------------------------------------------------------------
     '''
     initialize tags table
@@ -101,7 +101,7 @@ def dbinit_sponsortables():
 
 #----------------------------------------------------------------------
 @dbinit_cli.command('contracts')
-def dbinit_sponsortables():
+def dbinit_contractstables():
 #----------------------------------------------------------------------
     '''
     initialize contracts tables contract, template, contracttype, contractblocktype
@@ -112,7 +112,7 @@ def dbinit_sponsortables():
 
 #----------------------------------------------------------------------
 @dbinit_cli.command('trends')
-def dbinit_sponsortables():
+def dbinit_sponsortrends():
 #----------------------------------------------------------------------
     '''
     initialize trends in sponsors table

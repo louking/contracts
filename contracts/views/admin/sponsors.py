@@ -608,8 +608,8 @@ sponsorsummary.register()
 # sponsorraces endpoint
 ###########################################################################################
 
-sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description'.split(',')
-sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description'.split(',')
+sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
+sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
 sponsorrace_dbmapping = dict(zip(sponsorrace_dbattrs, sponsorrace_formfields))
 sponsorrace_formmapping = dict(zip(sponsorrace_formfields, sponsorrace_dbattrs))
 
@@ -674,7 +674,12 @@ sponsorrace = DbCrudApiRolePermissions(
                         },
                         { 'data': 'couponproviderid', 'name': 'couponproviderid', 'label': 'Coupon Provider ID', 
                         },
-                        { 'data': 'description', 'name': 'description', 'label': 'Description', 
+                        { 'data': 'display', 'name': 'display', 'label': 'Display',
+                          'className': 'field_req',
+                          '_treatment' : {'boolean':{'formfield':'display', 'dbfield':'display'}},
+                          'ed':{ 'def': 'yes' },
+                        },
+                        { 'data': 'description', 'name': 'description', 'label': 'Description',
                         },
                     ], 
                     servercolumns = None,  # not server side

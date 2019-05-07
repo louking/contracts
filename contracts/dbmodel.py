@@ -194,7 +194,7 @@ eventtag_table = Table('eventtag', Base.metadata,
     Column( 'tag_id', Integer, ForeignKey('tag.id' ), nullable=False ),
     )
 
-# system tag text
+# events tag text
 class Tag(Base):
     __tablename__ =  'tag'
     id                = Column( Integer, primary_key=True ) 
@@ -231,6 +231,31 @@ tags = [
     {'tag':TAG_LEADEMAILSENT, 'description':'email has been sent to lead just before race', 'isBuiltIn':True},
     {'tag':TAG_PRERACEPREMPROMOEMAILSENT, 'description':"email has been sent for premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
     {'tag':TAG_PRERACEPREMPROMOEMAILINHIBITED, 'description':"admin wants to inhibit email to premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
+]
+
+# events tag text
+class SponsorTag(Base):
+    __tablename__ =  'sponsortag'
+    id                = Column( Integer, primary_key=True )
+    tag               = Column( String(TAG_LEN) )
+    description       = Column( String(DESCR_LEN) )
+    isBuiltIn         = Column( Boolean )   # True if tag configured below
+
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
+
+## as the built in tag text is used in code and will be stored in the database, these can't be changed by user
+## (or in the code without very careful consideration of the migration plan)
+## hyphens are avoided because these would cause wrapping in table displays
+SPONSORTAG_RACERENEWED = 'sponsorshiprenewed'
+
+## these tags are used to initialize the database in dbinit_contracts.py,
+## That file is one time use, so changing
+## the tags structure will have no effect after the project is deployed
+sponsortags = [
+    {'tag':SPONSORTAG_RACERENEWED, 'description':'sponsorship has been renewed', 'isBuiltIn':True},
 ]
 
 # for a given service, fieldValues are sorted
@@ -498,6 +523,7 @@ class SponsorRace(Base):
     couponprovider = Column( String(PROVIDER_LEN) )
     couponproviderid = Column( String(PROVIDERID_LEN) )
     description      = Column( String(DESCR_LEN) )
+    display          = Column( Boolean )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {

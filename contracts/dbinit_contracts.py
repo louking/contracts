@@ -14,12 +14,8 @@ dbinit_contracts - contracts database initialization configuration
 
 # homegrown
 from dbmodel import State, FeeType, FeeBasedOn, Service, Course, ContractType, TemplateType, ContractBlockType 
-from dbmodel import Contract, DateRule, Tag, tags
+from dbmodel import Contract, DateRule, Tag, tags, SponsorTag, sponsortags
 from dbmodel import EventAvailabilityException
-from dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
-from dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
-from dbmodel import TAG_LEADEMAILSENT
-from dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHIBITED
 
 from dbmodel import STATE_RENEWED_PENDING, STATE_TENTATIVE, STATE_CONTRACT_SENT, STATE_COMMITTED, STATE_CANCELED       
 
@@ -862,6 +858,7 @@ basemodelitems = [
 
 tagmodelitems = [
     ModelItem(Tag, tags, False, 'tag'),
+    ModelItem(SponsorTag, sponsortags, False, 'tag'),
 ]
 
 contractmodelitems = [
