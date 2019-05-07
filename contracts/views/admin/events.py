@@ -29,7 +29,6 @@ from contracts.crudapi import DbCrudApiRolePermissions
 from daterules import daterule
 from common import client
 from eventscontract import EventsContract
-from tags import tag
 from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
 ##########################################################################################

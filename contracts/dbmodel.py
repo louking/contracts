@@ -233,6 +233,13 @@ tags = [
     {'tag':TAG_PRERACEPREMPROMOEMAILINHIBITED, 'description':"admin wants to inhibit email to premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
 ]
 
+# see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
+sponsortag_table = Table('sponsorshiptag', Base.metadata,
+    Column( 'sponsor_id', Integer, ForeignKey('sponsor.id' ) ),
+    Column( 'sponsortag_id', Integer, ForeignKey('sponsortag.id' ), nullable=False ),
+    )
+
+
 # events tag text
 class SponsorTag(Base):
     __tablename__ =  'sponsortag'
@@ -500,6 +507,9 @@ class Sponsor(Base):
     isSponsorThankedFB  = Column( Boolean )
 
     notes               = Column( String(NOTES_LEN) )
+
+    # tags
+    tags                = relationship( 'SponsorTag', secondary=sponsortag_table, backref='sponsors', lazy=True )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {

@@ -20,7 +20,7 @@ from re import match
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit
+from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit, SponsorTag
 from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from contracts.dbmodel import Client, State
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbDependent
@@ -32,8 +32,8 @@ from sponsorcontract import SponsorContract
 # sponsors endpoint
 ###########################################################################################
 
-sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
-sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,notes'.split(',')
+sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
+sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
 sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
 sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
 
@@ -64,6 +64,11 @@ sponsor_filters = '\n'.join([
             "        <span class='label'>Trend(s)</span>",
             "        <span id='external-filter-trends' class='filter'></span>",
             "    </div>",
+            "",
+            "    <div class='filter-item'>",
+            "        <span class='label'>Tag(s)</span>",
+            "        <span id='external-filter-tags' class='filter'></span>",
+            "    </div>",
             "</div>",
             ])
 
@@ -73,6 +78,7 @@ racecol = 2
 statecol = 4
 levelcol = 5
 trendcol = 11
+tagcol = 20
 sponsor_yadcf_options = [
           {
            'column_number': raceyearcol,
@@ -153,7 +159,24 @@ sponsor_yadcf_options = [
             'text_data_delimiter': ', ',
             'filter_reset_button_text': False, # hide yadcf reset button
           },
-    ]
+          {
+              'column_number': tagcol,
+              'select_type': 'select2',
+              'select_type_options': {
+                  'width': '200px',
+                  'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
+                  'placeholder': {
+                      'id': -1,
+                      'text': 'Select tags',
+                  },
+              },
+              'filter_type': 'multi_select',
+              'filter_container_id': 'external-filter-tags',
+              'column_data_type': 'text',
+              'text_data_delimiter': ', ',
+              'filter_reset_button_text': False,  # hide yadcf reset button
+          },
+]
 
 def sponsor_validate(action, formdata):
     results = []
@@ -268,6 +291,14 @@ sponsor = SponsorContract(
                           'ed':{ 'def': 'no' }, 
                         },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Agreement', 'type':'googledoc', 'opts':{'text':'click for contract'} },
+                        { 'data': 'tags', 'name': 'tags', 'label': 'Tags',
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorTag, 'labelfield':'tag', 'formfield':'tags', 'dbfield':'tags',
+                                                              'uselist':True, 'searchbox':False,
+                                                              # TODO: requires fix for #80
+                                                              # 'editable' : { 'api':tag },
+                                                            }
+                           },
+                        },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea'
                         },
                     ], 
