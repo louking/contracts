@@ -21,12 +21,12 @@ from traceback import format_exc
 from datetime import datetime
 
 # pypi
-from flask import current_app, request, jsonify, render_template, url_for
+from flask import current_app, request, render_template
 from flask.views import MethodView
 
 # home grown
 from . import bp
-from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorBenefit, SponsorQueryLog
+from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorQueryLog, SponsorRaceDate
 from contracts.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
@@ -52,7 +52,9 @@ class SponsorshipQuery(MethodView):
             # determine number of sponsorships for target year is under the limit
             underlimit = True
             if level.maxallowed:
-                thisyear = datetime.today().year
+                # use latest raceyear for this race
+                racedates = SponsorRaceDate.query.filter_by(race_id=level.race_id).order_by(SponsorRaceDate.raceyear).all()
+                thisyear = int(racedates[-1].raceyear)
                 thesesponsorships = [s for s in level.sponsors if int(s.raceyear) == thisyear]
                 if len(thesesponsorships) >= level.maxallowed:
                     underlimit = False
