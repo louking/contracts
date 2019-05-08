@@ -27,6 +27,7 @@ from flask.views import MethodView
 # home grown
 from . import bp
 from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorQueryLog, SponsorRaceDate
+from contracts.dbmodel import State, STATE_COMMITTED
 from contracts.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
@@ -48,6 +49,7 @@ class SponsorshipQuery(MethodView):
         # build levels by race
         levelsdata = SponsorLevel.query.all()
         levels = OrderedDict()
+        committed_id = State.query.filter_by(state=STATE_COMMITTED).one().id
         for level in levelsdata:
             # determine number of sponsorships for target year is under the limit
             underlimit = True
@@ -55,7 +57,7 @@ class SponsorshipQuery(MethodView):
                 # use latest raceyear for this race
                 racedates = SponsorRaceDate.query.filter_by(race_id=level.race_id).order_by(SponsorRaceDate.raceyear).all()
                 thisyear = int(racedates[-1].raceyear)
-                thesesponsorships = [s for s in level.sponsors if int(s.raceyear) == thisyear]
+                thesesponsorships = [s for s in level.sponsors if int(s.raceyear) == thisyear and s.state_id == committed_id]
                 if len(thesesponsorships) >= level.maxallowed:
                     underlimit = False
             # only collect levels if the race is to be displayed and haven't reached limit
