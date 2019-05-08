@@ -28,14 +28,15 @@ from click import argument
 
 # homegrown
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag
+from contracts.dbmodel import Sponsor, SponsorRaceDate
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
-from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED, TAG_RACERENEWED
+from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED
 from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHIBITED
 from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING
 from contracts.settings import Production
 from contracts.mailer import sendmail
-from contracts.utils import renew_event
+from contracts.utils import renew_event, renew_sponsorship
 from contracts.applogging import setlogging
 from loutilities.configparser import getitems
 from loutilities.timeu import asctime
@@ -356,6 +357,58 @@ def preraceprempromoemail(startdate, enddate):
         event.tags.append(senttag)
 
         # pick up all db changes (event.tags)
+        db.session.commit()
+
+# ----------------------------------------------------------------------
+@app.cli.command()
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
+def renewsponsorship(startdate, enddate):
+    # ----------------------------------------------------------------------
+    '''Renew sponsorships for races within date window'''
+
+    # calculate start and end date window
+    if startdate == 'auto' and enddate == 'auto':
+        # only send for races within one week window
+        # this causes sending DAYS_PRERACE_PREMPROMO_EMAIL after race,
+        # but if it doesn't happen for some reason will retry for a week
+        # calculate start and end date window (try to send for 1 week)
+        start = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_RENEWSPONSORSHIP'] + 7))
+        end = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_RENEWSPONSORSHIP']))
+
+    # verify both dates are present, check user input format is yyyy-mm-dd
+    else:
+        if startdate == 'auto' or enddate == 'auto':
+            print 'ERROR: startdate and enddate must both be specified'
+            return
+
+        if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+                not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            return
+
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
+        end = enddate
+
+    # use filter to get sponsorships for races in which occurred at least N days ago
+    racedates = SponsorRaceDate.query.filter(SponsorRaceDate.racedate.between(start, end)).all()
+    queries = []
+    for racedate in racedates:
+        queries.append({'race_id' : racedate.race_id, 'raceyear' : racedate.raceyear})
+
+    sponsorships = []
+    for query in queries:
+        sponsorships += Sponsor.query.filter_by(**query).all()
+
+    for sponsorship in sponsorships:
+        # ignore uncommitted events
+        if sponsorship.state.state != STATE_COMMITTED: continue
+
+        # renew event
+        newsponsorship = renew_sponsorship(sponsorship)
+
+        # pick up any db changes related to renewal (renew, daterule, event.tags)
         db.session.commit()
 
 

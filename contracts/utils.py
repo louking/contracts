@@ -15,9 +15,11 @@ utils - miscellaneous utilities
 # pypi
 from flask import current_app
 from sqlalchemy.orm.exc import MultipleResultsFound
+from sqlalchemy import and_
 
 # homegrown
 from contracts.dbmodel import db, Event, Tag, DateRule, State
+from contracts.dbmodel import Sponsor, SponsorTag, SPONSORTAG_RACERENEWED
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, TAG_RACERENEWED
 from contracts.daterule import date2daterule, daterule2dates
 
@@ -136,3 +138,71 @@ def renew_event(event):
             newevent = events[0]
 
     return newevent
+
+
+# ----------------------------------------------------------------------
+def renew_sponsorship(sponsorship):
+    # ----------------------------------------------------------------------
+    '''
+    renew sponsorship
+
+    caller needs to commit the database update, or roll back
+
+    :param sponsorship: sponsorship to renew
+
+    :rtype: new sponsorship from renew process
+    '''
+    # set up tag to indicate event was renewed
+    renewedtag = SponsorTag.query.filter_by(tag=SPONSORTAG_RACERENEWED).one()
+
+    # don't renew the race twice
+    if renewedtag not in sponsorship.tags:
+
+        # create new sponsorship based on this sponsorship's daterule
+        newsponsorshipdict = {k: v for k, v in sponsorship.__dict__.items() if k[0] != '_' and k != 'id'}
+        newsponsorship = Sponsor(**newsponsorshipdict)
+
+        # update fields within the new sponsorship to start fresh
+        newsponsorship.state = State.query.filter_by(state=STATE_RENEWED_PENDING).one()
+
+        # bump the raceyear
+        newsponsorship.raceyear = sponsorship.raceyear+1
+
+        # reset the sponsorship fields and other fields we want fixed values for
+        for f in ['datesolicited', 'dateagreed', 'invoicesent', 'couponcode',
+                  'contractDocId', 'notes' ]:
+            setattr(newsponsorship, f, None)
+
+        for f in ['isWebsiteUpdated', 'isSponsorThankedFB']:
+            setattr(newsponsorship, f, False)
+
+        newsponsorship.tags = []
+        newsponsorship.RegSiteUpdated = 'no'
+        newsponsorship.trend = 'pending'
+
+        # add the new sponsorship to the database
+        db.session.add(newsponsorship)
+
+        # current sponsorship has been renewed
+        sponsorship.tags.append(renewedtag)
+
+    # determine the renewal sponsorship if race had already been renewed
+    else:
+        # find all sponsorships with this race id after the current sponsorship date
+        # really should only be one
+        thisraceyear = sponsorship.raceyear
+        try:
+            newsponsorship = Sponsor.query.filter(and_(Sponsor.race_id == sponsorship.race_id,
+                                                       Sponsor.client_id == sponsorship.client_id,
+                                                       Sponsor.raceyear > thisraceyear)).one_or_none()
+
+        # well this shouldn't really have happened. Just return the first we find
+        except MultipleResultsFound:
+            current_app.logger.error(
+                'renew_sponsorship(): multiple renewed sponsorships found for {} {}'.format(sponsorship.raceyear, sponsorship.race.race))
+            sponsorships = Sponsor.query.filter(and_(Sponsor.race_id == Sponsor.race_id,
+                                                     Sponsor.client_id == sponsorship.client_id,
+                                                     Sponsor.raceyear > thisraceyear)).all()
+            newsponsorship = sponsorships[0]
+
+    return newsponsorship
