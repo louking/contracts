@@ -49,20 +49,29 @@ class SponsorshipQuery(MethodView):
         levelsdata = SponsorLevel.query.all()
         levels = OrderedDict()
         for level in levelsdata:
-            thislevel = {
-                'levelname': level.level,
-                'minsponsorship': level.minsponsorship,
-                # TODO: determine display based on level.maxallowed and current sponsors configuration
-                'display': level.display,
-            }
-            levels.setdefault(level.race.race, []).append(thislevel)
+            # determine number of sponsorships for target year is under the limit
+            underlimit = True
+            if level.maxallowed:
+                thisyear = datetime.today().year
+                thesesponsorships = [s for s in level.sponsors if int(s.raceyear) == thisyear]
+                if len(thesesponsorships) >= level.maxallowed:
+                    underlimit = False
+            # only collect levels if the race is to be displayed and haven't reached limit
+            if level.race.display and underlimit:
+                thislevel = {
+                    'levelname': level.level,
+                    'minsponsorship': level.minsponsorship,
+                    'display': level.display,
+                }
+                levels.setdefault(level.race.race, []).append(thislevel)
 
         # sort levels for each race high to low, i.e., most important first, supports form display
         for thisrace in levels:
             levels[thisrace] = sorted(levels[thisrace], key=itemgetter('minsponsorship'), reverse=True)
 
         # get races, build structure
-        racesdata = SponsorRace.query.all()
+        # only collect races which are to be displayed
+        racesdata = SponsorRace.query.filter_by(display=True).all()
         races = OrderedDict()
         for race in racesdata:
             races[race.race] = {k:v for k,v in race.__dict__.items() if k[0:4] != "_sa_"}
