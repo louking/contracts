@@ -53,7 +53,7 @@ function sponsor_configureformbuttons( that, action ) {
                         that.close();
                         that.title( 'Delete' )
                             .buttons( 'Confirm Delete' )
-                            .message( 'Are you sure you want to delete this event?' )
+                            .message( 'Are you sure you want to delete this sponsorship?' )
                             .remove( that.modifier() )
                     }
                 },
