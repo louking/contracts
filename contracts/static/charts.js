@@ -94,7 +94,7 @@ function charts_line_chart_annual(options) {
     let today = new Date().setHours(0,0,0,0);
     let dailydata = [];
     for (i=0; i<config.data.length; i++) {
-        let raceyear = config.data[i].year;
+        let year = config.data[i].year;
         let checkvalues = _.cloneDeep(config.data[i].values);
         let dailyvalues = [];
         // https://stackoverflow.com/questions/563406/add-days-to-javascript-date
@@ -107,12 +107,12 @@ function charts_line_chart_annual(options) {
             dailyvalues.push({date:new Date(thisdate), value:currvalue});
 
             // break out after today
-            let testdate = new Date(thisdate).setYear(raceyear);
+            let testdate = new Date(thisdate).setYear(year);
             if (testdate >= today) {
                 break;
             }
         }
-        dailydata.push( {year: raceyear, values:dailyvalues} );
+        dailydata.push( {year: year, values:dailyvalues} );
     }
 
 
@@ -168,7 +168,7 @@ function charts_line_chart_annual(options) {
     
     colormap = [];
     for (i=0; i<dailydata.length; i++) {
-        year = dailydata[i].year
+        let year = dailydata[i].year
         colormap.push({'year': year, 'color': colorcycle[i % colorcycle.length]});
     
         svg.append("path")
