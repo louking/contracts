@@ -42,6 +42,7 @@ moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
 fullcalendar_ver = '3.9.0'  # fullcalendar.io
 materialize_ver = '1.0.0'   # materializecss.com
+d3_ver = '5.9.2'            # d3js.org (see https://d3js.org/)
 
 materialize_bundle_js = Bundle(
         'js/materialize-v{ver}/materialize/js/materialize.js'.format(ver=materialize_ver),
@@ -149,12 +150,14 @@ asset_bundles = {
         'js/yadcf-{ver}/jquery.dataTables.yadcf.js'.format(ver=yadcf_ver),
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
+        'js/d3-{ver}/d3.js'.format(ver=d3_ver),
 
         'admin/editor.googledoc.js',
         'admin/layout.js',
         'admin/crudapi.js',
         'admin/datatables.js',
         'filters.js',
+        'charts.js',
         'admin/events.js',
         'admin/sponsors.js',    # must be after events
         'admin/sponsorshipsview.js',    # must be after events
@@ -190,6 +193,7 @@ asset_bundles = {
         'admin/editor-forms.css', 
         'admin/events.css',
         'eventscalendar.css',
+        'charts.css',
 
         output='gen/admin.css',
         # cssrewrite helps find image files when ASSETS_DEBUG = False

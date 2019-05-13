@@ -9,7 +9,15 @@ function summary_drawcallback( settings ) {
 
     var api = this.api();
 
+    // get all the row data, as currently filtered
+    var data = api.rows({
+                    page:'all',
+                    search: 'applied',
+                    order: 'index',
+                }).data();
+
     // if this is the first draw, look at all the data to set the year under review
+    // also chart can be drawn now
     if (summary_firstdraw) {
         summary_firstdraw = false;
         var alldata = api.rows({
@@ -39,13 +47,6 @@ function summary_drawcallback( settings ) {
             api.draw();
         });
     } // if (summary_firstdraw)
-
-    // get all the row data, as currently filtered
-    var data = api.rows({
-                    page:'all',
-                    search: 'applied',
-                    order: 'index',
-                }).data();
 
     // scan table to calculate level, trend, yearly data
     var levels = {};
@@ -279,6 +280,56 @@ function summary_drawcallback( settings ) {
         $('#yearly tbody').append(date_body);
     }
 
+    // draw chart
+    // transform dataset into what chart wants to see
+    // [{'year':year, values: [{'date':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
+    let years_dataset = _.transform(data, function(result, item) {
+        // skip invalid items and uncommitted items
+        if (!item.hasOwnProperty('state') || item.state.state != 'committed') {
+            return true;
+        }
+        (result[item.raceyear] || (result[item.raceyear] = {year:item.raceyear,
+            values:[]})).values.push({date:item.dateagreed,
+            // make sure item.amount is number
+            value:+item.amount})
+    }, {});
+    // sort values
+    years = Object.keys(years_dataset);
+    years.sort().reverse();
+    let dataset = [];
+    for (var i=0; i<years.length; i++) {
+        year = years[i];
+        yearobj = years_dataset[year];
+        // sort values by date
+        yearobj.values = _.sortBy(yearobj.values, ['date']);
+        // make a copy because we're messing with the values
+        thisobj = _.cloneDeep(yearobj);
+        // fill dataset with cumulative frequency
+        let yearaccum = 0;
+        thisobj.values.forEach(function(valueobj) {
+            yearaccum += valueobj.value;
+            valueobj.value = yearaccum;
+        });
+        dataset.push(thisobj);
+    };
+
+    // calculate date range
+    let lodate = m.week(loweeknum).day(0).format('MM-DD'),
+        hidate = m.week(hiweeknum).day(6).format('MM-DD');
+
+    // now accumulate values
+    let chartopts = {
+        data : dataset,
+        margin : {top:30, left:60, right:100, bottom:80},
+        containerselect : '#weekly-chart',
+        // chartheader : 'accumulated sponsorship $',
+        yaxislabel : 'total sponsorship dollars',
+        daterange : [lodate, hidate],
+        ytickincrement : 500,
+    }
+
+    $('#weekly-chart svg').remove();
+    charts_line_chart_annual(chartopts);
 
 } // summary_drawcallback
 
