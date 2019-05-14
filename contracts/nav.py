@@ -49,7 +49,7 @@ def nav_menu():
     contracts = Subgroup('Contracts')
     events    = Subgroup('Events')
     services  = Subgroup('Services')
-    sponsors  = Subgroup('Sponsorships')
+    sponsors  = Subgroup('Signature Races')
 
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):

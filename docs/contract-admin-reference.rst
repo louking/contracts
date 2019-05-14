@@ -595,7 +595,7 @@ Sponsorship Management
 Sponsorship Overview view
 ===========================
 
-**Navigation:** Sponsorships > Sponsorships
+**Navigation:** Signature Races > Sponsorships
 
 This view  provides a table  of all the :term:`sponsorships <sponsorship>`  in the database. The
 admin can create a new :term:`sponsorship`, or  select an :term:`sponsorship` for various 
@@ -700,7 +700,7 @@ using the Sponsor Query Form.
 Sponsor Query Log
 =====================
 
-**Navigation:** Sponsorships > Query Log
+**Navigation:** Signature Races > Query Log
 
 When a sponsor :term:`client` fills out the :ref:`sponsor-query-form`, the contents of the form are 
 saved in the Sponsor Query Log.
@@ -714,7 +714,7 @@ saved in the Sponsor Query Log.
 Sponsor Race Dates Overview
 ===============================
 
-**Navigation:** Sponsorships > Race Dates [super-admin only]
+**Navigation:** Signature Races > Race Dates [super-admin only]
 
 .. image:: images/sponsor-race-dates-overview.*
 
@@ -724,6 +724,6 @@ Sponsor Race Dates Overview
 Sponsor Race Variables Overview
 ===============================
 
-**Navigation:** Sponsorships > Race Variables [super-admin only]
+**Navigation:** Signature Races > Race Variables [super-admin only]
 
 .. image:: images/sponsor-race-variables-overview.*
