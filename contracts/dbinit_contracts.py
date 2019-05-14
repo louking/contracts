@@ -13,7 +13,7 @@ dbinit_contracts - contracts database initialization configuration
 '''
 
 # homegrown
-from dbmodel import State, FeeType, FeeBasedOn, Service, Course, ContractType, TemplateType, ContractBlockType 
+from dbmodel import State, FeeType, FeeBasedOn, Service, Course, ContractType, TemplateType, ContractBlockType, AddOn
 from dbmodel import Contract, DateRule, Tag, tags, SponsorTag, sponsortags
 from dbmodel import EventAvailabilityException
 
@@ -644,6 +644,18 @@ contracts += [
                                 '  <li>{{ service }}</li>',
                                 '{% endfor %}',
                                 '</ul>',
+                                '{% if addlservices %}',
+                                '<p>with the following add-ons</p>'
+                                '<ul>',
+                                '{% for addon in addlservices %}',
+                                '  <li>{{ addon }}</li>',
+                                '{% endfor %}',
+                                '</ul>',
+                                '{% endif %}',
+                                '{% if notes %}',
+                                '<p><b>Notes:</b></p>',
+                                '<p style="padding-left: 40px; padding-right: 40px; white-space: pre-line;">{{ notes }}</p>'
+                                '{% endif %}'
                                 '<p>Please record the following and send to raceservices@steeplechasers.org by replying ',
                                 'to this email after the race.</p>',
                                 '<ul>',
@@ -798,13 +810,18 @@ states = [
 feetypes = [
     {'feeType':'fixed',         'description':'fixed fee'},
     {'feeType':'basedOnField',  'description':'fee is based on another field'},
-    {'feeType':'addOn',         'description':'service is an add on'},
+    {'feeType':'addOn',         'description':'service is an add on'},  # TODO: is this needed?
 ]
 
 services = [
     {'service':'finishline', 'serviceLong':'Finish Line', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='basedOnField').one, 'basedOnField':'maxParticipants'},
     {'service':'coursemarking', 'serviceLong':'Course Marking', 'isCalendarBlocked': True, 'feeType': FeeType.query.filter_by(feeType='fixed').one, 'fee':100},
     {'service':'premiumpromotion', 'serviceLong':'Premium Promotion', 'isCalendarBlocked': False, 'feeType':FeeType.query.filter_by(feeType='fixed').one, 'fee':75},
+]
+
+# don't use hyphens in shortDescr because it wraps in table display
+addons = [
+    {'shortDescr' : 'addlscoring1', 'longDescr' : 'Scoring for one additional distance', 'fee' : 100},
 ]
 
 feebasedons = [
@@ -854,6 +871,7 @@ basemodelitems = [
     ModelItem(Service, services, False, 'service'),
     ModelItem(FeeBasedOn, feebasedons),
     ModelItem(Course, courses, False, 'course'),
+    ModelItem(AddOn, addons, False, 'shortDescr'),
 ]
 
 tagmodelitems = [

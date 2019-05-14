@@ -126,17 +126,22 @@ class EventsContract(DbCrudApiRolePermissions):
                                 self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
                                 raise ParameterError, 'cannot calculate fee if {} greater than {}'.format(field, lastfieldval)
                                 
-                        # fee is an add on
-                        elif service.feeType.feeType =='addOn':
-                            raise NotImplemented, 'addOn not implemented yet'
-                        
                         # not sure how we could get here, but best to be defensive
                         else:
                             raise ParameterError, 'unknown feeType: {}'.format(service.feeType.feeType)
 
                         # accumulate total fee
                         feetotal += thisfee
-                    
+
+                    # need to calculate addons in addition to services
+                    for addon in eventdb.addOns:
+                        thisfee = addon.fee
+                        servicefee = {'service': addon.longDescr, 'fee': thisfee}
+                        servicefees.append(servicefee)
+
+                        # accumulate total fee
+                        feetotal += thisfee
+
                     # generate contract
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
                     docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 

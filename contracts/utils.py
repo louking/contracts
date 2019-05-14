@@ -116,6 +116,10 @@ def renew_event(event):
         # make sure services are carried over
         for service in event.services:
             newevent.services.append(service)
+
+        # make sure addons are carried over
+        for addon in event.addOns:
+            newevent.addOns.append(addon)
             
         # add the new event to the database
         db.session.add(newevent)

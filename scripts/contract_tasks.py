@@ -136,7 +136,9 @@ def preraceemail():
 
 #----------------------------------------------------------------------
 @app.cli.command()
-def leademail():
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
+def leademail(startdate, enddate):
 #----------------------------------------------------------------------
     '''Send pre-race email to lead.'''
 
@@ -144,8 +146,26 @@ def leademail():
     senttag = Tag.query.filter_by(tag=TAG_LEADEMAILSENT).one()
 
     # calculate start and end date window
-    start = dbdate.dt2asc(date.today())
-    end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_LEAD_EMAIL']))
+    if startdate == 'auto' and enddate == 'auto':
+        # only send for races coming up within DAYS_LEAD_EMAIL in advance of the event,
+        # but if it doesn't happen for some reason will retry until event passed
+        start = dbdate.dt2asc(date.today())
+        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_LEAD_EMAIL']))
+
+    # verify both dates are present, check user input format is yyyy-mm-dd
+    else:
+        if startdate == 'auto' or enddate == 'auto':
+            print 'ERROR: startdate and enddate must both be specified'
+            return
+
+        if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+                not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            return
+
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
+        end = enddate
 
     # use correct filter to get races in next N days
     events = Event.query.filter(Event.date.between(start, end)).all()
@@ -179,6 +199,7 @@ def leademail():
         mergefields = deepcopy(event.__dict__)
 
         mergefields['servicedescrs'] = [s.serviceLong for s in event.services if s.service != 'premiumpromotion']
+        mergefields['addlservices'] = [a.longDescr for a in event.addOns]
         mergefields['event'] = event.race.race
 
         html = template.render( mergefields )
@@ -196,16 +217,36 @@ def leademail():
 
 #----------------------------------------------------------------------
 @app.cli.command()
-def postraceprocessing():
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
+def postraceprocessing(startdate, enddate):
 #----------------------------------------------------------------------
     '''Sending post-race email and renew race.'''
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
     inhibittag = Tag.query.filter_by(tag=TAG_POSTRACEMAILINHIBITED).one()
 
-    # calculate start and end date window (try to send for 1 week)
-    start = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL'] + 7) )
-    end = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL'] ) )
+    if startdate == 'auto' and enddate == 'auto':
+        # processing for races DAYS_POSTRACE_EMAIL days after the event,
+        # but if it doesn't happen for some reason will retry for a week
+        # calculate start and end date window (try to send for 1 week)
+        start = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL'] + 7))
+        end = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL']))
+
+    # verify both dates are present, check user input format is yyyy-mm-dd
+    else:
+        if startdate == 'auto' or enddate == 'auto':
+            print 'ERROR: startdate and enddate must both be specified'
+            return
+
+        if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+                not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            return
+
+    # cli specified dates format is fine, and both dates specified
+    start = startdate
+    end = enddate
 
     # use filter to get races in which occurred at least N days ago
     events = Event.query.filter(Event.date.between(start, end)).all()
