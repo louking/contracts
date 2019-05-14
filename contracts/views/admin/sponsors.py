@@ -138,6 +138,7 @@ sponsor_yadcf_options = [
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-levels',
+            'filter_match_mode': 'exact',
             'column_data_type': 'text',
             'text_data_delimiter': ', ',
             'filter_reset_button_text': False, # hide yadcf reset button
@@ -436,6 +437,7 @@ sponsorview_yadcf_options = [
             },
             'filter_type': 'multi_select',
             'filter_container_id': 'external-filter-levels',
+            'filter_match_mode': 'exact',
             'column_data_type': 'text',
             'text_data_delimiter': ', ',
             'filter_reset_button_text': False, # hide yadcf reset button
