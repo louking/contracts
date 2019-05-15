@@ -291,7 +291,9 @@ sponsor = SponsorContract(
                           '_treatment' : {'boolean':{'formfield':'isSponsorThankedFB', 'dbfield':'isSponsorThankedFB'}},
                           'ed':{ 'def': 'no' }, 
                         },
-                        { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Agreement', 'type':'googledoc', 'opts':{'text':'click for contract'} },
+                        { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Agreement', 'type':'googledoc', 'opts':{'text':'click for contract'},
+                          'render': '$.fn.dataTable.render.ellipsis( 10 )',
+                          },
                         { 'data': 'tags', 'name': 'tags', 'label': 'Tags',
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorTag, 'labelfield':'tag', 'formfield':'tags', 'dbfield':'tags',
                                                               'uselist':True, 'searchbox':False,
@@ -300,7 +302,8 @@ sponsor = SponsorContract(
                                                             }
                            },
                         },
-                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea'
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea',
+                          'render': '$.fn.dataTable.render.ellipsis( 20 )',
                         },
                     ], 
                     servercolumns = None,  # not server side
@@ -489,7 +492,8 @@ sponsorview = DbCrudApiRolePermissions(
                         },
                         { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'readonly',
                         },
-                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea'
+                        { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea',
+                          'render': '$.fn.dataTable.render.ellipsis( 20 )',
                         },
                     ], 
                     servercolumns = None,  # not server side

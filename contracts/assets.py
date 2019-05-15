@@ -156,6 +156,7 @@ asset_bundles = {
         'admin/layout.js',
         'admin/crudapi.js',
         'admin/datatables.js',
+        'admin/datatables.dataRender.ellipsis.js',
         'filters.js',
         'charts.js',
         'admin/events.js',
