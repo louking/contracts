@@ -81,7 +81,7 @@ function summary_drawcallback( settings ) {
         // track trends - look at focus year and previous
         var raceyear = Number(thisrow.raceyear);
         var amount = thisrow.amount;
-        if (_.includes([summary_focusyear, summary_focusyear-1], raceyear)) {
+        if (_.includes([summary_focusyear, summary_focusyear-1], raceyear) && thisrow.treatment == 'summarize') {
             var thisrace = thisrow.race.race;
             var sponsor = thisrow.client.client;
             var level = thisrow.level.race_level;
@@ -100,7 +100,7 @@ function summary_drawcallback( settings ) {
         }
 
         // track yearly data for committed sponsorships
-        if (state == 'committed') {
+        if (state == 'committed' && thisrow.treatment == 'summarize') {
             if (raceyear >= minyear && raceyear <= maxyear) {
                 years[raceyear].total += amount;
                 years[raceyear].count += 1;
@@ -285,7 +285,7 @@ function summary_drawcallback( settings ) {
     // [{'year':year, values: [{'date':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
     let years_dataset = _.transform(data, function(result, item) {
         // skip invalid items and uncommitted items
-        if (!item.hasOwnProperty('state') || item.state.state != 'committed') {
+        if (!item.hasOwnProperty('state') || item.state.state != 'committed' || item.treatment != 'summarize') {
             return true;
         }
         (result[item.raceyear] || (result[item.raceyear] = {year:item.raceyear,

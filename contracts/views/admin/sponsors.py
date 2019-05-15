@@ -526,8 +526,8 @@ sponsorview.register()
 # sponsorsummarys endpoint
 ###########################################################################################
 
-sponsorsummary_dbattrs = 'id,raceyear,racecontact,amount,trend,race,client,state,level,datesolicited,dateagreed,invoicesent'.split(',')
-sponsorsummary_formfields = 'rowid,raceyear,racecontact,amount,trend,race,client,state,level,datesolicited,dateagreed,invoicesent'.split(',')
+sponsorsummary_dbattrs = 'id,raceyear,racecontact,amount,trend,race,client,state,level,level.treatment,datesolicited,dateagreed,invoicesent'.split(',')
+sponsorsummary_formfields = 'rowid,raceyear,racecontact,amount,trend,race,client,state,level,treatment,datesolicited,dateagreed,invoicesent'.split(',')
 sponsorsummary_dbmapping = dict(zip(sponsorsummary_dbattrs, sponsorsummary_formfields))
 sponsorsummary_formmapping = dict(zip(sponsorsummary_formfields, sponsorsummary_dbattrs))
 
@@ -604,6 +604,9 @@ sponsorsummary = DbCrudApiRolePermissions(
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorLevel, 'labelfield':'race_level', 'formfield':'level', 
                                                               'dbfield':'level', 'uselist':False, 'searchbox':True,
                            } }
+                        },
+                        { 'data': 'treatment', 'name': 'treatment', 'label': 'Treatment',
+                          'className': 'field_req',
                         },
                         { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
                           'className': 'field_req',
@@ -738,8 +741,8 @@ sponsorrace.register()
 # sponsorlevels endpoint
 ###########################################################################################
 
-sponsorlevel_dbattrs = 'id,race,level,minsponsorship,couponcount,maxallowed,description,display'.split(',')
-sponsorlevel_formfields = 'rowid,race,level,minsponsorship,couponcount,maxallowed,description,display'.split(',')
+sponsorlevel_dbattrs = 'id,race,level,minsponsorship,couponcount,maxallowed,treatment,description,display'.split(',')
+sponsorlevel_formfields = 'rowid,race,level,minsponsorship,couponcount,maxallowed,treatment,description,display'.split(',')
 sponsorlevel_dbmapping = dict(zip(sponsorlevel_dbattrs, sponsorlevel_formfields))
 sponsorlevel_formmapping = dict(zip(sponsorlevel_formfields, sponsorlevel_dbattrs))
 
@@ -808,7 +811,12 @@ sponsorlevel = DbCrudApiRolePermissions(
                         },
                         { 'data': 'couponcount', 'name': 'couponcount', 'label': 'Num Free Entries', 
                         },
-                        { 'data': 'description', 'name': 'description', 'label': 'Description for Agreement', 
+                        { 'data': 'treatment', 'name': 'treatment', 'label': 'Treatment', 'type': 'select2',
+                          'className': 'field_req',
+                          'options': ['summarize', 'not in summary'],
+                          'ed': {'def': 'summarize'},
+                          },
+                        { 'data': 'description', 'name': 'description', 'label': 'Description for Agreement',
                         },
                     ], 
                     servercolumns = None,  # not server side

@@ -90,6 +90,7 @@ BENEFICIARY_LEN = 128
 RACELOC_LEN = 128
 SLUG_LEN = 32
 VALUE_LEN = 128
+TREATMENT_LEN = 32
 
 class Lead(Base):
     __tablename__ = 'lead'
@@ -587,6 +588,7 @@ class SponsorLevel(Base):
     couponcount    = Column( Integer )
     display        = Column( Boolean )
     maxallowed     = Column( Integer )  # leave null if no limit
+    treatment      = Column( String(TREATMENT_LEN) )
     description    = Column( String(DESCR_LEN) )
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To One
     race_id        = Column( Integer, ForeignKey('sponsorrace.id') )

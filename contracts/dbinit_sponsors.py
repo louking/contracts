@@ -98,6 +98,16 @@ sponsorlevels = [
      'maxallowed'       : 1,
      'couponcount'      : 3,
      'display'          : True,
+     'treatment'        : 'summarize',
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Test Race'}),
+     'level'            : 'In Kind',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+     'treatment'        : 'not in summary',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Test Race'}),
@@ -106,6 +116,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : False,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
@@ -114,6 +125,7 @@ sponsorlevels = [
      'maxallowed'       : 1,
      'couponcount'      : 5,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
@@ -122,6 +134,7 @@ sponsorlevels = [
      'maxallowed'       : 8,
      'couponcount'      : 3,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
@@ -130,6 +143,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 2,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
@@ -138,6 +152,16 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : True,
+     'treatment'        : 'summarize',
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
+     'level'            : 'In Kind',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+     'treatment'        : 'not in summary',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Market Street Mile'}),
@@ -146,6 +170,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : False,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -155,6 +180,7 @@ sponsorlevels = [
      'maxallowed'       : 1,
      'couponcount'      : 10,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -163,6 +189,7 @@ sponsorlevels = [
      'maxallowed'       : 3,
      'couponcount'      : 5,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -171,6 +198,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 4,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -179,6 +207,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 3,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -187,6 +216,16 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 2,
      'display'          : True,
+     'treatment'        : 'summarize',
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
+     'level'            : 'In Kind',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+     'treatment'        : 'not in summary',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Women\'s Distance Festival'}),
@@ -195,6 +234,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : False,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -203,6 +243,7 @@ sponsorlevels = [
      'maxallowed'       : 1,
      'couponcount'      : 5,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -211,6 +252,7 @@ sponsorlevels = [
      'maxallowed'       : 3,
      'couponcount'      : 4,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -219,6 +261,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 3,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -227,6 +270,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 2,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -235,6 +279,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -243,6 +288,16 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : False,
+     'treatment'        : 'summarize',
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
+     'level'            : 'In Kind',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+     'treatment'        : 'not in summary',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Frederick Summer Solstice 8K'}),
@@ -251,6 +306,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : False,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -259,6 +315,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -267,6 +324,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 1,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -275,6 +333,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 2,
      'display'          : True,
+     'treatment'        : 'summarize',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -283,6 +342,16 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : 3,
      'display'          : True,
+     'treatment'        : 'summarize',
+    },
+    {
+     'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
+     'level'            : 'In Kind',
+     'minsponsorship'   : 0,
+     'maxallowed'       : None,
+     'couponcount'      : None,
+     'display'          : False,
+     'treatment'        : 'not in summary',
     },
     {
      'race'             : getmodelitems(SponsorRace,{'race':'Rick O\'Donnell 5.22 Mile Trail Run and Ultra Challenge'}),
@@ -291,6 +360,7 @@ sponsorlevels = [
      'maxallowed'       : None,
      'couponcount'      : None,
      'display'          : False,
+     'treatment'        : 'summarize',
     },
 ]
 
