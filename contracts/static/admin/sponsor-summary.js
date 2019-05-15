@@ -297,6 +297,8 @@ function summary_drawcallback( settings ) {
     years = Object.keys(years_dataset);
     years.sort().reverse();
     let dataset = [];
+    let lodate = '12-31',
+        hidate = '01-01';
     for (var i=0; i<years.length; i++) {
         year = years[i];
         yearobj = years_dataset[year];
@@ -311,11 +313,15 @@ function summary_drawcallback( settings ) {
             valueobj.value = yearaccum;
         });
         dataset.push(thisobj);
-    };
 
-    // calculate date range
-    let lodate = m.week(loweeknum).day(0).format('MM-DD'),
-        hidate = m.week(hiweeknum).day(6).format('MM-DD');
+        // calculate date range
+        if (moment(yearobj.values[0].date).format('MM-DD') < lodate) {
+            lodate = moment(yearobj.values[0].date).format('MM-DD');
+        }
+        if (moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD') > hidate) {
+            hidate = moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD');
+        }
+    };
 
     // now accumulate values
     let chartopts = {
