@@ -1,0 +1,38 @@
+{% extends "datatables.jinja2" %}
+{% block css %}
+  {{ super() }}
+  <style type="text/css">
+    #datatable_wrapper {
+        display: none;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    .flex-item {
+      padding: 5px;
+      /*width: 200px;*/
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .race-chart {
+        width:900px;
+        height:600px;
+    }
+
+  </style>
+{% endblock %}
+{% block body %}
+  {{ super() }}
+  <div class=flex-container>
+    <div id=date-chart class="flex-item race-chart">
+    </div>
+    <div id=daystorace-chart class="flex-item race-chart">
+    </div>
+    <div id=daysfromreg-chart class="flex-item race-chart">
+    </div>
+  </div>
+{% endblock %}

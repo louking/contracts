@@ -32,6 +32,8 @@ from flask import current_app
 login_url = 'https://runsignup.com/rest/login'
 logout_url = 'https://runsignup.com/rest/logout'
 coupons_url = 'https://runsignup.com/rest/race/{race_id}/coupons'
+race_url = 'https://runsignup.com/rest/race/{race_id}'
+raceparticipants_url = 'https://runsignup.com/rest/race/{race_id}/participants'
 
 class accessError(Exception): pass
 class parameterError(Exception): pass
@@ -253,7 +255,69 @@ class RunSignUp():
                            )
       
         return data['coupons']
-        
+
+
+    # ----------------------------------------------------------------------
+    def getraceevents(self, race_id):
+    # ----------------------------------------------------------------------
+        """
+        return events for race information accessible to this application
+        uses get race RSU method
+
+        :param race_id: id of race
+        """
+
+        if self.debug:
+            current_app.logger.debug('getraceevents({})'.format(race_id))
+
+        data = self._rsuget(race_url.format(race_id=race_id),
+                            )
+        events = data['race']['events']
+
+        return events
+
+
+    # ----------------------------------------------------------------------
+    def getraceparticipants(self, race_id, event_id):
+    # ----------------------------------------------------------------------
+        """
+        return race information accessible to this application
+
+        :param race_id: id of race
+        :param event_id: id of event (instance of event for race in a given year)
+        """
+
+        if self.debug:
+            current_app.logger.debug('getraceparticipants({}, event_id={})'.format(race_id, event_id))
+
+        # max number of raceparticipants in raceparticipant list is 100, so need to loop, collecting
+        # BITESIZE raceparticipants at a time.  These are all added to raceparticipants list, and final
+        # list is returned to the caller
+        BITESIZE = 100
+        page = 1
+        raceparticipants = []
+        while True:
+            params = {
+                'event_id': event_id,
+                'page': page,
+                'results_per_page': BITESIZE,
+            }
+
+            # note list is returned; only asking for one event, so data gets the first item in list
+            data = self._rsuget(raceparticipants_url.format(race_id=race_id),
+                                **params
+                                )[0]
+            if 'participants' not in data or len(data['participants']) == 0: break
+
+            theseraceparticipants = data['participants']
+
+            raceparticipants += theseraceparticipants
+            page += 1
+
+            # stop iterating if we've reached the end of the data
+            if len(data['participants']) < BITESIZE: break
+
+        return raceparticipants
 
     #----------------------------------------------------------------------
     def _rsuget(self, methodurl, **payload):

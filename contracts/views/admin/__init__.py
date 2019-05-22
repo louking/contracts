@@ -23,4 +23,5 @@ import tags
 import daterules
 import contractviews
 import sponsors
+import racessummary
 import sysinfo
