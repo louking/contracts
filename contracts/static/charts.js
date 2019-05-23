@@ -16,6 +16,7 @@ function charts_line_chart_annual(options) {
     //     chartheader - optional text - if present, printed in the top center of the chart
     //     yaxislabel - optional text - if present, printed 90 deg rotated, on the left of the chart
     //     daterange - optional array [startdate, enddate] dates in mm/dd format, default ['01-01', '12-31']
+    //     lastseq - optional date (mm-dd) to skip after, or {year:lastseq, ... } by year
 
     // extend config based on options
     let config = {
@@ -117,8 +118,15 @@ function charts_line_chart_annual(options) {
             dailyvalues.push({date:new Date(thisdate), value:currvalue});
 
             // break out after today
-            let testdate = new Date(thisdate).setYear(year);
-            if (testdate >= today) {
+            // break out after current sequence
+            let lastseq;
+            if (typeof config.lastseq == 'string') {
+                lastseq = config.lastseq;
+            } else {
+                lastseq = config.lastseq[year];
+            }
+            // TODO: handle inverted lodate, hidate
+            if (lastseq != '' && moment(thisdate).format('MM-DD') >= lastseq) {
                 break;
             }
         }
@@ -178,7 +186,7 @@ function charts_line_chart_annual(options) {
     
     colormap = [];
     for (let i=0; i<dailydata.length; i++) {
-        let year = dailydata[i].year
+        let year = dailydata[i].year;
         colormap.push({'year': year, 'color': colorcycle[i % colorcycle.length]});
     
         svg.append("path")
@@ -267,6 +275,7 @@ function charts_line_chart_seq(options) {
     //     xrange - array [startseq, endseq] seq are numeric, startseq may be higher then endseq
     //     chartheader - optional text - if present, printed in the top center of the chart
     //     yaxislabel - optional text - if present, printed 90 deg rotated, on the left of the chart
+    //     lastseq - optional sequence number to skip after, or {linelabel:lastseq, ... } by linelabel
 
     // extend config based on options
     let config = {
@@ -277,6 +286,7 @@ function charts_line_chart_seq(options) {
         yaxislabel : '',
         xrange : [0, 100],
         ytickincrement : 100,
+        lastseq : 0,
     };
     config = Object.assign(config, options);
 
@@ -367,7 +377,13 @@ function charts_line_chart_seq(options) {
             seqvalues.push({x:thisx, value:currvalue});
 
             // break out after current sequence
-            if (config.lastseq > 0 && ((incr > 0 && thisx >= config.lastseq) || (incr < 0 && thisx <= lastseq))) {
+            let lastseq;
+            if (typeof config.lastseq == 'number') {
+                lastseq = config.lastseq;
+            } else {
+                lastseq = config.lastseq[linelabel];
+            }
+            if (lastseq > 0 && ((incr > 0 && thisx >= lastseq) || (incr < 0 && thisx <= lastseq))) {
                 break;
             }
         }

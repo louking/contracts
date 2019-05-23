@@ -40,7 +40,7 @@ function racesummary_drawcallback( settings ) {
         let charttypeselect = '<select id="summary-race-charttype-select" name="charttype">\n';
         let charttypes = [
             {val:'daystorace', text:'days to race'},
-            {val:'daysfromreg', text:'days from registration'},
+            {val:'daysfromreg', text:'days from registration open'},
             {val:'date', text:'date'},
         ];
         for (let i=0; i<charttypes.length; i++) {
@@ -77,6 +77,8 @@ function racesummary_drawcallback( settings ) {
             date:item.registration_date,
             daystorace: moment(item.race_date).diff(moment(item.registration_date), 'days'),
             daysfromreg: moment(item.registration_date).diff(moment(item.regopen_date), 'days'),
+            race_date: item.race_date,
+            regopen_date: item.regopen_date,
             // make sure item.amount is number
             value:+item.count
         })
@@ -87,6 +89,8 @@ function racesummary_drawcallback( settings ) {
     let dataset = [];
     let lodate = '12-31',
         hidate = '01-01';
+    let today = moment({hour: 0});  // midnight today morning
+    let datelastseq = {};
     for (let i=0; i<years.length; i++) {
         let year = years[i];
         let yearobj = years_dataset[year];
@@ -94,6 +98,12 @@ function racesummary_drawcallback( settings ) {
         yearobj.values = _.sortBy(yearobj.values, ['date']);
         // make a copy because we're messing with the values
         let thisobj = _.cloneDeep(yearobj);
+
+        if (today.year() == thisobj.year) {
+            datelastseq[thisobj.year] = today.format('MM-DD');
+        } else {
+            datelastseq[thisobj.year] = moment(thisobj.values[0].race_date).format('MM-DD');
+        }
 
         // TODO: determine cumulative vs frequency algorithm based on pulldown
         // fill dataset with cumulative frequency
@@ -126,22 +136,36 @@ function racesummary_drawcallback( settings ) {
         yaxislabel : 'number of registrants',
         daterange : [lodate, hidate],
         ytickincrement : 100,
+        lastseq: datelastseq,
     });
 
     // now accumulate values
     // note dataset has already been sorted nicely
     let daystoraceset = _.cloneDeep(dataset);
     let daysfromregset = _.cloneDeep(dataset);
+    let daystoracelastseq = {};
+    let daysfromreglastseq = {};
     let maxdays = 0;
+
     for (let i=0; i<daystoraceset.length; i++) {
         let thisobj = daystoraceset[i];
         thisobj.linelabel = thisobj.year;
+        if (today.year() == thisobj.year) {
+            daystoracelastseq[thisobj.linelabel] = moment(thisobj.values[0].race_date).diff(today, 'days');
+        } else {
+            daystoracelastseq[thisobj.linelabel] = 0;
+        }
         thisobj.values.forEach(function(valueobj) {
             valueobj.x = valueobj.daystorace;
             if (valueobj.x > maxdays) maxdays = valueobj.x;
         });
         thisobj = daysfromregset[i];
         thisobj.linelabel = thisobj.year;
+        if (today.year() == thisobj.year) {
+            daysfromreglastseq[thisobj.linelabel] = moment(today).diff(thisobj.values[0].regopen_date, 'days');
+        } else {
+            daysfromreglastseq[thisobj.linelabel] = moment(thisobj.values[0].race_date).diff(moment(thisobj.values[0].regopen_date), 'days');
+        }
         thisobj.values.forEach(function(valueobj) {
             valueobj.x = valueobj.daysfromreg;
         });
@@ -157,6 +181,7 @@ function racesummary_drawcallback( settings ) {
         yaxislabel : 'number of registrants',
         xrange : [maxdays, 0],
         ytickincrement : 100,
+        lastseq : daystoracelastseq,
     });
 
     // days from registration chart
@@ -165,10 +190,11 @@ function racesummary_drawcallback( settings ) {
         data : daysfromregset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daysfromreg-chart',
-        chartheader : 'registrants by days from registration',
+        chartheader : 'registrants by days from registration open',
         yaxislabel : 'number of registrants',
         xrange : [0, maxdays],
         ytickincrement : 100,
+        lastseq : daysfromreglastseq,
     });
 
     // can show the current chart now

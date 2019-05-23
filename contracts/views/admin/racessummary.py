@@ -99,7 +99,7 @@ class RaceSummaryApi(CrudApi):
     #-------------------------------------------------------------------------------------
     def open(self):
     #-------------------------------------------------------------------------------------
-        races = SponsorRace.query.all()
+        races = SponsorRace.query.filter_by(display=True).all()
 
         with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET']) as rsu:
             racedata = {}
