@@ -27,6 +27,7 @@ function charts_line_chart_annual(options) {
         yaxislabel : '',
         daterange : ['01-01', '12-31'],
         ytickincrement : 100,
+        lastseq: '',
     };
     config = Object.assign(config, options);
 
