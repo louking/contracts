@@ -244,9 +244,9 @@ def postraceprocessing(startdate, enddate):
             print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
             return
 
-    # cli specified dates format is fine, and both dates specified
-    start = startdate
-    end = enddate
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
+        end = enddate
 
     # use filter to get races in which occurred at least N days ago
     events = Event.query.filter(Event.date.between(start, end)).all()
