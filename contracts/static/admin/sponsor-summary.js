@@ -62,9 +62,18 @@ function summary_drawcallback( settings ) {
         years[year] = {total:0, avg:0, count:0, weeks:{}}
     }
 
+    let today = moment({hour: 0});  // midnight today morning
+    let sponsorlastseq = {};
+
     for (var i=0; i<data.length; i++) {
         var thisrow = data[i];
         // console.log('data['+i+']='+JSON.stringify(data[i]));
+
+        if (today.year() == thisrow.raceyear) {
+            sponsorlastseq[thisrow.raceyear] = today.format('MM-DD');
+        } else {
+            sponsorlastseq[thisrow.raceyear] = '';
+        }
 
         var state = thisrow.state.state;
 
@@ -259,7 +268,6 @@ function summary_drawcallback( settings ) {
         $('#yearly tbody').append(stat_body);
     });
     var cdf = {};
-    var today = moment();
     for (week = loweeknum; week <= hiweeknum; week++) {
         var m = moment().year(summary_focusyear)
         var dates = m.week(week).day(0).format('MM/DD') 
@@ -323,8 +331,8 @@ function summary_drawcallback( settings ) {
         }
     };
 
-    // now accumulate values
-    let chartopts = {
+    $('#weekly-chart svg').remove();
+    charts_line_chart_annual({
         data : dataset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#weekly-chart',
@@ -332,10 +340,8 @@ function summary_drawcallback( settings ) {
         yaxislabel : 'total sponsorship dollars',
         daterange : [lodate, hidate],
         ytickincrement : 500,
-    }
-
-    $('#weekly-chart svg').remove();
-    charts_line_chart_annual(chartopts);
+        lastseq: sponsorlastseq,
+    });
 
 } // summary_drawcallback
 
