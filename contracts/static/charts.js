@@ -137,7 +137,9 @@ function charts_line_chart_annual(options) {
 
     // 6. Y scale will use the dataset values
     // force up to next boundary based on ytickincrement
-    y.domain([0, Math.ceil(d3.max(ydomaindata, function(d) { return d.value })/config.ytickincrement )*config.ytickincrement]);
+    y.domain([0, Math.ceil(d3.max(ydomaindata, function(d) {
+        return d.value
+    })/config.ytickincrement )*config.ytickincrement]);
 
     // 3. Call the x axis in a group tag
     svg.append("g")
@@ -216,21 +218,27 @@ function charts_line_chart_annual(options) {
         .data(colormap)
       .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(" + i * 90 + ",0)"; });
+        .attr("transform", function(d, i) {
+            return "translate(" + i * 90 + ",0)";
+        });
   
     legend.append("rect")
         .attr("y", height + config.margin.bottom - 15)
         .attr("x", 60)
         .attr("width", 15)
         .attr("height", 15)
-        .style("fill", function(d) { return d.color });
+        .style("fill", function(d) {
+            return d.color
+        });
   
     legend.append("text")
         .attr("x", 15)
         .attr("y", height + config.margin.bottom - 15)
         .attr("dy", ".8em")
         .style("text-anchor", "bottom")
-        .text(function(d) { return d.year; });
+        .text(function(d) {
+            return d.year;
+        });
   
     let mouseoverlay = svg.append("rect")
         .attr("class", "overlay")
@@ -239,8 +247,12 @@ function charts_line_chart_annual(options) {
 
     let allfocus = d3.selectAll(".focus");
     mouseoverlay
-      .on("mouseover", function() { allfocus.style("display", null); })
-      .on("mouseout", function() { allfocus.style("display", "none"); })
+      .on("mouseover", function() {
+          allfocus.style("display", null);
+      })
+      .on("mouseout", function() {
+          allfocus.style("display", "none");
+      })
       .on("mousemove", mousemove);
   
     function mousemove() {
@@ -266,259 +278,284 @@ function charts_line_chart_annual(options) {
 }
 
 // line chart with bottom axis sequential, left axis values
-function charts_line_chart_seq(options) {
+// function charts_line_chart_seq(options) {
+class Chart {
     // options:
     //     data - [{'linelabel':linelabel, values: [{'x':number, 'value':value}, ... ]}, ... ]
     //              values need to be sorted by date
     //     margin - 50 OR {top: 50, right: 50, bottom: 50, left: 50} (e.g.), default 40
     //     containerselect - e.g., 'body', '#divname', default 'body'
-    //     ytickincrement - y range is bumped up to next integral multiple of this value, default 100
+    //     xaxis - 'date', 'number', default 'number'
     //     xrange - array [startseq, endseq] seq are numeric, startseq may be higher then endseq
     //     chartheader - optional text - if present, printed in the top center of the chart
+    //     ytickincrement - y range is bumped up to next integral multiple of this value, default 100
     //     yaxislabel - optional text - if present, printed 90 deg rotated, on the left of the chart
     //     lastseq - optional sequence number to skip after, or {linelabel:lastseq, ... } by linelabel
 
     // extend config based on options
-    let config = {
-        data : null,
-        margin : 40,
-        containerselect : 'body',
-        chartheader : '',
-        yaxislabel : '',
-        xrange : [0, 100],
-        ytickincrement : 100,
-        lastseq : 0,
-    };
-    config = Object.assign(config, options);
+    constructor(options) {
+        let that = this;
+        that.options = {
+            data: null,
+            margin: 40,
+            containerselect: 'body',
+            chartheader: '',
+            xaxis: 'number',
+            xrange: [0, 100],
+            yaxislabel: '',
+            ytickincrement: 100,
+            lastseq: 0,
+        };
+        that.options = Object.assign(that.options, options);
 
-    // convert margin if necessary
-    if (typeof config.margin == 'number') {
-        config.margin = {top:config.margin, right:config.margin, bottom:config.margin, left:config.margin};
+        // convert margin if necessary
+        if (typeof that.options.margin == 'number') {
+            that.options.margin = {
+                top: that.options.margin,
+                right: that.options.margin,
+                bottom: that.options.margin,
+                left: that.options.margin
+            };
+        }
     }
 
-    // colors copied from matplotlib v2.0 - see https://matplotlib.org/users/dflt_style_changes.html#colors-in-default-property-cycle
-    let colorcycle = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-                  '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
-                  '#bcbd22', '#17becf'];
-    let color = d3.scaleOrdinal()
-        .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-                  '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
-                  '#bcbd22', '#17becf']);
+    draw() {
+        let that = this;
 
-    // get container
-    let container = d3.select(config.containerselect),
-        containerjs = document.querySelector(config.containerselect);
+        // colors copied from matplotlib v2.0 - see https://matplotlib.org/users/dflt_style_changes.html#colors-in-default-property-cycle
+        let colorcycle = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+            '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+            '#bcbd22', '#17becf'];
+        let color = d3.scaleOrdinal()
+            .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+                '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+                '#bcbd22', '#17becf']);
 
-    // 2. Use the margin convention practice, for container
-    let width = containerjs.clientWidth - config.margin.left - config.margin.right, // Use the container's width
-        height = containerjs.clientHeight - config.margin.top - config.margin.bottom, // Use the container's height
-        viewbox_width = width + config.margin.left + config.margin.right,
-        viewbox_height = height + config.margin.top + config.margin.bottom;
+        // get container
+        let container = d3.select(that.options.containerselect),
+            containerjs = document.querySelector(that.options.containerselect);
 
-    // 1. Add the SVG to the page and employ #2
-    let svg = container.append("svg")
-        .attr("width", width + config.margin.left + config.margin.right)
-        .attr("height", height + config.margin.top + config.margin.bottom)
-      .append("g")
-        .attr("transform", "translate(" + config.margin.left + "," + config.margin.top + ")");
+        // 2. Use the margin convention practice, for container
+        let width = containerjs.clientWidth - that.options.margin.left - that.options.margin.right, // Use the container's width
+            height = containerjs.clientHeight - that.options.margin.top - that.options.margin.bottom, // Use the container's height
+            viewbox_width = width + that.options.margin.left + that.options.margin.right,
+            viewbox_height = height + that.options.margin.top + that.options.margin.bottom;
 
-    // set up scales and ranges
-    let x = d3.scaleLinear()
-        .range([0, width]);
-    let y = d3.scaleLinear()
-        .range([height, 0]);
+        // 1. Add the SVG to the page and employ #2
+        let svg = container.append("svg")
+            .attr("width", width + that.options.margin.left + that.options.margin.right)
+            .attr("height", height + that.options.margin.top + that.options.margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + that.options.margin.left + "," + that.options.margin.top + ")");
 
-    // incr is 1 for lowx < highx, -1 for lowx > highx
-    let lowx = config.xrange[0],
-        highx = config.xrange[1],
-        incr = (lowx < highx) ? 1 : -1;
+        // set up scales and ranges
+        let x = d3.scaleLinear()
+            .range([0, width]);
+        let y = d3.scaleLinear()
+            .range([height, 0]);
 
-    // 5. X scale will use the x of our data
-    let bisectX = d3.bisector(function(d, x) {
-        if (incr > 0) {
-            return d.x - x;
-        } else {
-            return x - d.x;
-        }
-    }).left;
-    x.domain([lowx, highx]);
+        // incr is 1 for lowx < highx, -1 for lowx > highx
+        let lowx = that.options.xrange[0],
+            highx = that.options.xrange[1],
+            incr = (lowx < highx) ? 1 : -1;
 
-    // see https://bl.ocks.org/d3noob/0e276dc70bb9184727ee47d6dd06e915
-    let xAxis = d3.axisBottom(x)
-        .tickSize(16);
-
-    let yAxis = d3.axisLeft(y);
-
-    // ydomaindata is concatenation of all data for y.domain(d3.extent),
-    // used to determine y domain
-    let ydomaindata = [];
-    for (i=0; i<config.data.length; i++) {
-        config.data[i].values.forEach(function(d) {
-            // force number
-            d.value = +d.value;
-        });
-        ydomaindata = ydomaindata.concat(config.data[i].values);
-    };
-
-    // seqdata is used to draw the paths so that there is a point for each number in the range
-    let seqdata = [];
-    for (let i=0; i<config.data.length; i++) {
-        let linelabel = config.data[i].linelabel;
-        let checkvalues = _.cloneDeep(config.data[i].values);
-        let seqvalues = [];
-        let currvalue = 0;
-        let xrange = _.range(lowx, highx+incr, incr);
-        for (let j=0; j<xrange.length; j++) {
-            let thisx = xrange[j];
-            while (checkvalues.length > 0
-                    && ((incr > 0 && checkvalues[0].x <= thisx) || (incr < 0 && checkvalues[0].x >= thisx))) {
-                let thisitem = checkvalues.shift();
-                currvalue = thisitem.value;
-            }
-            seqvalues.push({x:thisx, value:currvalue});
-
-            // break out after current sequence
-            let lastseq;
-            if (typeof config.lastseq == 'number') {
-                lastseq = config.lastseq;
+        // 5. X scale will use the x of our data
+        let bisectX = d3.bisector(function (d, x) {
+            if (incr > 0) {
+                return d.x - x;
             } else {
-                lastseq = config.lastseq[linelabel];
+                return x - d.x;
             }
-            if (lastseq > 0 && ((incr > 0 && thisx >= lastseq) || (incr < 0 && thisx <= lastseq))) {
-                break;
-            }
-        }
-        seqdata.push( {linelabel: linelabel, values:seqvalues} );
-    }
+        }).left;
+        x.domain([lowx, highx]);
 
-
-    // 6. Y scale will use the dataset values
-    // force up to next boundary based on ytickincrement
-    y.domain([0, Math.ceil(d3.max(ydomaindata, function(d) { return d.value })/config.ytickincrement )*config.ytickincrement]);
-
-    // 3. Call the x axis in a group tag
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
         // see https://bl.ocks.org/d3noob/0e276dc70bb9184727ee47d6dd06e915
-        .call(xAxis) // Create an axis component with d3.axisBottom
-      // https://bl.ocks.org/d3noob/3c040800ff6457717cca586ae9547dbf
-      .selectAll(".tick text")
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("transform", "rotate(-65)");
+        let xAxis = d3.axisBottom(x)
+            .tickSize(16);
 
-    // 4. Call the y axis in a group tag
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis); // Create an axis component with d3.axisLeft
+        let yAxis = d3.axisLeft(y);
 
-    // y axis text
-    svg.append("text")
-        .attr("transform", "rotate(-90)")
-        // x and y are flipped due to the rotation. see https://leanpub.com/d3-t-and-t-v4/read#leanpub-auto-the-y-axis-label
-        .attr("y", 0 - config.margin.left)
-        .attr("x", 0 - (height/2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text(config.yaxislabel);
+        // ydomaindata is concatenation of all data for y.domain(d3.extent),
+        // used to determine y domain
+        let ydomaindata = [];
+        for (i = 0; i < that.options.data.length; i++) {
+            that.options.data[i].values.forEach(function (d) {
+                // force number
+                d.value = +d.value;
+            });
+            ydomaindata = ydomaindata.concat(that.options.data[i].values);
+        }
 
-    // add heading if we have one
-    svg.append("g")
-        .attr("class", "heading")
-      .append("text")
-        .attr("transform", "translate(" + width/2 + ",-10)")
-        .style("text-anchor", "middle")
-        .text(config.chartheader);
+        // seqdata is used to draw the paths so that there is a point for each number in the range
+        let seqdata = [];
+        for (let i = 0; i < that.options.data.length; i++) {
+            let linelabel = that.options.data[i].linelabel;
+            let checkvalues = _.cloneDeep(that.options.data[i].values);
+            let seqvalues = [];
+            let currvalue = 0;
+            let xrange = _.range(lowx, highx + incr, incr);
+            for (let j = 0; j < xrange.length; j++) {
+                let thisx = xrange[j];
+                while (checkvalues.length > 0
+                && ((incr > 0 && checkvalues[0].x <= thisx) || (incr < 0 && checkvalues[0].x >= thisx))) {
+                    let thisitem = checkvalues.shift();
+                    currvalue = thisitem.value;
+                }
+                seqvalues.push({x: thisx, value: currvalue});
 
-    // 7. d3's line generator
-    let line = d3.line()
-        .x(function(d) {
-            return x(d.x); // set the x values for the line generator
-        })
-        .y(function(d) {
-            return y(d.value); // set the y values for the line generator
-        });
+                // break out after current sequence
+                let lastseq;
+                if (typeof that.options.lastseq == 'number') {
+                    lastseq = that.options.lastseq;
+                } else {
+                    lastseq = that.options.lastseq[linelabel];
+                }
+                if (lastseq > 0 && ((incr > 0 && thisx >= lastseq) || (incr < 0 && thisx <= lastseq))) {
+                    break;
+                }
+            }
+            seqdata.push({linelabel: linelabel, values: seqvalues});
+        }
+
+
+        // 6. Y scale will use the dataset values
+        // force up to next boundary based on ytickincrement
+        y.domain([0, Math.ceil(d3.max(ydomaindata, function (d) {
+            return d.value
+        }) / that.options.ytickincrement) * that.options.ytickincrement]);
+
+        // 3. Call the x axis in a group tag
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            // see https://bl.ocks.org/d3noob/0e276dc70bb9184727ee47d6dd06e915
+            .call(xAxis) // Create an axis component with d3.axisBottom
+            // https://bl.ocks.org/d3noob/3c040800ff6457717cca586ae9547dbf
+            .selectAll(".tick text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)");
+
+        // 4. Call the y axis in a group tag
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis); // Create an axis component with d3.axisLeft
+
+        // y axis text
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            // x and y are flipped due to the rotation. see https://leanpub.com/d3-t-and-t-v4/read#leanpub-auto-the-y-axis-label
+            .attr("y", 0 - that.options.margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text(that.options.yaxislabel);
+
+        // add heading if we have one
+        svg.append("g")
+            .attr("class", "heading")
+            .append("text")
+            .attr("transform", "translate(" + width / 2 + ",-10)")
+            .style("text-anchor", "middle")
+            .text(that.options.chartheader);
+
+        // 7. d3's line generator
+        let line = d3.line()
+            .x(function (d) {
+                return x(d.x); // set the x values for the line generator
+            })
+            .y(function (d) {
+                return y(d.value); // set the y values for the line generator
+            });
         // .curve(d3.curveMonotoneX) // apply smoothing to the line
 
-    colormap = [];
-    for (i=0; i<seqdata.length; i++) {
-        let linelabel = seqdata[i].linelabel
-        colormap.push({'linelabel': linelabel, 'color': colorcycle[i % colorcycle.length]});
+        let colormap = [];
+        for (i = 0; i < seqdata.length; i++) {
+            let linelabel = seqdata[i].linelabel
+            colormap.push({'linelabel': linelabel, 'color': colorcycle[i % colorcycle.length]});
 
-        svg.append("path")
-            .style("stroke", colormap[i].color)
-            .datum(seqdata[i].values)
-            .attr("class", "line")
-            .attr("d", line);
+            svg.append("path")
+                .style("stroke", colormap[i].color)
+                .datum(seqdata[i].values)
+                .attr("class", "line")
+                .attr("d", line);
 
-        // assure unique focusid per chart
-        let thisfocus = svg.append("g")
-            .attr("class", "focus")
-            .attr("id", charts_get_focusid(config.containerselect, i))
-            .style("display", "none");
+            // assure unique focusid per chart
+            let thisfocus = svg.append("g")
+                .attr("class", "focus")
+                .attr("id", charts_get_focusid(that.options.containerselect, i))
+                .style("display", "none");
 
-        thisfocus.append("circle")
-            .attr("r", 4.5);
+            thisfocus.append("circle")
+                .attr("r", 4.5);
 
-        thisfocus.append("text")
-            .style("text-anchor", "start")
-            .attr("x", 4)
-            .attr("y", 7)
-            .attr("dy", ".35em");
-    }
-
-    let legend = svg.selectAll(".legend")
-        .data(colormap)
-      .enter().append("g")
-        .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(" + i * 90 + ",0)"; });
-
-    legend.append("rect")
-        .attr("y", height + config.margin.bottom - 15)
-        .attr("x", 60)
-        .attr("width", 15)
-        .attr("height", 15)
-        .style("fill", function(d) { return d.color });
-
-    legend.append("text")
-        .attr("x", 15)
-        .attr("y", height + config.margin.bottom - 15)
-        .attr("dy", ".8em")
-        .style("text-anchor", "bottom")
-        .text(function(d) { return d.linelabel; });
-
-    let mouseoverlay = svg.append("rect")
-        .attr("class", "overlay")
-        .attr("width", width + config.margin.right)
-        .attr("height", height);
-
-    let allfocus = d3.selectAll(".focus");
-    mouseoverlay
-      .on("mouseover", function() { allfocus.style("display", null); })
-      .on("mouseout", function() { allfocus.style("display", "none"); })
-      .on("mousemove", mousemove);
-
-    function mousemove() {
-        let x0 = x.invert(d3.mouse(this)[0]);
-        for (let i=0; i<seqdata.length; i++) {
-            let j = bisectX(seqdata[i].values, x0);
-            let d;
-            // use d0, d1 if in range
-            if (j < seqdata[i].values.length) {
-                let d0 = seqdata[i].values[j - 1],
-                    d1 = seqdata[i].values[j];
-                d = x0 - d0.x > d1.x - x0 ? d1 : d0;
-            }
-            else {
-                d = seqdata[i].values[seqdata[i].values.length-1]
-            }
-            let thisfocus = d3.select('#'+charts_get_focusid(config.containerselect, i));
-            thisfocus.attr("transform", "translate(" + x(d.x) + "," + y(d.value) + ")");
-            thisfocus.select("text").text(d.x + " " + d.value);
-            // console.log('d.x='+d.x+' d.value='+d.value+' x(d.x)='+x(d.x)+' y(d.value)='+y(d.value));
+            thisfocus.append("text")
+                .style("text-anchor", "start")
+                .attr("x", 4)
+                .attr("y", 7)
+                .attr("dy", ".35em");
         }
-    }
 
+        let legend = svg.selectAll(".legend")
+            .data(colormap)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function (d, i) {
+                return "translate(" + i * 90 + ",0)";
+            });
+
+        legend.append("rect")
+            .attr("y", height + that.options.margin.bottom - 15)
+            .attr("x", 60)
+            .attr("width", 15)
+            .attr("height", 15)
+            .style("fill", function (d) {
+                return d.color
+            });
+
+        legend.append("text")
+            .attr("x", 15)
+            .attr("y", height + that.options.margin.bottom - 15)
+            .attr("dy", ".8em")
+            .style("text-anchor", "bottom")
+            .text(function (d) {
+                return d.linelabel;
+            });
+
+        let mouseoverlay = svg.append("rect")
+            .attr("class", "overlay")
+            .attr("width", width + that.options.margin.right)
+            .attr("height", height);
+
+        let allfocus = d3.selectAll(".focus");
+        mouseoverlay
+            .on("mouseover", function () {
+                allfocus.style("display", null);
+            })
+            .on("mouseout", function () {
+                allfocus.style("display", "none");
+            })
+            .on("mousemove", mousemove);
+
+        function mousemove() {
+            let x0 = x.invert(d3.mouse(this)[0]);
+            for (let i = 0; i < seqdata.length; i++) {
+                let j = bisectX(seqdata[i].values, x0);
+                let d;
+                // use d0, d1 if in range
+                if (j < seqdata[i].values.length) {
+                    let d0 = seqdata[i].values[j - 1],
+                        d1 = seqdata[i].values[j];
+                    d = x0 - d0.x > d1.x - x0 ? d1 : d0;
+                } else {
+                    d = seqdata[i].values[seqdata[i].values.length - 1]
+                }
+                let thisfocus = d3.select('#' + charts_get_focusid(that.options.containerselect, i));
+                thisfocus.attr("transform", "translate(" + x(d.x) + "," + y(d.value) + ")");
+                thisfocus.select("text").text(d.x + " " + d.value);
+                // console.log('d.x='+d.x+' d.value='+d.value+' x(d.x)='+x(d.x)+' y(d.value)='+y(d.value));
+            }
+        }
+    }   // draw
 }

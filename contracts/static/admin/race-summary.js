@@ -173,7 +173,7 @@ function racesummary_drawcallback( settings ) {
 
     // days to race chart
     $('#daystorace-chart svg').remove();
-    charts_line_chart_seq({
+    let daystoracechart = new Chart({
         data : daystoraceset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daystorace-chart',
@@ -183,10 +183,11 @@ function racesummary_drawcallback( settings ) {
         ytickincrement : 100,
         lastseq : daystoracelastseq,
     });
+    daystoracechart.draw();
 
     // days from registration chart
     $('#daysfromreg-chart svg').remove();
-    charts_line_chart_seq({
+    let daysfromregopenchart = new Chart({
         data : daysfromregset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daysfromreg-chart',
@@ -196,6 +197,7 @@ function racesummary_drawcallback( settings ) {
         ytickincrement : 100,
         lastseq : daysfromreglastseq,
     });
+    daysfromregopenchart.draw();
 
     // can show the current chart now
     racesummary_showchart( $( '#summary-race-charttype-select' ).val() );
