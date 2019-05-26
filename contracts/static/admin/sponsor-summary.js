@@ -290,14 +290,15 @@ function summary_drawcallback( settings ) {
 
     // draw chart
     // transform dataset into what chart wants to see
-    // [{'year':year, values: [{'date':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
+    // [{'label':label, values: [{'date':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
     let years_dataset = _.transform(data, function(result, item) {
         // skip invalid items and uncommitted items
         if (!item.hasOwnProperty('state') || item.state.state != 'committed' || item.treatment != 'summarize') {
             return true;
         }
-        (result[item.raceyear] || (result[item.raceyear] = {year:item.raceyear,
-            values:[]})).values.push({date:item.dateagreed,
+        (result[item.raceyear] || (result[item.raceyear] = {
+            label:item.raceyear,
+            values:[]})).values.push({x:item.dateagreed,
             // make sure item.amount is number
             value:+item.amount})
     }, {});
@@ -311,7 +312,7 @@ function summary_drawcallback( settings ) {
         year = years[i];
         yearobj = years_dataset[year];
         // sort values by date
-        yearobj.values = _.sortBy(yearobj.values, ['date']);
+        yearobj.values = _.sortBy(yearobj.values, ['x']);
         // make a copy because we're messing with the values
         thisobj = _.cloneDeep(yearobj);
         // fill dataset with cumulative frequency
@@ -323,25 +324,29 @@ function summary_drawcallback( settings ) {
         dataset.push(thisobj);
 
         // calculate date range
-        if (moment(yearobj.values[0].date).format('MM-DD') < lodate) {
-            lodate = moment(yearobj.values[0].date).format('MM-DD');
+        if (moment(yearobj.values[0].x).format('MM-DD') < lodate) {
+            lodate = moment(yearobj.values[0].x).format('MM-DD');
         }
-        if (moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD') > hidate) {
-            hidate = moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD');
+        if (moment(yearobj.values[yearobj.values.length-1].x).format('MM-DD') > hidate) {
+            hidate = moment(yearobj.values[yearobj.values.length-1].x).format('MM-DD');
         }
     };
 
     $('#weekly-chart svg').remove();
-    charts_line_chart_annual({
+    // charts_line_chart_annual({
+    let weeklychart = new Chart({
         data : dataset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#weekly-chart',
         // chartheader : 'accumulated sponsorship $',
-        yaxislabel : 'total sponsorship dollars',
-        daterange : [lodate, hidate],
-        ytickincrement : 500,
+        xrange : [lodate, hidate],
+        xaxis : 'date',
+        xdirection : 'asc',
         lastseq: sponsorlastseq,
+        yaxislabel : 'total sponsorship dollars',
+        ytickincrement : 500,
     });
+    weeklychart.draw();
 
 } // summary_drawcallback
 

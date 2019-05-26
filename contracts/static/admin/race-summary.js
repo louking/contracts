@@ -63,7 +63,7 @@ function racesummary_drawcallback( settings ) {
 
     // draw date chart
     // transform dataset into what chart wants to see
-    // [{'year':year, values: [{'date':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
+    // [{'label':year, values: [{'x':date[yyyy-mm-dd or mm-dd], 'value':value}, ... ]}, ... ]
     let years_dataset = _.transform(data, function(result, item) {
         // skip invalid items and uncommitted items
         if (!item.hasOwnProperty('race')) {
@@ -71,10 +71,10 @@ function racesummary_drawcallback( settings ) {
         }
         let raceyear = item.race_date.split('-')[0];
         (result[raceyear] || (result[raceyear] = {
-            year:raceyear,
+            label:raceyear,
             values:[]
         })).values.push({
-            date:item.registration_date,
+            x:item.registration_date,
             daystorace: moment(item.race_date).diff(moment(item.registration_date), 'days'),
             daysfromreg: moment(item.registration_date).diff(moment(item.regopen_date), 'days'),
             race_date: item.race_date,
@@ -95,14 +95,14 @@ function racesummary_drawcallback( settings ) {
         let year = years[i];
         let yearobj = years_dataset[year];
         // sort values by date
-        yearobj.values = _.sortBy(yearobj.values, ['date']);
+        yearobj.values = _.sortBy(yearobj.values, ['x']);
         // make a copy because we're messing with the values
         let thisobj = _.cloneDeep(yearobj);
 
-        if (today.year() == thisobj.year) {
-            datelastseq[thisobj.year] = today.format('MM-DD');
+        if (today.year() == thisobj.label) {
+            datelastseq[thisobj.label] = today.format('MM-DD');
         } else {
-            datelastseq[thisobj.year] = moment(thisobj.values[0].race_date).format('MM-DD');
+            datelastseq[thisobj.label] = moment(thisobj.values[0].race_date).format('MM-DD');
         }
 
         // TODO: determine cumulative vs frequency algorithm based on pulldown
@@ -115,11 +115,11 @@ function racesummary_drawcallback( settings ) {
         dataset.push(thisobj);
 
         // calculate date range
-        if (moment(yearobj.values[0].date).format('MM-DD') < lodate) {
-            lodate = moment(yearobj.values[0].date).format('MM-DD');
+        if (moment(yearobj.values[0].x).format('MM-DD') < lodate) {
+            lodate = moment(yearobj.values[0].x).format('MM-DD');
         }
-        if (moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD') > hidate) {
-            hidate = moment(yearobj.values[yearobj.values.length-1].date).format('MM-DD');
+        if (moment(yearobj.values[yearobj.values.length-1].x).format('MM-DD') > hidate) {
+            hidate = moment(yearobj.values[yearobj.values.length-1].x).format('MM-DD');
         }
     };
 
@@ -128,16 +128,19 @@ function racesummary_drawcallback( settings ) {
 
     // date chart
     $('#date-chart svg').remove();
-    charts_line_chart_annual({
+    let datechart = new Chart({
         data : dataset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#date-chart',
         chartheader : 'registrants by date',
+        xrange : [lodate, hidate],
+        xaxis: 'date',
+        xdirection: 'asc',
         yaxislabel : 'number of registrants',
-        daterange : [lodate, hidate],
         ytickincrement : 100,
         lastseq: datelastseq,
     });
+    datechart.draw();
 
     // now accumulate values
     // note dataset has already been sorted nicely
@@ -149,22 +152,20 @@ function racesummary_drawcallback( settings ) {
 
     for (let i=0; i<daystoraceset.length; i++) {
         let thisobj = daystoraceset[i];
-        thisobj.linelabel = thisobj.year;
-        if (today.year() == thisobj.year) {
-            daystoracelastseq[thisobj.linelabel] = moment(thisobj.values[0].race_date).diff(today, 'days');
+        if (today.year() == thisobj.label) {
+            daystoracelastseq[thisobj.label] = moment(thisobj.values[0].race_date).diff(today, 'days');
         } else {
-            daystoracelastseq[thisobj.linelabel] = 0;
+            daystoracelastseq[thisobj.label] = 0;
         }
         thisobj.values.forEach(function(valueobj) {
             valueobj.x = valueobj.daystorace;
             if (valueobj.x > maxdays) maxdays = valueobj.x;
         });
         thisobj = daysfromregset[i];
-        thisobj.linelabel = thisobj.year;
-        if (today.year() == thisobj.year) {
-            daysfromreglastseq[thisobj.linelabel] = moment(today).diff(thisobj.values[0].regopen_date, 'days');
+        if (today.year() == thisobj.label) {
+            daysfromreglastseq[thisobj.label] = moment(today).diff(thisobj.values[0].regopen_date, 'days');
         } else {
-            daysfromreglastseq[thisobj.linelabel] = moment(thisobj.values[0].race_date).diff(moment(thisobj.values[0].regopen_date), 'days');
+            daysfromreglastseq[thisobj.label] = moment(thisobj.values[0].race_date).diff(moment(thisobj.values[0].regopen_date), 'days');
         }
         thisobj.values.forEach(function(valueobj) {
             valueobj.x = valueobj.daysfromreg;
@@ -178,8 +179,9 @@ function racesummary_drawcallback( settings ) {
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daystorace-chart',
         chartheader : 'registrants by days to race',
-        yaxislabel : 'number of registrants',
         xrange : [maxdays, 0],
+        xdirection : 'desc',
+        yaxislabel : 'number of registrants',
         ytickincrement : 100,
         lastseq : daystoracelastseq,
     });
@@ -192,8 +194,9 @@ function racesummary_drawcallback( settings ) {
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daysfromreg-chart',
         chartheader : 'registrants by days from registration open',
-        yaxislabel : 'number of registrants',
         xrange : [0, maxdays],
+        xdirection : 'asc',
+        yaxislabel : 'number of registrants',
         ytickincrement : 100,
         lastseq : daysfromreglastseq,
     });
