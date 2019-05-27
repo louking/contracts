@@ -73,7 +73,9 @@ dbdate = asctime('%Y-%m-%d')
 
 #----------------------------------------------------------------------
 @app.cli.command()
-def preraceemail():
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
+def preraceemail(startdate, enddate):
 #----------------------------------------------------------------------
     '''Send pre-race email to race director and lead.'''
 
@@ -82,8 +84,25 @@ def preraceemail():
     inhibittag = Tag.query.filter_by(tag=TAG_PRERACEMAILINHIBITED).one()
 
     # calculate start and end date window
-    start = dbdate.dt2asc(date.today())
-    end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_EMAIL']))
+    if startdate == 'auto' and enddate == 'auto':
+        # calculate start and end date window
+        start = dbdate.dt2asc(date.today())
+        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_EMAIL']))
+
+    # verify both dates are present, check user input format is yyyy-mm-dd
+    else:
+        if startdate == 'auto' or enddate == 'auto':
+            print 'ERROR: startdate and enddate must both be specified'
+            return
+
+        if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+                not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            return
+
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
+        end = enddate
 
     # use correct filter to get races in next N days
     events = Event.query.filter(Event.date.between(start, end)).all()
