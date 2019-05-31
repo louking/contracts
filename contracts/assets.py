@@ -18,7 +18,7 @@ from flask import current_app
 from flask_assets import Bundle, Environment
 
 # jquery
-jq_ver = '3.3.1'
+jq_ver = '3.4.1'
 jq_ui_ver = '1.12.1'
 
 # dataTables
@@ -61,7 +61,7 @@ materialize_bundle_css = Bundle(
 asset_bundles = {
 
     'frontend_js': Bundle(
-        'js/jQuery-{ver}/jquery-{ver}.js'.format(ver=jq_ver),
+        'js/jQuery-{ver}/jquery.js'.format(ver=jq_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
 
         # date time formatting 
@@ -119,7 +119,7 @@ asset_bundles = {
         ),
 
     'admin_js': Bundle(
-        'js/jQuery-{ver}/jquery-{ver}.js'.format(ver=jq_ver),
+        'js/jQuery-{ver}/jquery.js'.format(ver=jq_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
 
         'js/lodash-{ver}/lodash.js'.format(ver=lodash_ver),
