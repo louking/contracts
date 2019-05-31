@@ -33,10 +33,10 @@ dt_editor_plugin_fieldtype_ver = '?'
 # select2
 # NOTE: patch to jquery ui required, see https://github.com/select2/select2/issues/1246#issuecomment-17428249
 # currently in datatables.js
-s2_ver = '4.0.5'
+s2_ver = '4.0.7'
 
 # yadcf
-yadcf_ver = '0.9.3'
+yadcf_ver = '0.9.4.beta.25'
 
 moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)

@@ -192,12 +192,10 @@ racesummary_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 1
-eventcol = 3
 racesummary_yadcf_options = {
     'columns' : [
         {
-            'column_number': racecol,
+            'column_selector': 'race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -212,7 +210,7 @@ racesummary_yadcf_options = {
             'filter_reset_button_text': False,  # hide yadcf reset button
         },
         {
-            'column_number': eventcol,
+            'column_selector': 'event:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
