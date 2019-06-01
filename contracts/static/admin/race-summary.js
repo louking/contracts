@@ -2,10 +2,23 @@
 let racesummary_firstdraw = true;
 let rsloyear = 9999;
 let rshiyear = 0;
+let racesummary_charts = [];
+let years;
 
 function racesummary_showchart( charttype ) {
     $( '.race-chart' ).hide();
     $( '#' + charttype + '-chart' ).show();
+}
+
+function racesummary_setshowlabels ( numyears ) {
+    let labels = [];
+    if (numyears != -1) {
+        labels = years.slice(0, numyears);
+    }
+    for (let i=0; i<racesummary_charts.length; i++) {
+        let chart = racesummary_charts[i];
+        chart.setshowlabels(labels);
+    }
 }
 
 function racesummary_drawcallback( settings ) {
@@ -59,7 +72,33 @@ function racesummary_drawcallback( settings ) {
             racesummary_showchart( $( '#summary-race-charttype-select' ).val() );
         });
 
+        let numyearselect = '<select id="summary-race-numyear-select" name="numyear">\n';
+        let numyearsoptions = [
+            {val:'-1', text:'all'},
+            {val:'5', text:'5'},
+            {val:'4', text:'4'},
+            {val:'3', text:'3'},
+            {val:'2', text:'2'},
+            {val:'1', text:'1'},
+        ];
+        for (let i=0; i<numyearsoptions.length; i++) {
+            numyear = numyearsoptions[i];
+            numyearselect += '   <option value="' + numyear.val + '">' + numyear.text + '</option>\n';
+        }
+        numyearselect += '</select>';
+        $( numyearselect ).appendTo('#summary-race-numyears');
+        $( '#summary-race-numyear-select' ).select2({
+                                            minimumResultsForSearch: Infinity,
+                                            width: '75px',
+                                        });
+        $( '#summary-race-numyear-select' ).on('change', function(event) {
+            racesummary_setshowlabels( $( '#summary-race-numyear-select' ).val() );
+        });
+
     } // if (racesummary_firstdraw)
+
+    // clear racesummary_charts each draw
+    racesummary_charts = [];
 
     // draw date chart
     // transform dataset into what chart wants to see
@@ -84,7 +123,7 @@ function racesummary_drawcallback( settings ) {
         })
     }, {});
     // sort values
-    let years = Object.keys(years_dataset);
+    years = Object.keys(years_dataset);
     years.sort().reverse();
     let dataset = [];
     let lodate = '12-31',
@@ -141,6 +180,7 @@ function racesummary_drawcallback( settings ) {
         lastseq: datelastseq,
     });
     datechart.draw();
+    racesummary_charts.push(datechart);
 
     // now accumulate values
     // note dataset has already been sorted nicely
@@ -186,6 +226,7 @@ function racesummary_drawcallback( settings ) {
         lastseq : daystoracelastseq,
     });
     daystoracechart.draw();
+    racesummary_charts.push(daystoracechart);
 
     // days from registration chart
     $('#daysfromreg-chart svg').remove();
@@ -201,9 +242,13 @@ function racesummary_drawcallback( settings ) {
         lastseq : daysfromreglastseq,
     });
     daysfromregopenchart.draw();
+    racesummary_charts.push(daysfromregopenchart);
 
     // can show the current chart now
     racesummary_showchart( $( '#summary-race-charttype-select' ).val() );
+
+    // show labels based on current setting
+    racesummary_setshowlabels( $( '#summary-race-numyear-select' ).val() );
 
 } // racesummary_drawcallback
 

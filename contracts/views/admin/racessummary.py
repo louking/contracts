@@ -188,6 +188,11 @@ racesummary_filters = '\n'.join([
             "        <span class='label'>Chart Type</span>",
             "        <span id='summary-race-charttype' class='filter'></span>",
             "    </div>",
+            # the numyears filter is not handled by yadcf, check race-summary.js
+            "    <div class='filter-item'>",
+            "        <span class='label'>Num Years</span>",
+            "        <span id='summary-race-numyears' class='filter'></span>",
+            "    </div>",
             "</div>",
             ])
 

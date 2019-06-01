@@ -36,6 +36,9 @@ class Chart {
         };
         that.options = Object.assign(that.options, options);
 
+        // default show all labels
+        that.showlabels = [];
+
         that.xascending = that.options.xdirection == 'asc';
         if (that.options.xaxis == 'number') {
             that.xscale = d3.scaleLinear;
@@ -258,12 +261,12 @@ class Chart {
             svg.append("path")
                 .style("stroke", colormap[i].color)
                 .datum(seqdata[i].values)
-                .attr("class", "line")
+                .attr("class", "line alllabels label-"+label)
                 .attr("d", line);
 
             // assure unique focusid per chart
             let thisfocus = svg.append("g")
-                .attr("class", "focus")
+                .attr("class", "focus focuslabel-"+label)
                 .attr("id", charts_get_focusid(that.options.containerselect, i))
                 .style("display", "none");
 
@@ -280,7 +283,9 @@ class Chart {
         let legend = svg.selectAll(".legend")
             .data(colormap)
             .enter().append("g")
-            .attr("class", "legend")
+            .attr("class", function(d) {
+                return 'legend alllabels label-'+d.label;
+            })
             .attr("transform", function (d, i) {
                 return "translate(" + i * 90 + ",0)";
             });
@@ -311,7 +316,18 @@ class Chart {
         let allfocus = d3.selectAll(".focus");
         mouseoverlay
             .on("mouseover", function () {
-                allfocus.style("display", null);
+                // nothing in list means show all labels
+                if (that.showlabels.length == 0) {
+                    allfocus.style("display", null);
+
+                // otherwise show just the labels in the list
+                } else {
+                    allfocus.style("display", "none");
+                    for (let i=0; i<that.showlabels.length; i++) {
+                        let label = that.showlabels[i];
+                        d3.selectAll('.focuslabel-'+label).style("display", null);
+                    }
+                }
             })
             .on("mouseout", function () {
                 allfocus.style("display", "none");
@@ -338,4 +354,23 @@ class Chart {
             }
         }
     }   // draw
+
+    setshowlabels(labels) {
+        let that = this;
+        that.showlabels = labels;
+        let alllabels = d3.selectAll(".alllabels");
+
+        // nothing in list means show all labels
+        if (that.showlabels.length == 0) {
+            alllabels.style("display", null);
+
+        // otherwise show just the labels in the list
+        } else {
+            alllabels.style("display", "none");
+            for (let i=0; i<that.showlabels.length; i++) {
+                let label = that.showlabels[i];
+                d3.selectAll('.label-'+label).style("display", null);
+            }
+        }
+    } // showlabels
 }
