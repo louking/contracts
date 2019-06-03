@@ -36,7 +36,7 @@ dt_editor_plugin_fieldtype_ver = '?'
 s2_ver = '4.0.7'
 
 # yadcf
-yadcf_ver = '0.9.3'
+yadcf_ver = '0.9.4.beta.27'
 
 moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
