@@ -32,6 +32,8 @@ templatetypes = [
     {'templateType' : 'accept agreement error view', 'description' : 'accept agreement error view', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'agreement accepted view', 'description' : 'agreement accepted view', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'prempromo email', 'description' : 'premium promotion email before start of promotion', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
+    {'templateType' : 'late renewed reminder email', 'description' : 'late reminder of race still in renewed-pending state', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
+    {'templateType' : 'canceled email', 'description' : 'canceled race because we gave up on race still in renewed-pending state ', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'sponsor agreement', 'description' : 'sponsor agreement', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
     {'templateType' : 'sponsor email', 'description' : 'sponsorship agreement sponsor email', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
 ]
@@ -701,6 +703,42 @@ contracts += [
                                 "Race Support Team, Frederick Steeplechasers Running Club</p>",
                                ])
     }, 
+]
+
+# late renewed reminder email
+contracts += [
+    {   'contractType'       : ContractType.query.filter_by(contractType='race services').one,
+        'contractBlockType'  : ContractBlockType.query.filter_by(blockType='html').one,
+        'templateType'       : TemplateType.query.filter_by(templateType='late renewed reminder email').one,
+        'blockPriority'      : contractmailpriority,
+        'block'              : '\n'.join([
+                                "<p>Hi {{ client.contactFirstName }},</p>",
+                                "<p>Thank you so much for using FSRC for race support services for {{ event }}.</p>",
+                                "<p>We are tentatively holding your date based on your most recent race. It looks like your next race will fall on ",
+                                " {{ renew_date }}, which is coming up soon.</p>",
+                                "<p>When you are ready to confirm, or if you'd like to consider a different date, please let us know. ",
+                                "We would also appreciate knowing if you will not be using our services so that we can clear the date on our calendar.</p>",
+                                "<p>thanks,<br>",
+                                "Race Support Team, Frederick Steeplechasers Running Club</p>",
+                               ])
+    },
+]
+
+# canceled email
+contracts += [
+    {   'contractType'       : ContractType.query.filter_by(contractType='race services').one,
+        'contractBlockType'  : ContractBlockType.query.filter_by(blockType='html').one,
+        'templateType'       : TemplateType.query.filter_by(templateType='canceled email').one,
+        'blockPriority'      : contractmailpriority,
+        'block'              : '\n'.join([
+                                "<p>The system has automatically canceled {{ event }} for {{ client.client }} which was tentatively ",
+                                "being held on {{ renew_date }}.</p>",
+                                "<p>This event was canceled because we hadn't heard back from the race director after ",
+                                "several reminders.</p>",
+                                "<p>If this was a mistake, please manually set the event to the tentative state and send ",
+                                "the contract if and when arrangements have been finalized for the race.</p>",
+                               ])
+    },
 ]
 
 # prempromo email

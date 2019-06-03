@@ -214,6 +214,8 @@ class Tag(Base):
 TAG_PRERACEMAILSENT         = 'preraceemailsent'
 TAG_POSTRACEMAILSENT        = 'postraceemailsent'
 TAG_PRERACEPREMPROMOEMAILSENT = 'preracepremoromoemailsent'
+TAG_PRERACERENEWEDREMINDEREMAILSENT = 'preracerenwdreminderemailsent'
+TAG_PRERACERENEWEDCANCELED = 'preracerenewedcanceled'
 TAG_PRERACEMAILINHIBITED    = 'inhibitpreraceemail'
 TAG_POSTRACEMAILINHIBITED   = 'inhibitpostraceemail'
 TAG_PRERACEPREMPROMOEMAILINHIBITED = 'inhibitpreracepremoromoemail'
@@ -232,6 +234,12 @@ tags = [
     {'tag':TAG_LEADEMAILSENT, 'description':'email has been sent to lead just before race', 'isBuiltIn':True},
     {'tag':TAG_PRERACEPREMPROMOEMAILSENT, 'description':"email has been sent for premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
     {'tag':TAG_PRERACEPREMPROMOEMAILINHIBITED, 'description':"admin wants to inhibit email to premium promotion only event that hasn't yet been renewed", 'isBuiltIn':True},
+    {'tag': TAG_PRERACERENEWEDREMINDEREMAILSENT,
+     'description': "email has been sent for finish line event that hasn't yet been renewed",
+     'isBuiltIn': True},
+    {'tag': TAG_PRERACERENEWEDCANCELED,
+     'description': "canceled finish line event that hasn't yet been renewed because we haven't heard back from race director",
+     'isBuiltIn': True},
 ]
 
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
