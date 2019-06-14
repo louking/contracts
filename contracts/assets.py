@@ -14,7 +14,6 @@ assets - javascript and css asset handling
 ===================================================
 '''
 
-from flask import current_app
 from flask_assets import Bundle, Environment
 
 # jquery
