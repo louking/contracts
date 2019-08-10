@@ -552,7 +552,7 @@ def cancellaterace(startdate, enddate):
 
         # don't send email if this message has already been sent or was inhibited by admin
         # this is done for all events, regardless of what services were 'renewed'
-        if senttag in event.tags in event.tags: continue
+        if senttag in event.tags: continue
 
         # cancel event
         event.state = State.query.filter_by(state=STATE_CANCELED).one()
