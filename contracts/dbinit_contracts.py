@@ -821,7 +821,7 @@ contracts += [
                                '<p>For your {{ _couponcount_ }} complimentary entries, please register using coupon code \n'
                                '<b>{{ couponcode }}</b> by {{ _coupondate_ }}.</p>'
                                '{% endif %}\n'
-                               '<p>Your invoice should arrive soon.</p>\n'
+                               '<p>If you have not already sent us a check, your invoice should arrive soon.</p>\n'
                                '<p>thanks again,<br>\n'
                                '{{ race.racedirector }}<br>\n'
                                'Race Director, {{ race.race }}\n'

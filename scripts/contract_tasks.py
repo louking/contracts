@@ -468,7 +468,7 @@ def latereminderemail(startdate, enddate):
 
         # don't send email if this message has already been sent or was inhibited by admin
         # don't send email if only premiumpromotion included (handled by another task)
-        if senttag in event.tags in event.tags: continue
+        if senttag in event.tags: continue
         if len(event.services) == 1 and 'premiumpromotion' in [s.service for s in event.services]: continue
 
         # get late renewed reminder email template

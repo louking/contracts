@@ -67,6 +67,7 @@ h2              { font-size: 1.2em; }
   font-weight:bold;
 }
 
+/* TODO: remove this in favor of loutilities filters.css */
 /* yadcf stuff */
 
 .external-filter {
@@ -95,6 +96,8 @@ h2              { font-size: 1.2em; }
   flex-grow: 0;
   margin-right: 5px;
 }
+
+/* remove up to here */
 
 .ui-menu {
   width: 150px;

@@ -1,3 +1,5 @@
+// TODO: remove this in favor of loutilities filters.js
+
 // some filters are persistent across pages
 // when the page is loaded, the session storage is checked for filter value and if found applied
 // if not found in session storage, the local storage is checked for filter value, 
