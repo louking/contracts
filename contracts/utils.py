@@ -23,6 +23,8 @@ from contracts.dbmodel import Sponsor, SponsorTag, SPONSORTAG_RACERENEWED
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, TAG_RACERENEWED
 from contracts.daterule import date2daterule, daterule2dates
 
+class parameterError(Exception): pass
+
 #----------------------------------------------------------------------
 def time24(time):
 #----------------------------------------------------------------------
@@ -138,7 +140,7 @@ def renew_event(event):
         # well this shouldn't have happened. Just return the first we fine
         except MultipleResultsFound:
             current_app.logger.error('renew_event(): multiple renewed events found for {} {}'.format(event.date, event.race.race))
-            events = Event.query.filter_by(race_id=event.race_id).filter(date > start).all()
+            events = Event.query.filter_by(race_id=event.race_id).filter(Event.date > start).all()
             newevent = events[0]
 
     return newevent
