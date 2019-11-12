@@ -35,8 +35,8 @@ def calculateTrend(thisyeardb):
     thisyear = int(thisyeardb.raceyear)
     race_id = thisyeardb.race_id
     client_id = thisyeardb.client_id
-    prevyeardb = Sponsor.query.filter_by(race_id=race_id, raceyear=thisyear-1, client_id=client_id).one_or_none()
-    nextyeardb = Sponsor.query.filter_by(race_id=race_id, raceyear=thisyear+1, client_id=client_id).one_or_none()
+    prevyeardb = Sponsor.query.filter(Sponsor.race_id==race_id, Sponsor.raceyear==thisyear-1, Sponsor.client_id==client_id, Sponsor.amount>0).one_or_none()
+    nextyeardb = Sponsor.query.filter(Sponsor.race_id==race_id, Sponsor.raceyear==thisyear+1, Sponsor.client_id==client_id, Sponsor.amount>0).one_or_none()
 
     # new or potentially new sponsorship
     if not prevyeardb or prevyeardb.state.state != STATE_COMMITTED:
