@@ -117,6 +117,13 @@ function summary_drawcallback( settings ) {
                 years[raceyear].avg = _.round(years[raceyear].total / years[raceyear].count);
                 //{total:0, avg:0, count:0, weeks:{}}
                 m = moment(thisrow.dateagreed);
+                // if dateagreed is previous year, force to Jan 1 of the race year
+                // thisrow.mdateagreed is used for drawing chart
+                thisrow.mdateagreed = thisrow.dateagreed
+                if (m.year() < raceyear) {
+                    m = moment(raceyear + '-01-01')
+                    thisrow.mdateagreed = raceyear + '-01-01'
+                }
                 weeknum = m.week();
                 if (weeknum < loweeknum) 
                     loweeknum = weeknum;
@@ -298,7 +305,7 @@ function summary_drawcallback( settings ) {
         }
         (result[item.raceyear] || (result[item.raceyear] = {
             label:item.raceyear,
-            values:[]})).values.push({x:item.dateagreed,
+            values:[]})).values.push({x:item.mdateagreed,
             // make sure item.amount is number
             value:+item.amount})
     }, {});
@@ -324,6 +331,8 @@ function summary_drawcallback( settings ) {
         dataset.push(thisobj);
 
         // calculate date range
+        // this assumes earliest date charted is no earlier than Jan 1
+        // * see item.mdateagreed / thisrow.mdateagreed manipulation
         if (moment(yearobj.values[0].x).format('MM-DD') < lodate) {
             lodate = moment(yearobj.values[0].x).format('MM-DD');
         }
