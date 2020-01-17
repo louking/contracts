@@ -1,5 +1,5 @@
 ###########################################################################################
-# event_tasks - background tasks needed for contract event management
+# dbinit_cli - command line database initialization
 #
 #       Date            Author          Reason
 #       ----            ------          ------
@@ -8,7 +8,7 @@
 #   Copyright 2018 Lou King.  All rights reserved
 ###########################################################################################
 '''
-event_tasks - background tasks needed for contract event management
+dbinit_cli - command line database initialization
 =======================================================================
 
 '''
