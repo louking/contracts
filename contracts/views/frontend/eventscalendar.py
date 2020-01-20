@@ -190,7 +190,7 @@ class EventsCalendar(MethodView):
     def get(self):
     #----------------------------------------------------------------------
         context = {
-                   'pagename'          : 'events calendar',
+                   'pagename'          : current_app.config['CONTRACTS_FRONTEND_TITLE'],
                    # 'servicesqueryurl'  : request.url_root[0:-1] + url_for('.events-servicesquery')
                    'servicesqueryurl'  : url_for('.events-servicesquery')
                   }
