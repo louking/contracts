@@ -413,10 +413,12 @@ race.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(zip(event_dbattrs, event_formfields))
 event_formmapping = dict(zip(event_formfields, event_dbattrs))
+event_dbmapping['isContractUpdated'] = '__readonly__'
+event_formmapping['isContractUpdated'] = lambda dbrow: 'yes' if dbrow.isContractUpdated else 'no'
 
 ## validate fields
 def event_validate(action, formdata):
@@ -660,6 +662,7 @@ event = EventsContract(
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc', 'opts':{'text':'click for contract'},
                           'render': '$.fn.dataTable.render.ellipsis( 10 )',
                           },
+                        { 'data': 'isContractUpdated', 'name': 'isContractUpdated', 'label': 'Has Been Updated', 'type':'readonly' },
                         { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },
                         { 'data': 'contractApprover', 'name': 'contractApprover', 'label': 'Approver', 'type':'readonly' },
                         { 'data': 'contractApproverEmail', 'name': 'contractApproverEmail', 'label': 'Approver Email', 'type':'readonly' },

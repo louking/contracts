@@ -417,6 +417,9 @@ class Event(Base):
     contractApproverEmail = Column( String(EMAIL_LEN) )
     contractApproverNotes = Column( String(NOTES_LEN) )
 
+    # set to True if contract updated after initially approved
+    isContractUpdated     = Column( Boolean, default=False )
+
     # tags
     tags                = relationship( 'Tag', secondary=eventtag_table, backref='events', lazy=True )
 

@@ -585,26 +585,27 @@ class DbCrudApi(CrudApi):
             
                 # special processing if db attribute implies subrecord
                 # only know how to handle two levels now
-                branches = dbattr.split('.')
-                if len(branches) == 2:
-                    # submodel is one level down
-                    submodelname = branches[0]
-                    submodel = type(getattr(args['model'],submodelname))
-                    subfield = branches[1]
-                    thisreln = DteDbSubrec(model=submodel, field=submodelname, subfield=subfield, formfield=formfield)
-                    if not args['serverside']:
-                        self.formmapping[formfield] = thisreln.get
+                if not callable(dbattr):
+                    branches = dbattr.split('.')
+                    if len(branches) == 2:
+                        # submodel is one level down
+                        submodelname = branches[0]
+                        submodel = type(getattr(args['model'],submodelname))
+                        subfield = branches[1]
+                        thisreln = DteDbSubrec(model=submodel, field=submodelname, subfield=subfield, formfield=formfield)
+                        if not args['serverside']:
+                            self.formmapping[formfield] = thisreln.get
 
-                    # server side tables adds ColumnDT (untested)
-                    else:
-                        self.servercolumns.append( ColumnDT( thisreln.get(getattr(submodel, 'id')) , mData=formfield, **columndt_args) )                        
+                        # server side tables adds ColumnDT (untested)
+                        else:
+                            self.servercolumns.append( ColumnDT( thisreln.get(getattr(submodel, 'id')) , mData=formfield, **columndt_args) )
 
-                    # db processing section
-                    ## save handler, set data to db using handler set function
-                    ## for now, make this a noop, and readonly. See loutilities.tables.DataTablesEditor.set_dbrow()
-                    # self.dbmapping[dbattr] = thisreln.set        #TODO: doesn't work
-                    self.dbmapping[dbattr] = '__readonly__' # won't be found so no db update to this field will be made
-                    col['type'] = 'readonly'                # force column to be readonly on form
+                        # db processing section
+                        ## save handler, set data to db using handler set function
+                        ## for now, make this a noop, and readonly. See loutilities.tables.DataTablesEditor.set_dbrow()
+                        # self.dbmapping[dbattr] = thisreln.set        #TODO: doesn't work
+                        self.dbmapping[dbattr] = '__readonly__' # won't be found so no db update to this field will be made
+                        col['type'] = 'readonly'                # force column to be readonly on form
 
             # special treatment required
             else:

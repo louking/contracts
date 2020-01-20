@@ -61,8 +61,15 @@ class EventsContract(DbCrudApiRolePermissions):
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
+                # different subject line if contract had been accepted before. This must match contractviews.AcceptAgreement.post
+                annotation = ''
+
                 # if we are generating a new version of the contract
                 if form['addlaction'] == 'sendcontract':
+                    # if there was already a document sent, indicate that we're updating it
+                    if eventdb.contractDocId:
+                        eventdb.isContractUpdated = True
+                        annotation = '(updated) '
 
                     # check appropriate fields are present for certain services
                     servicenames = set([s.service for s in eventdb.services])
@@ -166,6 +173,7 @@ class EventsContract(DbCrudApiRolePermissions):
                 # if we are just resending current version of the contract
                 else:
                     docid = eventdb.contractDocId
+                    annotation = '(resend) '
 
                 # email sent depends on current state as this flows from 'sendcontract' and 'resendcontract'
                 if eventdb.state.state == STATE_COMMITTED:
@@ -178,7 +186,7 @@ class EventsContract(DbCrudApiRolePermissions):
                                    .one()
                                   ).block
                     template = Template( templatestr )
-                    subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
+                    subject = '{}ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(annotation, eventdb.race.race, eventdb.date)
 
                 elif eventdb.state.state == STATE_CONTRACT_SENT:
                     # send contract mail to client
@@ -190,7 +198,7 @@ class EventsContract(DbCrudApiRolePermissions):
                                .one()
                               ).block
                     template = Template( templatestr )
-                    subject = 'FSRC Race Support Agreement: {} - {}'.format(eventdb.race.race, eventdb.date)
+                    subject = '{}FSRC Race Support Agreement: {} - {}'.format(annotation, eventdb.race.race, eventdb.date)
 
                 # state must be STATE_COMMITTED or STATE_CONTRACT_SENT, else logic error
                 else:
