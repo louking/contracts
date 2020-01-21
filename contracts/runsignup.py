@@ -81,11 +81,11 @@ class RunSignUp():
             requests_log.propagate = False
 
         if (not key and not email):
-            raise parameterError, 'either key/secret or email/password must be supplied'
+            raise parameterError('either key/secret or email/password must be supplied')
         if (key and not secret) or (secret and not key):
-            raise parameterError, 'key and secret must be supplied together'
+            raise parameterError('key and secret must be supplied together')
         if (email and not password) or (password and not email):
-            raise parameterError, 'email and password must be supplied together'
+            raise parameterError('email and password must be supplied together')
 
         self.key = key
         self.secret = secret
@@ -339,12 +339,12 @@ class RunSignUp():
 
         resp = self.session.get(methodurl, params=thispayload)
         if resp.status_code != 200:
-            raise accessError, 'HTTP response code={}, url={}'.format(resp.status_code,resp.url)
+            raise accessError('HTTP response code={}, url={}'.format(resp.status_code,resp.url))
 
         data = resp.json()
 
         if 'error' in data:
-            raise accessError, 'RSU response code={}-{}, url={}'.format(data['error']['error_code'],data['error']['error_msg'],resp.url)
+            raise accessError('RSU response code={}-{}, url={}'.format(data['error']['error_code'],data['error']['error_msg'],resp.url))
     
         return data 
         
@@ -368,12 +368,12 @@ class RunSignUp():
 
         resp = self.session.post(methodurl, data=thispayload)
         if resp.status_code != 200:
-            raise accessError, 'HTTP response code={}, url={}'.format(resp.status_code,resp.url)
+            raise accessError('HTTP response code={}, url={}'.format(resp.status_code,resp.url))
 
         data = resp.json()
 
         if 'error' in data:
-            raise accessError, 'RSU response code={}-{}, url={}'.format(data['error']['error_code'],data['error']['error_msg'],resp.url)
+            raise accessError('RSU response code={}-{}, url={}'.format(data['error']['error_code'],data['error']['error_msg'],resp.url))
     
         return data 
         

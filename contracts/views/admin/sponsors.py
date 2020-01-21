@@ -25,8 +25,8 @@ from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from contracts.dbmodel import Client, State
 from contracts.crudapi import DbCrudApiRolePermissions, DteDbDependent
 from contracts.crudapi import REGEX_URL, REGEX_EMAIL, REGEX_VBL
-from common import client
-from sponsorcontract import SponsorContract
+from .common import client
+from .sponsorcontract import SponsorContract
 
 ##########################################################################################
 # sponsors endpoint
@@ -34,8 +34,8 @@ from sponsorcontract import SponsorContract
 
 sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
 sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
-sponsor_dbmapping = dict(zip(sponsor_dbattrs, sponsor_formfields))
-sponsor_formmapping = dict(zip(sponsor_formfields, sponsor_dbattrs))
+sponsor_dbmapping = dict(list(zip(sponsor_dbattrs, sponsor_formfields)))
+sponsor_formmapping = dict(list(zip(sponsor_formfields, sponsor_dbattrs)))
 
 ## yadcf external filters
 sponsor_filters = '\n'.join([
@@ -342,8 +342,8 @@ sponsor.register()
 
 sponsorview_dbattrs = 'id,raceyear,racecontact,amount,trend,contractDocId,race.race,client.client,state.state,level.race_level,notes'.split(',')
 sponsorview_formfields = 'rowid,raceyear,racecontact,amount,trend,contractDocId,race,client,state,level,notes'.split(',')
-sponsorview_dbmapping = dict(zip(sponsorview_dbattrs, sponsorview_formfields))
-sponsorview_formmapping = dict(zip(sponsorview_formfields, sponsorview_dbattrs))
+sponsorview_dbmapping = dict(list(zip(sponsorview_dbattrs, sponsorview_formfields)))
+sponsorview_formmapping = dict(list(zip(sponsorview_formfields, sponsorview_dbattrs)))
 
 ## yadcf external filters
 sponsorview_filters = '\n'.join([
@@ -528,8 +528,8 @@ sponsorview.register()
 
 sponsorsummary_dbattrs = 'id,raceyear,racecontact,amount,trend,race,client,state,level,level.treatment,datesolicited,dateagreed,invoicesent'.split(',')
 sponsorsummary_formfields = 'rowid,raceyear,racecontact,amount,trend,race,client,state,level,treatment,datesolicited,dateagreed,invoicesent'.split(',')
-sponsorsummary_dbmapping = dict(zip(sponsorsummary_dbattrs, sponsorsummary_formfields))
-sponsorsummary_formmapping = dict(zip(sponsorsummary_formfields, sponsorsummary_dbattrs))
+sponsorsummary_dbmapping = dict(list(zip(sponsorsummary_dbattrs, sponsorsummary_formfields)))
+sponsorsummary_formmapping = dict(list(zip(sponsorsummary_formfields, sponsorsummary_dbattrs)))
 
 ## yadcf external filters
 sponsorsummary_filters = '\n'.join([
@@ -650,8 +650,8 @@ sponsorsummary.register()
 
 sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
 sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
-sponsorrace_dbmapping = dict(zip(sponsorrace_dbattrs, sponsorrace_formfields))
-sponsorrace_formmapping = dict(zip(sponsorrace_formfields, sponsorrace_dbattrs))
+sponsorrace_dbmapping = dict(list(zip(sponsorrace_dbattrs, sponsorrace_formfields)))
+sponsorrace_formmapping = dict(list(zip(sponsorrace_formfields, sponsorrace_dbattrs)))
 
 def race_validate(action, formdata):
     results = []
@@ -743,8 +743,8 @@ sponsorrace.register()
 
 sponsorlevel_dbattrs = 'id,race,level,minsponsorship,couponcount,maxallowed,treatment,description,display'.split(',')
 sponsorlevel_formfields = 'rowid,race,level,minsponsorship,couponcount,maxallowed,treatment,description,display'.split(',')
-sponsorlevel_dbmapping = dict(zip(sponsorlevel_dbattrs, sponsorlevel_formfields))
-sponsorlevel_formmapping = dict(zip(sponsorlevel_formfields, sponsorlevel_dbattrs))
+sponsorlevel_dbmapping = dict(list(zip(sponsorlevel_dbattrs, sponsorlevel_formfields)))
+sponsorlevel_formmapping = dict(list(zip(sponsorlevel_formfields, sponsorlevel_dbattrs)))
 
 ## yadcf external filters
 sponsorlevel_filters = '\n'.join([
@@ -840,8 +840,8 @@ sponsorlevel.register()
 
 sponsorracedate_dbattrs = 'id,race,raceyear,racedate,beneficiary,raceloc'.split(',')
 sponsorracedate_formfields = 'rowid,race,raceyear,racedate,beneficiary,raceloc'.split(',')
-sponsorracedate_dbmapping = dict(zip(sponsorracedate_dbattrs, sponsorracedate_formfields))
-sponsorracedate_formmapping = dict(zip(sponsorracedate_formfields, sponsorracedate_dbattrs))
+sponsorracedate_dbmapping = dict(list(zip(sponsorracedate_dbattrs, sponsorracedate_formfields)))
+sponsorracedate_formmapping = dict(list(zip(sponsorracedate_formfields, sponsorracedate_dbattrs)))
 
 sponsorracedate = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -906,8 +906,8 @@ def vbl_validate(action, formdata):
 
 sponsorracevbl_dbattrs = 'id,race,variable,value'.split(',')
 sponsorracevbl_formfields = 'rowid,race,variable,value'.split(',')
-sponsorracevbl_dbmapping = dict(zip(sponsorracevbl_dbattrs, sponsorracevbl_formfields))
-sponsorracevbl_formmapping = dict(zip(sponsorracevbl_formfields, sponsorracevbl_dbattrs))
+sponsorracevbl_dbmapping = dict(list(zip(sponsorracevbl_dbattrs, sponsorracevbl_formfields)))
+sponsorracevbl_formmapping = dict(list(zip(sponsorracevbl_formfields, sponsorracevbl_dbattrs)))
 
 ## yadcf external filters
 sponsorracevbl_filters = '\n'.join([
@@ -988,8 +988,8 @@ sponsorracevbl.register()
 
 sponsorbenefit_dbattrs = 'id,race,order,benefit,description,levels'.split(',')
 sponsorbenefit_formfields = 'rowid,race,order,benefit,description,levels'.split(',')
-sponsorbenefit_dbmapping = dict(zip(sponsorbenefit_dbattrs, sponsorbenefit_formfields))
-sponsorbenefit_formmapping = dict(zip(sponsorbenefit_formfields, sponsorbenefit_dbattrs))
+sponsorbenefit_dbmapping = dict(list(zip(sponsorbenefit_dbattrs, sponsorbenefit_formfields)))
+sponsorbenefit_formmapping = dict(list(zip(sponsorbenefit_formfields, sponsorbenefit_dbattrs)))
 
 ## yadcf external filters
 sponsorbenefit_filters = '\n'.join([
@@ -1089,8 +1089,8 @@ sponsorbenefit.register()
 
 sponsorquerylog_dbattrs = 'id,time,organization,name,phone,city,state,street,zipcode,email,race,amount,level,comments'.split(',')
 sponsorquerylog_formfields = 'rowid,time,organization,name,phone,city,state,street,zipcode,email,race,amount,level,comments'.split(',')
-sponsorquerylog_dbmapping = dict(zip(sponsorquerylog_dbattrs, sponsorquerylog_formfields))
-sponsorquerylog_formmapping = dict(zip(sponsorquerylog_formfields, sponsorquerylog_dbattrs))
+sponsorquerylog_dbmapping = dict(list(zip(sponsorquerylog_dbattrs, sponsorquerylog_formfields)))
+sponsorquerylog_formmapping = dict(list(zip(sponsorquerylog_formfields, sponsorquerylog_dbattrs)))
 
 sponsorquerylog = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app

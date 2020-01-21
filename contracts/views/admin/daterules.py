@@ -28,8 +28,8 @@ from loutilities.tables import DataTablesEditor
 
 daterule_dbattrs = 'id,rulename,rule,day,month,date,year,deltaday,addldays'.split(',')
 daterule_formfields = 'rowid,rulename,rule,day,month,date,year,deltaday,addldays'.split(',')
-daterule_dbmapping = dict(zip(daterule_dbattrs, daterule_formfields))
-daterule_formmapping = dict(zip(daterule_formfields, daterule_dbattrs))
+daterule_dbmapping = dict(list(zip(daterule_dbattrs, daterule_formfields)))
+daterule_formmapping = dict(list(zip(daterule_formfields, daterule_dbattrs)))
 
 # set up rulename based on DateRule.__init__() logic
 def set_rulename(formrow):
@@ -41,7 +41,7 @@ def set_rulename(formrow):
     # create new instance of dbrow without setting rulename apriori
     # this sets rulename per DateRule.__init__()
     tmpdbrow.rulename = ''
-    newdbrow = DateRule(**{k:v for k,v in tmpdbrow.__dict__.items() if k[0] != '_'})
+    newdbrow = DateRule(**{k:v for k,v in list(tmpdbrow.__dict__.items()) if k[0] != '_'})
     current_app.logger.debug('set_rulename(): tmpdbrow.__dict__ = {}'.format(tmpdbrow.__dict__))
 
     # use the rulename which was created

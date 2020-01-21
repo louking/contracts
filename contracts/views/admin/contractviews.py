@@ -28,8 +28,8 @@ from contracts.crudapi import DbCrudApiRolePermissions
 
 templatetype_dbattrs = 'id,templateType,description,contractType'.split(',')
 templatetype_formfields = 'rowid,templateType,description,contractType'.split(',')
-templatetype_dbmapping = dict(zip(templatetype_dbattrs, templatetype_formfields))
-templatetype_formmapping = dict(zip(templatetype_formfields, templatetype_dbattrs))
+templatetype_dbmapping = dict(list(zip(templatetype_dbattrs, templatetype_formfields)))
+templatetype_formmapping = dict(list(zip(templatetype_formfields, templatetype_dbattrs)))
 
 templatetype = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -68,8 +68,8 @@ templatetype.register()
 
 contracttype_dbattrs = 'id,contractType,description'.split(',')
 contracttype_formfields = 'rowid,contractType,description'.split(',')
-contracttype_dbmapping = dict(zip(contracttype_dbattrs, contracttype_formfields))
-contracttype_formmapping = dict(zip(contracttype_formfields, contracttype_dbattrs))
+contracttype_dbmapping = dict(list(zip(contracttype_dbattrs, contracttype_formfields)))
+contracttype_formmapping = dict(list(zip(contracttype_formfields, contracttype_dbattrs)))
 
 contracttype = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -105,8 +105,8 @@ contracttype.register()
 
 contractblocktype_dbattrs = 'id,blockType,description'.split(',')
 contractblocktype_formfields = 'rowid,blockType,description'.split(',')
-contractblocktype_dbmapping = dict(zip(contractblocktype_dbattrs, contractblocktype_formfields))
-contractblocktype_formmapping = dict(zip(contractblocktype_formfields, contractblocktype_dbattrs))
+contractblocktype_dbmapping = dict(list(zip(contractblocktype_dbattrs, contractblocktype_formfields)))
+contractblocktype_formmapping = dict(list(zip(contractblocktype_formfields, contractblocktype_dbattrs)))
 
 contractblocktype = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -142,8 +142,8 @@ contractblocktype.register()
 
 contract_dbattrs = 'id,contractType,templateType,blockPriority,contractBlockType,block'.split(',')
 contract_formfields = 'rowid,contractType,templateType,blockPriority,contractBlockType,block'.split(',')
-contract_dbmapping = dict(zip(contract_dbattrs, contract_formfields))
-contract_formmapping = dict(zip(contract_formfields, contract_dbattrs))
+contract_dbmapping = dict(list(zip(contract_dbattrs, contract_formfields)))
+contract_formmapping = dict(list(zip(contract_formfields, contract_dbattrs)))
 
 contract = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app

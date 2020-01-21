@@ -13,9 +13,9 @@ dbinit_sponsors - contracts database initialization configuration - sponsor tabl
 
 Initializion for sponsorraces, sponsorlevels, sponsorbenefits tables
 '''
-from dbmodel import db
-from dbmodel import SponsorRace, SponsorLevel, SponsorBenefit, SponsorRaceDate, SponsorRaceVbl
-from dbmodel import ModelItem, initdbmodels, getmodelitems, priorityUpdater
+from .dbmodel import db
+from .dbmodel import SponsorRace, SponsorLevel, SponsorBenefit, SponsorRaceDate, SponsorRaceVbl
+from .dbmodel import ModelItem, initdbmodels, getmodelitems, priorityUpdater
 
 sponsorraces = [
     {'race'             : 'Frederick Women\'s Distance Festival', 

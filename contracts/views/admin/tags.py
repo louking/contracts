@@ -24,8 +24,8 @@ from contracts.crudapi import DbCrudApiRolePermissions
 
 tag_dbattrs = 'id,tag,description,isBuiltIn'.split(',')
 tag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
-tag_dbmapping = dict(zip(tag_dbattrs, tag_formfields))
-tag_formmapping = dict(zip(tag_formfields, tag_dbattrs))
+tag_dbmapping = dict(list(zip(tag_dbattrs, tag_formfields)))
+tag_formmapping = dict(list(zip(tag_formfields, tag_dbattrs)))
 
 tag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -71,8 +71,8 @@ tag.register()
 
 super_tag_dbattrs = 'id,tag,description,isBuiltIn'.split(',')
 super_tag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
-super_tag_dbmapping = dict(zip(super_tag_dbattrs, super_tag_formfields))
-super_tag_formmapping = dict(zip(super_tag_formfields, super_tag_dbattrs))
+super_tag_dbmapping = dict(list(zip(super_tag_dbattrs, super_tag_formfields)))
+super_tag_formmapping = dict(list(zip(super_tag_formfields, super_tag_dbattrs)))
 
 super_tag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -117,8 +117,8 @@ super_tag.register()
 
 sponsortag_dbattrs = 'id,tag,description,isBuiltIn'.split(',')
 sponsortag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
-sponsortag_dbmapping = dict(zip(sponsortag_dbattrs, sponsortag_formfields))
-sponsortag_formmapping = dict(zip(sponsortag_formfields, sponsortag_dbattrs))
+sponsortag_dbmapping = dict(list(zip(sponsortag_dbattrs, sponsortag_formfields)))
+sponsortag_formmapping = dict(list(zip(sponsortag_formfields, sponsortag_dbattrs)))
 
 sponsortag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -164,8 +164,8 @@ sponsortag.register()
 
 super_sponsortag_dbattrs = 'id,tag,description,isBuiltIn'.split(',')
 super_sponsortag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
-super_sponsortag_dbmapping = dict(zip(super_sponsortag_dbattrs, super_sponsortag_formfields))
-super_sponsortag_formmapping = dict(zip(super_sponsortag_formfields, super_sponsortag_dbattrs))
+super_sponsortag_dbmapping = dict(list(zip(super_sponsortag_dbattrs, super_sponsortag_formfields)))
+super_sponsortag_formmapping = dict(list(zip(super_sponsortag_formfields, super_sponsortag_dbattrs)))
 
 super_sponsortag = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app

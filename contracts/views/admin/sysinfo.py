@@ -70,8 +70,7 @@ class ViewDebug(MethodView):
             sysvars = []
             
             # collect current_app.config variables
-            configkeys = current_app.config.keys()
-            configkeys.sort()
+            configkeys = sorted(list(current_app.config.keys()))
             appconfig = []
             for key in configkeys:
                 value = current_app.config[key]
@@ -82,8 +81,7 @@ class ViewDebug(MethodView):
             sysvars.append(['current_app.config',appconfig])
             
             # collect flask.session variables
-            sessionkeys = session.keys()
-            sessionkeys.sort()
+            sessionkeys = sorted(session.keys())
             sessionconfig = []
             for key in sessionkeys:
                 value = session[key]

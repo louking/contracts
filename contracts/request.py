@@ -55,7 +55,7 @@ def annotatescripts(scripts):
         cdnmin = ''
         if 'MINIMIZE_CDN_JAVASCRIPT' in current_app.config and current_app.config['MINIMIZE_CDN_JAVASCRIPT']:
             cdnmin = '.min'
-        if type(scriptitem) == tuple:
+        if isinstance(scriptitem, tuple):
             thisfile, version, cdn = scriptitem
 
 
@@ -108,13 +108,13 @@ def addscripts(scriptlist):
     # get filetype of first file
     firstfiletype = scriptlist[0].split('.')[-1]
     if firstfiletype not in ['css', 'js']:
-        raise invalidScript,'Invalid script filename: {}'.format(thisfile)
+        raise invalidScript('Invalid script filename: {}'.format(thisfile))
 
     # make sure all scripts referenced are of same type as first
     for thisfile in scriptlist:
         filetype = thisfile.split('.')[-1]
         if filetype != firstfiletype:
-            raise invalidScript,'All scripts in script list must be of same type: {}'.format(scriptlist)
+            raise invalidScript('All scripts in script list must be of same type: {}'.format(scriptlist))
 
     return annotatescripts(scriptlist)
 
@@ -152,9 +152,9 @@ def crossdomain(origin=None, methods=None, headers=None,
     '''
     if methods is not None:
         methods = ', '.join(sorted(x.upper() for x in methods))
-    if headers is not None and not isinstance(headers, basestring):
+    if headers is not None and not isinstance(headers, str):
         headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
+    if not isinstance(origin, str):
         origin = ', '.join(origin)
     if isinstance(max_age, timedelta):
         max_age = max_age.total_seconds()

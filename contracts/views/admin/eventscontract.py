@@ -57,7 +57,7 @@ class EventsContract(DbCrudApiRolePermissions):
 
             # pull record(s) from database and save as flat dotted record
             data = get_request_data(form)
-            print 'data={}'.format(data)
+            print(('data={}'.format(data)))
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
@@ -72,7 +72,7 @@ class EventsContract(DbCrudApiRolePermissions):
                         annotation = '(updated) '
 
                     # check appropriate fields are present for certain services
-                    servicenames = set([s.service for s in eventdb.services])
+                    servicenames = {s.service for s in eventdb.services}
                     if servicenames & {'coursemarking', 'finishline'}:
                         self._fielderrors = []
                         for field in ['race', 'date', 'mainStartTime', 'mainDistance' ]:
@@ -83,7 +83,7 @@ class EventsContract(DbCrudApiRolePermissions):
                             if not data[thisid][field]['id']:
                                 self._fielderrors.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
                         if self._fielderrors:
-                            raise parameterError, 'missing fields'
+                            raise parameterError('missing fields')
 
 
                     # calculate service fees
@@ -112,7 +112,7 @@ class EventsContract(DbCrudApiRolePermissions):
                             if not fieldval:
                                 formfield = self.dbmapping[field]   # hopefully not a function
                                 self._fielderrors = [{ 'name' : formfield, 'status' : 'needed to calculate fee' }]
-                                raise parameterError, 'cannot calculate fee if {} not set'.format(field)
+                                raise parameterError('cannot calculate fee if {} not set'.format(field))
 
                             feebasedons = FeeBasedOn.query.filter_by(serviceId=service.id).order_by(FeeBasedOn.fieldValue).all()
                             foundfee = False
@@ -131,11 +131,11 @@ class EventsContract(DbCrudApiRolePermissions):
                             if not foundfee:
                                 formfield = self.dbmapping[field]   # hopefully not a function
                                 self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
-                                raise ParameterError, 'cannot calculate fee if {} greater than {}'.format(field, lastfieldval)
+                                raise ParameterError('cannot calculate fee if {} greater than {}'.format(field, lastfieldval))
                                 
                         # not sure how we could get here, but best to be defensive
                         else:
-                            raise ParameterError, 'unknown feeType: {}'.format(service.feeType.feeType)
+                            raise ParameterError('unknown feeType: {}'.format(service.feeType.feeType))
 
                         # accumulate total fee
                         feetotal += thisfee
@@ -166,7 +166,7 @@ class EventsContract(DbCrudApiRolePermissions):
                     # find index with correct id and show database updates
                     for resprow in self._responsedata:
                         if resprow['rowid'] == thisid: 
-                            resprow['state'] = { key:val for (key,val) in eventdb.state.__dict__.items() if key[0] != '_' }
+                            resprow['state'] = { key:val for (key,val) in list(eventdb.state.__dict__.items()) if key[0] != '_' }
                             resprow['contractSentDate'] = eventdb.contractSentDate
                             resprow['contractDocId'] = eventdb.contractDocId
 
@@ -202,7 +202,7 @@ class EventsContract(DbCrudApiRolePermissions):
 
                 # state must be STATE_COMMITTED or STATE_CONTRACT_SENT, else logic error
                 else:
-                    raise parameterError, 'editor_method_posthook(): bad state seen for {}: {}'.format(form['addlaction'], eventdb.state.state)
+                    raise parameterError('editor_method_posthook(): bad state seen for {}: {}'.format(form['addlaction'], eventdb.state.state))
 
                 # merge database fields into template and send email
                 mergefields = deepcopy(eventdb.__dict__)

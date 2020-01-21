@@ -78,7 +78,7 @@ class SponsorshipQuery(MethodView):
         racesdata = SponsorRace.query.filter_by(display=True).all()
         races = OrderedDict()
         for race in racesdata:
-            races[race.race] = {k:v for k,v in race.__dict__.items() if k[0:4] != "_sa_"}
+            races[race.race] = {k:v for k,v in list(race.__dict__.items()) if k[0:4] != "_sa_"}
 
         context = {
                    'pagename'         : 'request sponsorship',

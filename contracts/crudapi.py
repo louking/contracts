@@ -14,7 +14,7 @@ crudapi - CRUD api for this application
 '''
 
 # standard
-from urllib import urlencode
+from urllib.parse import urlencode
 from json import dumps
 from copy import deepcopy, copy
 from threading import RLock
@@ -106,7 +106,7 @@ class DteDbRelationship():
         reqdfields = ['fieldmodel', 'labelfield', 'formfield', 'dbfield']
         for field in reqdfields:
             if not args[field]:
-                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+                raise parameterError('{} parameters are all required'.format(', '.join(reqdfields)))
 
         # set arguments as class attributes
         for key in args:
@@ -238,7 +238,7 @@ class DteDbSubrec():
         reqdfields = ['model', 'field', 'subfield', 'formfield']
         for field in reqdfields:
             if not args[field]:
-                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+                raise parameterError('{} parameters are all required'.format(', '.join(reqdfields)))
 
         # set arguments as class attributes
         for key in args:
@@ -300,7 +300,7 @@ class DteDbBool():
         reqdfields = ['formfield', 'dbfield']
         for field in reqdfields:
             if not args[field]:
-                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+                raise parameterError('{} parameters are all required'.format(', '.join(reqdfields)))
 
         # set arguments as class attributes
         for key in args:
@@ -390,7 +390,7 @@ class DteDbDependent():
         reqdfields = ['model', 'modelfield', 'depmodel', 'depmodelfield', 'depvaluefield']
         for field in reqdfields:
             if not args[field]:
-                raise parameterError, '{} parameters are all required'.format(', '.join(reqdfields))
+                raise parameterError('{} parameters are all required'.format(', '.join(reqdfields)))
 
         # set arguments as class attributes
         for key in args:
@@ -609,8 +609,8 @@ class DbCrudApi(CrudApi):
 
             # special treatment required
             else:
-                if type(treatment) != dict or len(treatment) != 1 or treatment.keys()[0] not in ['boolean', 'relationship']:
-                    raise parameterError, 'invalid treatment: {}'.format(treatment)
+                if not isinstance(treatment, dict) or len(treatment) != 1 or list(treatment.keys())[0] not in ['boolean', 'relationship']:
+                    raise parameterError('invalid treatment: {}'.format(treatment))
 
                 # handle boolean treatment
                 if 'boolean' in treatment:
@@ -954,11 +954,11 @@ class DbCrudApi(CrudApi):
             rowTable = DataTables(request.args.to_dict(), query, self.servercolumns)
 
             output = rowTable.output_result()
-            print output
+            print(output)
 
             # check for errors
             if 'error' in output:
-                raise parameterError, output['error']
+                raise parameterError(output['error'])
 
             # # transform rowTable.output_result()['data'] using get_response_data
             # ## loop through data
@@ -981,7 +981,7 @@ class DbCrudApi(CrudApi):
 
         # not server table, need to do translation
         if not self.serverside:
-            dbrecord = self.rows.next()
+            dbrecord = next(self.rows)
             return self.dte.get_response_data(dbrecord)
 
         # server table
@@ -1012,7 +1012,7 @@ class DbCrudApi(CrudApi):
             for col in self.clientcolumns:
                 field = col['data']
                 if 'className' in col and 'field_req' in col['className'].split(' '):
-                    if not isinstance(formdata[field], basestring) and 'id' in formdata[field]:
+                    if not isinstance(formdata[field], str) and 'id' in formdata[field]:
                         if not formdata[field]['id']:
                             results.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
                     elif not formdata[field]:
@@ -1180,12 +1180,12 @@ class DbCrudApiRolePermissions(DbCrudApi):
 
         # Caller should use roles_accepted OR roles_required but not both
         if self.roles_accepted and self.roles_required:
-            raise parameterError, 'use roles_accepted OR roles_required but not both'
+            raise parameterError('use roles_accepted OR roles_required but not both')
 
         # assure None or [ 'role1', ... ]
-        if self.roles_accepted and type(self.roles_accepted) != list:
+        if self.roles_accepted and not isinstance(self.roles_accepted, list):
             self.roles_accepted = [ self.roles_accepted ]
-        if self.roles_required and type(self.roles_required) != list:
+        if self.roles_required and not isinstance(self.roles_required, list):
             self.roles_required = [ self.roles_required ]
 
     #----------------------------------------------------------------------

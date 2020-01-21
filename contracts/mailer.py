@@ -43,11 +43,11 @@ def sendmail(subject, fromaddr, toaddr, html, text='', ccaddr=None ):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = fromaddr
-    if type(toaddr) != list:
+    if not isinstance(toaddr, list):
         toaddr = [toaddr]
     msg['To'] = ', '.join(toaddr)
     if ccaddr:
-        if type(ccaddr) != list:
+        if not isinstance(ccaddr, list):
             ccaddr = [ccaddr]
         msg['Cc'] = ', '.join(ccaddr)
 

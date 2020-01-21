@@ -31,8 +31,8 @@ from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
 client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
 client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
-client_dbmapping = dict(zip(client_dbattrs, client_formfields))
-client_formmapping = dict(zip(client_formfields, client_dbattrs))
+client_dbmapping = dict(list(zip(client_dbattrs, client_formfields)))
+client_formmapping = dict(list(zip(client_formfields, client_dbattrs)))
 
 def client_validate(action, formdata):
     results = []
@@ -101,8 +101,8 @@ client.register()
 
 state_dbattrs = 'id,state,description'.split(',')
 state_formfields = 'rowid,state,description'.split(',')
-state_dbmapping = dict(zip(state_dbattrs, state_formfields))
-state_formmapping = dict(zip(state_formfields, state_dbattrs))
+state_dbmapping = dict(list(zip(state_dbattrs, state_formfields)))
+state_formmapping = dict(list(zip(state_formfields, state_dbattrs)))
 
 state = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app

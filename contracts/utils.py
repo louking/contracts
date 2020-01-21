@@ -45,7 +45,7 @@ def time24(time):
 
     # hopefully this error was detected before time was put into database
     if len(fields) < 2 or len(fields) > 3:
-        raise parameterError, 'invalid time field {} detected'.format(time)
+        raise parameterError('invalid time field {} detected'.format(time))
     
     # use 24 hour clock
     if ampm.lower() == 'pm' and fields[0] != 12:
@@ -93,7 +93,7 @@ def renew_event(event):
             event.race.daterule = daterule
 
         # create new event based on this event's daterule
-        neweventdict = {k:v for k,v in event.__dict__.items() if k[0] != '_' and k != 'id'}
+        neweventdict = {k:v for k,v in list(event.__dict__.items()) if k[0] != '_' and k != 'id'}
         newevent = Event(**neweventdict)
         
         # the following assumes only one date will be returned from the event's date rule
@@ -165,7 +165,7 @@ def renew_sponsorship(sponsorship):
     if renewedtag not in sponsorship.tags:
 
         # create new sponsorship based on this sponsorship's daterule
-        newsponsorshipdict = {k: v for k, v in sponsorship.__dict__.items() if k[0] != '_' and k != 'id'}
+        newsponsorshipdict = {k: v for k, v in list(sponsorship.__dict__.items()) if k[0] != '_' and k != 'id'}
         newsponsorship = Sponsor(**newsponsorshipdict)
 
         # update fields within the new sponsorship to start fresh

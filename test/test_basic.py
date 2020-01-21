@@ -16,7 +16,7 @@ def create_user(email, roles):
     from contracts import user_datastore
     from contracts.dbmodel import db
     user = user_datastore.create_user(email=email)
-    if type(roles) != list:
+    if not isinstance(roles, list):
         roles = [roles]
     for role in roles:
         user_datastore.add_role_to_user(user, role)

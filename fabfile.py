@@ -37,7 +37,7 @@ WSGI_SCRIPT = 'contracts.wsgi'
 
 @task
 def deploy(c, branchname='master'):
-    print 'c.user={} c.host={} branchname={}'.format(c.user, c.host, branchname)
+    print('c.user={} c.host={} branchname={}'.format(c.user, c.host, branchname))
 
     venv_dir = '/var/www/{server}/venv'.format(server=c.host)
     project_dir = '/var/www/{server}/{appname}/{appname}'.format(server=c.host, appname=APP_NAME)

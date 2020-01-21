@@ -30,7 +30,7 @@ from contracts.daterule import daterule2dates
 from contracts.utils import time24
 from loutilities.flask_helpers.blueprints import add_url_rules
 
-from events import event
+from .events import event
 event_dte = event.dte
 
 class parameterError(Exception): pass
@@ -52,7 +52,7 @@ class EventsCalendarApi(MethodView):
 
         # if arguments are insufficent, raise exception
         if not start or not end:
-            raise parameterError, 'EventsCalendarApi: missing argument'
+            raise parameterError('EventsCalendarApi: missing argument')
 
         # retrieve events between start and end dates
         events = Event.query.filter( Event.date >= start, Event.date <= end ).all()
@@ -123,7 +123,7 @@ class EventsExceptionsApi(MethodView):
 
         # if arguments are insufficent, raise exception
         if not start or not end:
-            raise parameterError, 'EventsExceptionsApi: missing argument'
+            raise parameterError('EventsExceptionsApi: missing argument')
 
         # determine start and end year
         startyear = int( start.split('-')[0] )
@@ -168,7 +168,7 @@ class EventsExceptionsApi(MethodView):
 
         # this should not happen
         else:
-            raise parameterError, 'invalid start / end combination: start={} end={}'.format(start, end)
+            raise parameterError('invalid start / end combination: start={} end={}'.format(start, end))
 
         # Easter doesn't have a month to filter on
         # because we're lazy, just include it to get filtered out later if necessary
@@ -223,7 +223,7 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
-        from events import event
+        from .events import event
 
         # get the editor options, need url_root minus trailing /
         dt = requests.get('{}{}/saform'.format( request.url_root[:-1], url_for( '.events-superadmin' )))

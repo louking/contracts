@@ -29,8 +29,8 @@ from contracts.crudapi import DbCrudApiRolePermissions
 
 user_dbattrs = 'id,email,name,given_name,roles,last_login_at,current_login_at,last_login_ip,current_login_ip,login_count,active'.split(',')
 user_formfields = 'rowid,email,name,given_name,roles,last_login_at,current_login_at,last_login_ip,current_login_ip,login_count,active'.split(',')
-user_dbmapping = dict(zip(user_dbattrs, user_formfields))
-user_formmapping = dict(zip(user_formfields, user_dbattrs))
+user_dbmapping = dict(list(zip(user_dbattrs, user_formfields)))
+user_formmapping = dict(list(zip(user_formfields, user_dbattrs)))
 
 user = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -78,8 +78,8 @@ user.register()
 
 role_dbattrs = 'id,name,description'.split(',')
 role_formfields = 'rowid,name,description'.split(',')
-role_dbmapping = dict(zip(role_dbattrs, role_formfields))
-role_formmapping = dict(zip(role_formfields, role_dbattrs))
+role_dbmapping = dict(list(zip(role_dbattrs, role_formfields)))
+role_formmapping = dict(list(zip(role_formfields, role_dbattrs)))
 
 role = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app

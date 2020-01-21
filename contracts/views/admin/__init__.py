@@ -14,14 +14,14 @@ from flask import Blueprint
 bp = Blueprint('admin', __name__.split('.')[0], url_prefix='/admin', static_folder='static/admin', template_folder='templates/admin')
 
 # import views
-import login
-import userrole
-import common
-import events
-import admin_eventscalendar
-import tags
-import daterules
-import contractviews
-import sponsors
-import racessummary
-import sysinfo
+from . import login
+from . import userrole
+from . import common
+from . import events
+from . import admin_eventscalendar
+from . import tags
+from . import daterules
+from . import contractviews
+from . import sponsors
+from . import racessummary
+from . import sysinfo

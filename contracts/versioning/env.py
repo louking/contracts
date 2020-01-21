@@ -9,8 +9,8 @@
 ###########################################################################################
 
 # standard
-from __future__ import with_statement
-from ConfigParser import SafeConfigParser
+
+from configparser import SafeConfigParser
 from logging.config import fileConfig
 
 # pypi

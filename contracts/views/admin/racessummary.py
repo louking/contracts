@@ -56,12 +56,12 @@ class RaceSummaryApi(CrudApi):
 
         # Caller should use roles_accepted OR roles_required but not both
         if self.roles_accepted and self.roles_required:
-            raise parameterError, 'use roles_accepted OR roles_required but not both'
+            raise parameterError('use roles_accepted OR roles_required but not both')
 
         # assure None or [ 'role1', ... ]
-        if self.roles_accepted and type(self.roles_accepted) != list:
+        if self.roles_accepted and not isinstance(self.roles_accepted, list):
             self.roles_accepted = [ self.roles_accepted ]
-        if self.roles_required and type(self.roles_required) != list:
+        if self.roles_required and not isinstance(self.roles_required, list):
             self.roles_required = [ self.roles_required ]
 
     # ----------------------------------------------------------------------

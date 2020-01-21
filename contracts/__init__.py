@@ -32,8 +32,8 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from loutilities.configparser import getitems
 
 # bring in js, css assets
-import assets
-from assets import asset_env, asset_bundles
+from . import assets
+from .assets import asset_env, asset_bundles
 
 # get configuration
 # configfile = "contracts.cfg"
@@ -92,10 +92,10 @@ def create_app(config_obj, config_filename=None):
         app.register_blueprint(admin)
 
         # import navigation after views created
-        import nav
+        from . import nav
 
         # turn on logging
-        from applogging import setlogging
+        from .applogging import setlogging
         setlogging()
 
         # set up scoped session

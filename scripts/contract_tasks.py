@@ -16,7 +16,7 @@ event_tasks - background tasks needed for contract event management
 import os.path
 from copy import deepcopy
 from datetime import date, timedelta
-from urllib import quote_plus
+from urllib.parse import quote_plus
 from re import match
 
 # pypi
@@ -95,12 +95,12 @@ def preraceemail(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -177,12 +177,12 @@ def leademail(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -258,12 +258,12 @@ def postraceprocessing(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -358,12 +358,12 @@ def preraceprempromoemail(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate=='auto' or enddate=='auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (  not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
               not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -444,12 +444,12 @@ def latereminderemail(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -457,7 +457,7 @@ def latereminderemail(startdate, enddate):
         end = enddate
 
     # debug
-    if debug: print 'start={} end={}'.format(start, end)
+    if debug: print('start={} end={}'.format(start, end))
 
     # use filter to get races in which occurred at least N days ago
     events = Event.query.filter(Event.date.between(start, end)).all()
@@ -528,12 +528,12 @@ def cancellaterace(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -541,7 +541,7 @@ def cancellaterace(startdate, enddate):
         end = enddate
 
     # debug
-    if debug: print 'start={} end={}'.format(start, end)
+    if debug: print('start={} end={}'.format(start, end))
 
     # use filter to get races in which occurred at least N days ago
     events = Event.query.filter(Event.date.between(start, end)).all()
@@ -613,12 +613,12 @@ def renewsponsorship(startdate, enddate):
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
         if startdate == 'auto' or enddate == 'auto':
-            print 'ERROR: startdate and enddate must both be specified'
+            print('ERROR: startdate and enddate must both be specified')
             return
 
         if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
                 not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-            print 'ERROR: startdate and enddate must be in yyyy-mm-dd format'
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
             return
 
         # cli specified dates format is fine, and both dates specified
@@ -661,12 +661,12 @@ def renewraces(startdate, enddate):
     # check input argument format
     if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate)
             or not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-        print 'ERROR: dates must be in yyyy-mm-dd format'
+        print('ERROR: dates must be in yyyy-mm-dd format')
         return
 
     # do arguments make sense?
     if enddate < startdate:
-        print 'ERROR: enddate must be greater than or equal to startdate'
+        print('ERROR: enddate must be greater than or equal to startdate')
         return
 
     # use filter to get races specified
@@ -692,11 +692,11 @@ def renewraces(startdate, enddate):
         db.session.commit()
 
     if newevents:
-        print 'renewed events:'
+        print('renewed events:')
         for newevent in newevents:
-            print '   {} {}'.format(newevent.date, newevent.race.race)
+            print('   {} {}'.format(newevent.date, newevent.race.race))
     else:
-        print 'no events found'
+        print('no events found')
 
 #----------------------------------------------------------------------
 @app.cli.command()
@@ -715,12 +715,12 @@ def sendrenewemails(startdate, enddate):
     # check input argument format
     if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate)
             or not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
-        print 'ERROR: dates must be in yyyy-mm-dd format'
+        print('ERROR: dates must be in yyyy-mm-dd format')
         return
 
     # do arguments make sense?
     if enddate < startdate:
-        print 'ERROR: enddate must be greater than or equal to startdate'
+        print('ERROR: enddate must be greater than or equal to startdate')
         return
 
     # use filter to get races specified

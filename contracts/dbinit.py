@@ -13,14 +13,14 @@ dbinit - contracts database initialization
 '''
 
 # homegrown
-from dbmodel import db, Role, User
+from .dbmodel import db, Role, User
 
 #--------------------------------------------------------------------------
 def init_db(defineowner=True):
 #--------------------------------------------------------------------------
     # init the modelitems from dbinit_contracts
-    from dbinit_contracts import dbinit_base, dbinit_tags, dbinit_contracts
-    from dbinit_sponsors import dbinit_sponsors
+    from .dbinit_contracts import dbinit_base, dbinit_tags, dbinit_contracts
+    from .dbinit_sponsors import dbinit_sponsors
     dbinit_base()
     dbinit_tags()
     dbinit_contracts()

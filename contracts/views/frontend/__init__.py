@@ -15,7 +15,7 @@ from flask import Blueprint
 bp = Blueprint('frontend', __name__.split('.')[0], url_prefix='', static_folder='static/frontend', template_folder='templates/frontend')
 
 # import views
-import frontend
-import contractviews
-import eventscalendar
-import frontend_sponsors
+from . import frontend
+from . import contractviews
+from . import eventscalendar
+from . import frontend_sponsors

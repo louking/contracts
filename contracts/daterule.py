@@ -22,7 +22,7 @@ from dateutil.rrule import rrule
 from dateutil.rrule import YEARLY, DAILY, SA, SU, MO, TU, WE, TH, FR
 
 # home grown
-from dbmodel import DateRule
+from .dbmodel import DateRule
 from loutilities.timeu import asctime
 dt = asctime('%Y-%m-%d')
 
@@ -31,16 +31,16 @@ class parameterError(Exception): pass
 # set up translation tables for some of the rules, days and months
 rules = [ 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Last' ]
 offsets = [1, 2, 3, 4, 5, -1]
-rulex = dict( zip( rules, offsets ) )
+rulex = dict( list(zip( rules, offsets )) )
 
 # note dates must have index as defined by datetime.weekday(), i.e., Mon = 0, Sun = 6
 days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 weekdays = [ MO, TU, WE, TH, FR, SA, SU ]
-dayx = dict( zip( days, weekdays ) )
+dayx = dict( list(zip( days, weekdays )) )
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-monthndxs = range(1,12+1)
-monthx = dict( zip( months, monthndxs ) )
+monthndxs = list(range(1,12+1))
+monthx = dict( list(zip( months, monthndxs )) )
 
 ONEDAY = timedelta(1)
 
@@ -75,7 +75,7 @@ def daterule2dates(rule, year=None):
         thisdate = datetime( year, monthx[rule.month], rule.date )
 
     else:
-        raise parameterError, 'invalid rule "{}"'.format(rule.rule)
+        raise parameterError('invalid rule "{}"'.format(rule.rule))
 
     # handle deltaday
     if rule.deltaday:
@@ -106,7 +106,7 @@ def date2daterule(date):
     '''
 
     dtdate = dt.asc2dt(date)
-    offset = rules[dtdate.day / 7]
+    offset = rules[dtdate.day // 7]
     dow = days[dtdate.weekday()]
     month = months[dtdate.month-1]
 

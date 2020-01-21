@@ -13,13 +13,13 @@ dbinit_contracts - contracts database initialization configuration
 '''
 
 # homegrown
-from dbmodel import State, FeeType, FeeBasedOn, Service, Course, ContractType, TemplateType, ContractBlockType, AddOn
-from dbmodel import Contract, DateRule, Tag, tags, SponsorTag, sponsortags
-from dbmodel import EventAvailabilityException
+from .dbmodel import State, FeeType, FeeBasedOn, Service, Course, ContractType, TemplateType, ContractBlockType, AddOn
+from .dbmodel import Contract, DateRule, Tag, tags, SponsorTag, sponsortags
+from .dbmodel import EventAvailabilityException
 
-from dbmodel import STATE_RENEWED_PENDING, STATE_TENTATIVE, STATE_CONTRACT_SENT, STATE_COMMITTED, STATE_CANCELED       
+from .dbmodel import STATE_RENEWED_PENDING, STATE_TENTATIVE, STATE_CONTRACT_SENT, STATE_COMMITTED, STATE_CANCELED       
 
-from dbmodel import ModelItem, initdbmodels, priorityUpdater
+from .dbmodel import ModelItem, initdbmodels, priorityUpdater
 
 # define templatetypes
 templatetypes = [

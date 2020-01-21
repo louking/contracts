@@ -19,14 +19,14 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'contractility'
-copyright = u'2018,2019 Lou King'
-author = u'Lou King'
+project = 'contractility'
+copyright = '2018,2019 Lou King'
+author = 'Lou King'
 
 # The short X.Y version
-version = u''
+version = ''
 # The full version, including alpha/beta/rc tags
-release = u'1.0'
+release = '1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -70,7 +70,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -137,8 +137,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'contractility.tex', u'contractility Documentation',
-     u'Lou King', 'manual'),
+    (master_doc, 'contractility.tex', 'contractility Documentation',
+     'Lou King', 'manual'),
 ]
 
 
@@ -147,7 +147,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'contractility', u'contractility Documentation',
+    (master_doc, 'contractility', 'contractility Documentation',
      [author], 1)
 ]
 
@@ -158,7 +158,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'contractility', u'contractility Documentation',
+    (master_doc, 'contractility', 'contractility Documentation',
      author, 'contractility', 'One line description of project.',
      'Miscellaneous'),
 ]

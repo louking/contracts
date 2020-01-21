@@ -46,7 +46,7 @@ def upgrade():
                existing_nullable=True)
     op.add_column('sponsor', sa.Column('version_id', sa.Integer(), nullable=False))
     op.alter_column('sponsor', 'RegSiteUpdated',
-               existing_type=mysql.ENUM(u'no', u'yes', u'n/a'),
+               existing_type=mysql.ENUM('no', 'yes', 'n/a'),
                nullable=True)
     op.alter_column('sponsor', 'isLogoReceived',
                existing_type=mysql.TINYINT(display_width=1),
@@ -138,7 +138,7 @@ def downgrade():
                type_=mysql.TINYINT(display_width=1),
                existing_nullable=True)
     op.alter_column('sponsor', 'RegSiteUpdated',
-               existing_type=mysql.ENUM(u'no', u'yes', u'n/a'),
+               existing_type=mysql.ENUM('no', 'yes', 'n/a'),
                nullable=False)
     op.drop_column('sponsor', 'version_id')
     op.alter_column('service', 'isCalendarBlocked',

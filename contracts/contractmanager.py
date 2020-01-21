@@ -36,7 +36,7 @@ from contracts.dbmodel import db, Contract, ContractType, TemplateType
 from loutilities import timeu
 from loutilities.googleauth import get_credentials
 from contracts.views.admin.login import APP_CRED_FOLDER
-from html2docx import convert
+from .html2docx import convert
 
 class parameterError(Exception): pass
 
@@ -69,7 +69,7 @@ def _evaluate(tree, subtree):
             return subtree(tree)
 
     # flow here if we have an object
-    for key, val in subtree.__dict__.items():
+    for key, val in list(subtree.__dict__.items()):
         if key.startswith('_'): continue
 
         element = []
@@ -194,7 +194,7 @@ class ContractManager():
             setattr(self, key, args[key])
 
         if self.doctype not in ['docx', 'html']:
-            raise parameterError, 'ContractManager(): doctype must be "docx" or "html", found {}'.format(self.doctype)
+            raise parameterError('ContractManager(): doctype must be "docx" or "html", found {}'.format(self.doctype))
 
     #----------------------------------------------------------------------
     def create(self, filename, mergefields, addlfields={}):
@@ -220,7 +220,7 @@ class ContractManager():
         elif self.doctype == 'html':
             html = []
         else:
-            raise parameterError, 'create(): bad doctype {}'.format(self.doctype)
+            raise parameterError('create(): bad doctype {}'.format(self.doctype))
 
 
         # retrieve contract template
@@ -259,7 +259,7 @@ class ContractManager():
                 
                 # bad configuration, or bad code
                 else:
-                    raise parameterError, 'unknown block type for {}: {}'.format(self.doctype, blockType)
+                    raise parameterError('unknown block type for {}: {}'.format(self.doctype, blockType))
 
         # fill contents for docx files
         elif self.doctype == 'docx':
@@ -305,7 +305,7 @@ class ContractManager():
                 elif blockType == 'tablehdr':
                     # use csv reader to parse quoted fields with commas correctly
                     rdr = reader([blockd.block])
-                    headings = rdr.next()
+                    headings = next(rdr)
                     table = docx.add_table(rows=1, cols=len(headings))
                     hdr_cells = table.rows[0].cells
                     for c in range(len(headings)):
@@ -335,7 +335,7 @@ class ContractManager():
                                 run.bold = True
                 
                 else:
-                    raise parameterError, 'unknown block type for {}: {}'.format(self.doctype, blockType)
+                    raise parameterError('unknown block type for {}: {}'.format(self.doctype, blockType))
 
         # save temporary doc file
         dirpath = mkdtemp(prefix='contracts_')
@@ -395,7 +395,7 @@ class ContractManager():
             if exception:
                 # Handle error
                 if debug: current_app.logger.error("batch_callback(): permission exception {}".format(exception) )
-                raise PermissionError, exception
+                raise PermissionError(exception)
             else:
                 if debug: current_app.logger.debug("batch_callback(): permission id {}".format(response.get('id')) )
 

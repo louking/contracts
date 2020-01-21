@@ -26,9 +26,9 @@ from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityExcep
 from contracts.dbmodel import DateRule
 from contracts.dbmodel import STATE_TENTATIVE
 from contracts.crudapi import DbCrudApiRolePermissions
-from daterules import daterule
-from common import client
-from eventscontract import EventsContract
+from .daterules import daterule
+from .common import client
+from .eventscontract import EventsContract
 from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
 ##########################################################################################
@@ -37,8 +37,8 @@ from contracts.crudapi import REGEX_URL, REGEX_EMAIL
 
 lead_dbattrs = 'id,name,email,phone'.split(',')
 lead_formfields = 'rowid,name,email,phone'.split(',')
-lead_dbmapping = dict(zip(lead_dbattrs, lead_formfields))
-lead_formmapping = dict(zip(lead_formfields, lead_dbattrs))
+lead_dbmapping = dict(list(zip(lead_dbattrs, lead_formfields)))
+lead_formmapping = dict(list(zip(lead_formfields, lead_dbattrs)))
 
 lead = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -82,8 +82,8 @@ lead.register()
 
 course_dbattrs = 'id,course,address,isStandard'.split(',')
 course_formfields = 'rowid,course,address,isStandard'.split(',')
-course_dbmapping = dict(zip(course_dbattrs, course_formfields))
-course_formmapping = dict(zip(course_formfields, course_dbattrs))
+course_dbmapping = dict(list(zip(course_dbattrs, course_formfields)))
+course_formmapping = dict(list(zip(course_formfields, course_dbattrs)))
 
 # update fields coming from client
 course_dbmapping['isStandard'] = lambda formrow: formrow['isStandard'] == 'true'
@@ -132,8 +132,8 @@ course.register()
 
 feetype_dbattrs = 'id,feeType,description'.split(',')
 feetype_formfields = 'rowid,feeType,description'.split(',')
-feetype_dbmapping = dict(zip(feetype_dbattrs, feetype_formfields))
-feetype_formmapping = dict(zip(feetype_formfields, feetype_dbattrs))
+feetype_dbmapping = dict(list(zip(feetype_dbattrs, feetype_formfields)))
+feetype_formmapping = dict(list(zip(feetype_formfields, feetype_dbattrs)))
 
 feetype = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -174,8 +174,8 @@ feetype.register()
 
 feebasedon_dbattrs = 'id,service,fieldValue,fee'.split(',')
 feebasedon_formfields = 'rowid,service,fieldValue,fee'.split(',')
-feebasedon_dbmapping = dict(zip(feebasedon_dbattrs, feebasedon_formfields))
-feebasedon_formmapping = dict(zip(feebasedon_formfields, feebasedon_dbattrs))
+feebasedon_dbmapping = dict(list(zip(feebasedon_dbattrs, feebasedon_formfields)))
+feebasedon_formmapping = dict(list(zip(feebasedon_formfields, feebasedon_dbattrs)))
 
 feebasedon = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -221,8 +221,8 @@ feebasedon.register()
 
 addon_dbattrs = 'id,shortDescr,longDescr,fee'.split(',')
 addon_formfields = 'rowid,shortDescr,longDescr,fee'.split(',')
-addon_dbmapping = dict(zip(addon_dbattrs, addon_formfields))
-addon_formmapping = dict(zip(addon_formfields, addon_dbattrs))
+addon_dbmapping = dict(list(zip(addon_dbattrs, addon_formfields)))
+addon_formmapping = dict(list(zip(addon_formfields, addon_dbattrs)))
 
 addon = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -266,8 +266,8 @@ addon.register()
 
 service_dbattrs = 'id,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
 service_formfields = 'rowid,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
-service_dbmapping = dict(zip(service_dbattrs, service_formfields))
-service_formmapping = dict(zip(service_formfields, service_dbattrs))
+service_dbmapping = dict(list(zip(service_dbattrs, service_formfields)))
+service_formmapping = dict(list(zip(service_formfields, service_dbattrs)))
 
 service = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -314,8 +314,8 @@ service.register()
 
 eventexception_dbattrs = 'id,shortDescr,exception,daterule,notes'.split(',')
 eventexception_formfields = 'rowid,shortDescr,exception,daterule,notes'.split(',')
-eventexception_dbmapping = dict(zip(eventexception_dbattrs, eventexception_formfields))
-eventexception_formmapping = dict(zip(eventexception_formfields, eventexception_dbattrs))
+eventexception_dbmapping = dict(list(zip(eventexception_dbattrs, eventexception_formfields)))
+eventexception_formmapping = dict(list(zip(eventexception_formfields, eventexception_dbattrs)))
 
 eventexception = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -368,8 +368,8 @@ eventexception.register()
 
 race_dbattrs = 'id,race,daterule,notes'.split(',')
 race_formfields = 'rowid,race,daterule,notes'.split(',')
-race_dbmapping = dict(zip(race_dbattrs, race_formfields))
-race_formmapping = dict(zip(race_formfields, race_dbattrs))
+race_dbmapping = dict(list(zip(race_dbattrs, race_formfields)))
+race_formmapping = dict(list(zip(race_formfields, race_dbattrs)))
 
 race = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -415,8 +415,8 @@ race.register()
 
 event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_dbmapping = dict(zip(event_dbattrs, event_formfields))
-event_formmapping = dict(zip(event_formfields, event_dbattrs))
+event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
+event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
 event_dbmapping['isContractUpdated'] = '__readonly__'
 event_formmapping['isContractUpdated'] = lambda dbrow: 'yes' if dbrow.isContractUpdated else 'no'
 

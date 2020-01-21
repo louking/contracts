@@ -10,7 +10,7 @@
 
 # standard
 import os.path
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from copy import deepcopy
 
 # pypi
@@ -804,7 +804,7 @@ def initdbmodels(modelitems):
         model = modelitem.model
 
         # maybe items is list of strings, like csv file
-        if len(modelitem.items) > 0 and isinstance(modelitem.items[0], basestring):
+        if len(modelitem.items) > 0 and isinstance(modelitem.items[0], str):
             from csv import DictReader
             ITEMS = DictReader(modelitem.items)
             items = []
@@ -825,7 +825,7 @@ def initdbmodels(modelitems):
         # otherwise, checkkeys is list of keys to filter, create function to check
         else:
             # allow scalar
-            if type(checkkeys) != list:
+            if not isinstance(checkkeys, list):
                 checkkeys = [checkkeys]
 
             def itemexists(item):
@@ -848,7 +848,7 @@ def initdbmodels(modelitems):
                     
                     # bad configuration, like x/y/z
                     else:
-                        raise parameterError, 'invalid key has too many parts: {}, item {}'.format(key, item)
+                        raise parameterError('invalid key has too many parts: {}, item {}'.format(key, item))
 
 
                 # return query result

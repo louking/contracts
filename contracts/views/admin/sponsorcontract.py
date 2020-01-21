@@ -148,7 +148,7 @@ class SponsorContract(DbCrudApiRolePermissions):
                     # find index with correct id and show database updates
                     for resprow in self._responsedata:
                         if resprow['rowid'] == thisid: 
-                            resprow['state'] = { key:val for (key,val) in sponsordb.state.__dict__.items() if key[0] != '_' }
+                            resprow['state'] = { key:val for (key,val) in list(sponsordb.state.__dict__.items()) if key[0] != '_' }
                             resprow['dateagreed'] = sponsordb.dateagreed
                             resprow['contractDocId'] = sponsordb.contractDocId
 

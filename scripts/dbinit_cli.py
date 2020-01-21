@@ -17,7 +17,7 @@ import os
 import os.path
 from copy import deepcopy
 from datetime import date, timedelta
-from urllib import quote_plus
+from urllib.parse import quote_plus
 from re import match
 
 # pypi

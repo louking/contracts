@@ -45,7 +45,7 @@ class EventsCalendarApi(MethodView):
 
         # if arguments are insufficent, raise exception
         if not start or not end:
-            raise parameterError, 'EventsCalendarApi: missing argument'
+            raise parameterError('EventsCalendarApi: missing argument')
 
         # retrieve events between start and end dates
         events = Event.query.filter( Event.date >= start, Event.date <= end ).all()
@@ -92,7 +92,7 @@ class EventsExceptionsApi(MethodView):
 
         # if arguments are insufficent, raise exception
         if not start or not end:
-            raise parameterError, 'EventsExceptionsApi: missing argument'
+            raise parameterError('EventsExceptionsApi: missing argument')
 
         # determine start and end year
         startyear = int( start.split('-')[0] )
@@ -137,7 +137,7 @@ class EventsExceptionsApi(MethodView):
 
         # this should not happen
         else:
-            raise parameterError, 'invalid start / end combination: start={} end={}'.format(start, end)
+            raise parameterError('invalid start / end combination: start={} end={}'.format(start, end))
 
         # Easter doesn't have a month to filter on
         # because we're lazy, just include it to get filtered out later if necessary
@@ -225,7 +225,7 @@ class ServicesQuery(MethodView):
     #----------------------------------------------------------------------
         # request.form is werkzeug.datastructures.ImmutableMultiDict
         # and each field will show up as list if we don't convert to dict here
-        form = {k:v for k,v in request.form.items()}
+        form = {k:v for k,v in list(request.form.items())}
 
         # process a couple of form entries for easier reading
         theseservices = []

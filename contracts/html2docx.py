@@ -7,7 +7,7 @@ import re
 import sys
 python2 = sys.version_info[0] == 2
 if python2:
-    from HTMLParser import HTMLParser
+    from html.parser import HTMLParser
 else:
     from html.parser import HTMLParser
 
