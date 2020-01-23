@@ -73,7 +73,7 @@ def sendmail(subject, fromaddr, toaddr, html, text='', ccaddr=None ):
 
     try:
         if debug: current_app.logger.debug('sendmail(): msg.as_string()={}'.format(msg.as_string()))
-        message = { 'raw' : urlsafe_b64encode(msg.as_string()) }
+        message = { 'raw' : urlsafe_b64encode(msg.as_bytes()).decode("utf-8") }
         sent = gmail.users().messages().send(userId='me', body=message).execute()
         return sent
     except errors.HttpError as error:
