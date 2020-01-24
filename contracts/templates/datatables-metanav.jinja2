@@ -1,0 +1,17 @@
+{# use loutilities.tables-assets datatables.jinja2 #}
+{% extends "datatables.jinja2" %}
+
+{# add metanav block #}
+{% block metanav %}
+    <div class=metanav>
+      <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank" class="ui-button">Admin Guide</a>
+      {% if not session._ga_google_email %}
+        {# TODO: update with google sign in button image #}
+        <button id="signinButton" class="ui-button ui-widget ui-corner-all">Google Log In</button>
+      {% else %}
+{#         {{ session.user_name }}
+ #}
+        <a href="{{ url_for('logout') }}" class="ui-button">log out</a>
+      {% endif %}
+    </div>
+{% endblock %}
