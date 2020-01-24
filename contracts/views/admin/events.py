@@ -25,11 +25,11 @@ from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Serv
 from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from contracts.dbmodel import DateRule
 from contracts.dbmodel import STATE_TENTATIVE
-from contracts.crudapi import DbCrudApiRolePermissions
+from loutilities.tables import DbCrudApiRolePermissions
 from .daterules import daterule
 from .common import client
 from .eventscontract import EventsContract
-from contracts.crudapi import REGEX_URL, REGEX_EMAIL
+from loutilities.tables import REGEX_URL
 
 ##########################################################################################
 # leads endpoint

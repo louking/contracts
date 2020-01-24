@@ -22,8 +22,8 @@ from flask_security import roles_accepted, current_user
 # homegrown
 from . import bp
 from contracts.dbmodel import db, Client, State
-from contracts.crudapi import DbCrudApiRolePermissions
-from contracts.crudapi import REGEX_URL, REGEX_EMAIL
+from loutilities.tables import DbCrudApiRolePermissions
+from loutilities.tables import REGEX_URL, REGEX_EMAIL
 
 ##########################################################################################
 # clients endpoint

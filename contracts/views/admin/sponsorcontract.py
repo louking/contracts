@@ -25,13 +25,12 @@ from contracts.dbmodel import db, State, Sponsor, SponsorRaceDate, SponsorBenefi
 from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED
-from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from contracts.mailer import sendmail
 from contracts.runsignup import RunSignUp
 from contracts.trends import calculateTrend
 
-from loutilities.tables import get_request_data
+from loutilities.tables import DbCrudApiRolePermissions, get_request_data
 from loutilities.timeu import asctime
 
 dt = asctime('%Y-%m-%d')

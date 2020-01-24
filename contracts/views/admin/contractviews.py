@@ -20,7 +20,7 @@ contract - class and helpers to manage contract
 # homegrown
 from . import bp
 from contracts.dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
-from contracts.crudapi import DbCrudApiRolePermissions
+from loutilities.tables import DbCrudApiRolePermissions
 
 ##########################################################################################
 # templatetype endpoint

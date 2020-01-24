@@ -25,10 +25,12 @@
 import os.path
 
 # pypi
-from flask import Flask
+from flask import Flask, send_from_directory
+from jinja2 import ChoiceLoader, PackageLoader
 from flask_security import Security, SQLAlchemyUserDatastore
 
 # homegrown
+import loutilities
 from loutilities.configparser import getitems
 
 # bring in js, css assets
@@ -67,6 +69,30 @@ def create_app(config_obj, config_filename=None):
     # initialize database
     from contracts.dbmodel import db
     db.init_app(app)
+
+    # add loutilities tables-assets for js/css/template loading
+    # see https://adambard.com/blog/fresh-flask-setup/
+    #    and https://webassets.readthedocs.io/en/latest/environment.html#webassets.env.Environment.load_path
+    # loutilities.__file__ is __init__.py file inside loutilities; os.path.split gets package directory
+    loutilitiespath = os.path.join(os.path.split(loutilities.__file__)[0], 'tables-assets', 'static')
+
+    @app.route('/loutilities/static/<path:filename>')
+    def loutilities_static(filename):
+        return send_from_directory(loutilitiespath, filename)
+
+    # bring in js, css assets here, because app needs to be created first
+    from .assets import asset_env, asset_bundles
+    with app.app_context():
+        # js/css files
+        asset_env.append_path(app.static_folder)
+        asset_env.append_path(loutilitiespath, '/loutilities/static')
+
+        # templates
+        loader = ChoiceLoader([
+            app.jinja_loader,
+            PackageLoader('loutilities', 'tables-assets/templates')
+        ])
+        app.jinja_loader = loader
 
     # initialize assets
     asset_env.init_app(app)

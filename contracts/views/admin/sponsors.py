@@ -23,10 +23,10 @@ from . import bp
 from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit, SponsorTag
 from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from contracts.dbmodel import Client, State
-from contracts.crudapi import DbCrudApiRolePermissions, DteDbDependent
-from contracts.crudapi import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 from .common import client
 from .sponsorcontract import SponsorContract
+from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
+from loutilities.tables import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 
 ##########################################################################################
 # sponsors endpoint

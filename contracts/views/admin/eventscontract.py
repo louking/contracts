@@ -22,10 +22,9 @@ from jinja2 import Template
 # homegrown
 from contracts.dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
-from contracts.crudapi import DbCrudApiRolePermissions
 from contracts.contractmanager import ContractManager
 from contracts.mailer import sendmail
-from loutilities.tables import get_request_data
+from loutilities.tables import DbCrudApiRolePermissions, get_request_data
 from loutilities.timeu import asctime
 
 dt = asctime('%Y-%m-%d')

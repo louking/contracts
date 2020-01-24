@@ -21,7 +21,7 @@ from flask_security import roles_accepted, current_user
 # homegrown
 from . import bp
 from contracts.dbmodel import db, User, Role
-from contracts.crudapi import DbCrudApiRolePermissions
+from loutilities.tables import DbCrudApiRolePermissions
 
 ##########################################################################################
 # users endpoint

@@ -16,7 +16,7 @@ tags - manage tags
 # homegrown
 from . import bp
 from contracts.dbmodel import db, Tag, SponsorTag
-from contracts.crudapi import DbCrudApiRolePermissions
+from loutilities.tables import DbCrudApiRolePermissions
 
 ###########################################################################################
 # tags endpoint

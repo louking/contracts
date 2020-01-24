@@ -52,53 +52,6 @@ h2              { font-size: 1.2em; }
                   font: bold 1em verdana,arial,sans-serif;
                   color: #377ba8; font-weight: bold; }
 
-/* branding */
-.brand-all {
-  font-family: Impact, Charcoal, sans-serif;
-}
-
-.brand-left {
-  color:#009999;
-  font-weight: lighter;
-}
-
-.brand-right {
-  color:#990033;
-  font-weight:bold;
-}
-
-/* TODO: remove this in favor of loutilities filters.css */
-/* yadcf stuff */
-
-.external-filter {
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-.external-filter .label {
-    font-weight: bold;
-    /*width: 160px;*/
-    display: inline-block;
-}
-
-.external-filter .filter {
-    /*width: 160px;*/
-    display: inline-block;
-}
-
-.filter-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.filter-item {
-  order: 0; 
-  flex-grow: 0;
-  margin-right: 5px;
-}
-
-/* remove up to here */
-
 .ui-menu {
   width: 150px;
 }

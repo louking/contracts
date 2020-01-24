@@ -70,6 +70,10 @@ asset_bundles = {
         'legend.js',
         'frontend/eventscalendar.js',
 
+        'datatables.js',                        # from loutilities
+        'datatables.dataRender.ellipsis.js',    # from loutilities
+        'editor.buttons.editrefresh.js',        # from loutilities
+
         filters='jsmin',
         output='gen/frontend.js',
         ),
@@ -81,6 +85,11 @@ asset_bundles = {
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
         # next line causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
+
+        'datatables.css',   # from loutilities
+        'editor.css',       # from loutilities
+        'filters.css',      # from loutilities
+        'branding.css',     # from loutilities
 
         'style.css',
         'frontend/style.css',
@@ -172,6 +181,10 @@ asset_bundles = {
         'admin/admin_eventscalendar.js',
         'admin/sponsorquerylog.js',
 
+        'datatables.js',  # from loutilities
+        'datatables.dataRender.ellipsis.js',  # from loutilities
+        'editor.buttons.editrefresh.js',  # from loutilities
+
         output='gen/admin.js',
         filters='jsmin',
         ),
@@ -188,6 +201,11 @@ asset_bundles = {
         'js/select2-{ver}/css/select2.css'.format(ver=s2_ver),
         'js/yadcf-{ver}/jquery.dataTables.yadcf.css'.format(ver=yadcf_ver),
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
+
+        'datatables.css',  # from loutilities
+        'editor.css',  # from loutilities
+        'filters.css',  # from loutilities
+        'branding.css',  # from loutilities
 
         'style.css',
         'admin/style.css',
