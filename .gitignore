@@ -127,6 +127,9 @@ dmypy.json
 *_config.py
 config/
 
+# local jupyter notebooks
+*.ipynb
+
 # external javascript
 js/
 
