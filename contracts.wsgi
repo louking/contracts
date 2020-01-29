@@ -9,13 +9,13 @@
 ###########################################################################################
 
 import os, sys
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 # debug - information about python environment
 # goes to /var/log/httpd/error_log, per http://modwsgi.readthedocs.io/en/develop/user-guides/debugging-techniques.html
 if True:
     import platform
-    print >> sys.stderr, 'started with python {}, {}'.format(platform.python_version(), platform.python_compiler())
+    print('started with python {}, {}'.format(platform.python_version(), platform.python_compiler()), file=sys.stderr)
 
 
 # set configuration file, for here and for app
@@ -32,7 +32,7 @@ if PROJECT_DIR[0] == '"': PROJECT_DIR = PROJECT_DIR[1:-1]
 
 # activate virtualenv
 activate_this = os.path.join(PROJECT_DIR, 'bin', 'activate_this.py')
-execfile(activate_this, dict(__file__=activate_this))
+exec(compile(open(activate_this, "rb").read(), activate_this, 'exec'), dict(__file__=activate_this))
 sys.path.append(PROJECT_DIR)
 sys.path.append(thisdir)
 
@@ -40,7 +40,7 @@ sys.path.append(thisdir)
 # goes to /var/log/httpd/error_log, per http://modwsgi.readthedocs.io/en/develop/user-guides/debugging-techniques.html
 if False:
     from getpass import getuser
-    print >> sys.stderr, 'contracts user = {}'.format(getuser())
+    print('contracts user = {}'.format(getuser()), file=sys.stderr)
 
 # from contracts import app as application
 from contracts import create_app
