@@ -21,8 +21,8 @@ from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup
 from flask_nav.renderers import SimpleRenderer
 from dominate import tags
-from flask_security import current_user
-from flask import current_app
+from flask_security import current_user, logout_user
+from flask import current_app, session
 
 thisnav = Nav()
 
@@ -50,6 +50,10 @@ def nav_menu():
     events    = Subgroup('Events')
     services  = Subgroup('Services')
     sponsors  = Subgroup('Signature Races')
+
+    # did we lose our google sign-in session? if so, keep server in sync
+    if '_ga_google_email' not in session or not session['_ga_google_email']:
+        logout_user()
 
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
