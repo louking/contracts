@@ -34,7 +34,6 @@ from invoke import Exit
 
 APP_NAME = 'contracts'
 WSGI_SCRIPT = 'contracts.wsgi'
-TILITY_NAME = 'contractility'
 
 @task
 def deploy(c, branchname='master'):
@@ -61,5 +60,3 @@ def deploy(c, branchname='master'):
     c.run('cd {} && source {}/bin/activate && alembic -c contracts/alembic.ini upgrade head'.format(project_dir, venv_dir))
     c.run('cd {} && touch {}'.format(project_dir, WSGI_SCRIPT))
 
-    c.run('sudo systemctl restart vhost-{}-www.service'.format(TILITY_NAME))
-    c.run('sudo systemctl restart vhost-{}-sandbox.service'.format(TILITY_NAME))
