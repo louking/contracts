@@ -105,7 +105,6 @@ python-docx==0.8.10
 python-editor==1.0.4
 python-slugify==4.0.0
 pytz==2019.3
-pywin32==227
 pywinpty==0.5.7
 pyzmq==18.1.1
 qtconsole==4.6.0
