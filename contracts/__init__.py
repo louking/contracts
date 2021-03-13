@@ -48,15 +48,20 @@ user_datastore = None
 security = None
 
 # create application
-def create_app(config_obj, config_filename=None):
+def create_app(config_obj, configfiles=None, local_update=True):
     '''
     apply configuration object, then configuration filename
     '''
+    global app
     app = Flask('contracts')
     app.config.from_object(config_obj)
-    if config_filename:
-        appconfig = getitems(config_filename, 'app')
-        app.config.update(appconfig)
+    if configfiles:
+        # backwards compatibility
+        if type(configfiles) == str:
+            configfiles = [configfiles]
+        for configfile in configfiles:
+            appconfig = getitems(configfile, 'app')
+            app.config.update(appconfig)
 
     # tell jinja to remove linebreaks
     app.jinja_env.trim_blocks = True
@@ -83,6 +88,14 @@ def create_app(config_obj, config_filename=None):
     # bring in js, css assets here, because app needs to be created first
     from .assets import asset_env, asset_bundles
     with app.app_context():
+        # uncomment when working on #346
+        # # needs to be set before update_local_tables called and before UserSecurity() instantiated
+        # g.loutility = Application.query.filter_by(application=app.config['APP_LOUTILITY']).one()
+        #
+        # # update LocalUser and LocalInterest tables
+        # if local_update:
+        #     update_local_tables()
+
         # js/css files
         asset_env.append_path(app.static_folder)
         asset_env.append_path(loutilitiespath, '/loutilities/static')

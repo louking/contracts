@@ -38,6 +38,7 @@ Time = db.Time
 DateTime = db.DateTime
 Sequence = db.Sequence
 Enum = db.Enum
+Text = db.Text
 UniqueConstraint = db.UniqueConstraint
 ForeignKey = db.ForeignKey
 relationship = db.relationship
@@ -366,6 +367,7 @@ class Race(Base):
     daterule_id         = Column( Integer, ForeignKey('daterule.id') )
     daterule            = relationship( 'DateRule', backref='racerules', lazy=True )
     notes               = Column( String(NOTES_LEN) )
+    viewkey             = Column( Text )
     
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
