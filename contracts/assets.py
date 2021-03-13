@@ -175,12 +175,12 @@ asset_bundles = {
         'admin/sponsorlevels.js',    # must be after sponsors
         'admin/sponsor-summary.js',
         'admin/race-summary.js',
-        'admin/editor.select2.mymethods.js',
         'admin/editor.buttons.editrefresh.js',
         'legend.js',
         'admin/admin_eventscalendar.js',
         'admin/sponsorquerylog.js',
 
+        # 'editor.select2.mymethods.js',  # from loutilities
         'datatables.js',  # from loutilities
         'datatables.dataRender.ellipsis.js',  # from loutilities
         'editor.buttons.editrefresh.js',  # from loutilities

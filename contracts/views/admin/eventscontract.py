@@ -130,11 +130,11 @@ class EventsContract(DbCrudApiRolePermissions):
                             if not foundfee:
                                 formfield = self.dbmapping[field]   # hopefully not a function
                                 self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
-                                raise ParameterError('cannot calculate fee if {} greater than {}'.format(field, lastfieldval))
+                                raise parameterError('cannot calculate fee if {} greater than {}'.format(field, lastfieldval))
                                 
                         # not sure how we could get here, but best to be defensive
                         else:
-                            raise ParameterError('unknown feeType: {}'.format(service.feeType.feeType))
+                            raise parameterError('unknown feeType: {}'.format(service.feeType.feeType))
 
                         # accumulate total fee
                         feetotal += thisfee

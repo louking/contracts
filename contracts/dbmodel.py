@@ -249,7 +249,7 @@ sponsortag_table = Table('sponsorshiptag', Base.metadata,
     )
 
 
-# events tag text
+# sponsor tag text
 class SponsorTag(Base):
     __tablename__ =  'sponsortag'
     id                = Column( Integer, primary_key=True )
