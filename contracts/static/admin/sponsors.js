@@ -100,7 +100,7 @@ if ( ['/admin/sponsorships'].includes(location.pathname) ) {
             return true;
         });
 
-        // set the triggers which case the form buttons to change
+        // set the triggers which cause the form buttons to change
         sponsor_settriggers( editor );
 
         // initialize filters

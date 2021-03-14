@@ -367,8 +367,7 @@ class Race(Base):
     daterule_id         = Column( Integer, ForeignKey('daterule.id') )
     daterule            = relationship( 'DateRule', backref='racerules', lazy=True )
     notes               = Column( String(NOTES_LEN) )
-    viewkey             = Column( Text )
-    
+
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
         'version_id_col' : version_id
@@ -548,6 +547,7 @@ class SponsorRace(Base):
     couponproviderid = Column( String(PROVIDERID_LEN) )
     description      = Column( String(DESCR_LEN) )
     display          = Column( Boolean )
+    viewkey          = Column( Text )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {

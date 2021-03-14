@@ -17,6 +17,7 @@ sponsors - manage sponsors and associated tables
 from re import match
 
 # pypi
+from flask import request, url_for
 
 # homegrown
 from . import bp
@@ -340,8 +341,10 @@ sponsor.register()
 # sponsorviews endpoint
 ###########################################################################################
 
-sponsorview_dbattrs = 'id,raceyear,racecontact,amount,trend,contractDocId,race.race,client.client,state.state,level.race_level,notes'.split(',')
-sponsorview_formfields = 'rowid,raceyear,racecontact,amount,trend,contractDocId,race,client,state,level,notes'.split(',')
+sponsorview_dbattrs = 'id,raceyear,racecontact,amount,trend,contractDocId,race.race,client.client,' \
+                      'client.name,client.contactEmail,state.state,level.race_level,notes'.split(',')
+sponsorview_formfields = 'rowid,raceyear,racecontact,amount,trend,contractDocId,race,client,' \
+                         'client_name,client_email,state,level,notes'.split(',')
 sponsorview_dbmapping = dict(list(zip(sponsorview_dbattrs, sponsorview_formfields)))
 sponsorview_formmapping = dict(list(zip(sponsorview_formfields, sponsorview_dbattrs)))
 
@@ -351,11 +354,6 @@ sponsorview_filters = '\n'.join([
             "    <div class='filter-item'>",
             "        <span class='label'>Race Year</span>",
             "        <span id='external-filter-raceyear' class='filter'></span>",
-            "    </div>",
-            "",
-            "    <div class='filter-item'>",
-            "        <span class='label'>Race</span>",
-            "        <span id='external-filter-race' class='filter'></span>",
             "    </div>",
             "",
             "    <div class='filter-item'>",
@@ -377,7 +375,6 @@ sponsorview_filters = '\n'.join([
 
 ## options for yadcf
 raceyearcol = 1
-racecol = 2
 statecol = 4
 levelcol = 5
 trendcol = 8
@@ -395,21 +392,6 @@ sponsorview_yadcf_options = [
             },
             'filter_type': 'select',
             'filter_container_id': 'external-filter-raceyear',
-            'filter_reset_button_text': False, # hide yadcf reset button
-          },
-          {
-           'column_number': racecol,
-            'select_type': 'select2',
-            'select_type_options': {
-                'width': '300px',
-                'allowClear': True,  # show 'x' (remove) next to selection inside the select itself
-                'placeholder': {
-                    'id' : -1,
-                    'text': 'Select race', 
-                },
-            },
-            'filter_type': 'select',
-            'filter_container_id': 'external-filter-race',
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
@@ -464,7 +446,27 @@ sponsorview_yadcf_options = [
           },
     ]
 
-sponsorview = DbCrudApiRolePermissions(
+class SponsorView(DbCrudApiRolePermissions):
+    def permission(self):
+        allowed = super().permission()
+        if allowed:
+            viewkey = request.args.get('viewkey', None)
+            if not viewkey:
+                allowed = False
+            else:
+                race = SponsorRace.query.filter_by(viewkey=viewkey).one_or_none()
+                if not race:
+                    allowed = False
+        return allowed
+
+    def beforequery(self):
+        viewkey = request.args.get('viewkey')
+        race = SponsorRace.query.filter_by(viewkey=viewkey).one()
+        self.queryparams.update({
+            'race': race,
+        })
+
+sponsorview = SponsorView(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Sponsor, 
@@ -472,7 +474,7 @@ sponsorview = DbCrudApiRolePermissions(
                     template = 'datatables.jinja2',
                     pagename = 'Sponsorships View', 
                     endpoint = 'admin.sponsorshipsview', 
-                    rule = '/sponsorshipsview42',   # NOTE: need to change sponsorshipsview.js if this changes
+                    rule = '/sponsorshipsview',   # NOTE: need to change sponsorshipsview.js if this changes
                     dbmapping = sponsorview_dbmapping, 
                     formmapping = sponsorview_formmapping, 
                     clientcolumns = [
@@ -482,7 +484,11 @@ sponsorview = DbCrudApiRolePermissions(
                         },
                         { 'data': 'client', 'name': 'client', 'label': 'Sponsor', 
                         },
-                        { 'data': 'state', 'name': 'state', 'label': 'State', 
+                        { 'data': 'client_name', 'name': 'client_name', 'label': 'Sponsor Name', 'type': 'readonly',
+                        },
+                        { 'data': 'client_email', 'name': 'client_email', 'label': 'Sponsor Email', 'type': 'readonly',
+                        },
+                        { 'data': 'state', 'name': 'state', 'label': 'State',
                         },
                         { 'data': 'level', 'name': 'level', 'label': 'Sponsorship Level', 
                         },
@@ -648,8 +654,10 @@ sponsorsummary.register()
 # sponsorraces endpoint
 ###########################################################################################
 
-sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
-sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,couponprovider,couponproviderid,description,display'.split(',')
+sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
+                      'couponprovider,couponproviderid,description,display,viewkey'.split(',')
+sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
+                         'couponprovider,couponproviderid,description,display,viewkey'.split(',')
 sponsorrace_dbmapping = dict(list(zip(sponsorrace_dbattrs, sponsorrace_formfields)))
 sponsorrace_formmapping = dict(list(zip(sponsorrace_formfields, sponsorrace_dbattrs)))
 
@@ -714,6 +722,9 @@ sponsorrace = DbCrudApiRolePermissions(
                         },
                         { 'data': 'couponproviderid', 'name': 'couponproviderid', 'label': 'Coupon Provider ID', 
                         },
+                        { 'data': 'viewkey', 'name': 'viewkey', 'label': 'View Key',
+                          'render': lambda: {'eval': 'sponsorview_link( "{}", "View Race" )'.format(url_for('admin.sponsorshipsview'))},
+                          },
                         { 'data': 'display', 'name': 'display', 'label': 'Display',
                           'className': 'field_req',
                           '_treatment' : {'boolean':{'formfield':'display', 'dbfield':'display'}},
