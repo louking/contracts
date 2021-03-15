@@ -18,6 +18,7 @@ from re import match
 
 # pypi
 from flask import request, url_for
+from dominate.tags import button
 
 # homegrown
 from . import bp
@@ -28,6 +29,7 @@ from .common import client
 from .sponsorcontract import SponsorContract
 from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
 from loutilities.tables import REGEX_URL, REGEX_EMAIL, REGEX_VBL
+from loutilities.filters import filtercontainerdiv, filterdiv
 
 ##########################################################################################
 # sponsors endpoint
@@ -349,29 +351,15 @@ sponsorview_dbmapping = dict(list(zip(sponsorview_dbattrs, sponsorview_formfield
 sponsorview_formmapping = dict(list(zip(sponsorview_formfields, sponsorview_dbattrs)))
 
 ## yadcf external filters
-sponsorview_filters = '\n'.join([
-            "<div class='external-filter filter-container'>",
-            "    <div class='filter-item'>",
-            "        <span class='label'>Race Year</span>",
-            "        <span id='external-filter-raceyear' class='filter'></span>",
-            "    </div>",
-            "",
-            "    <div class='filter-item'>",
-            "        <span class='label'>State(s)</span>",
-            "        <span id='external-filter-state' class='filter'></span>",
-            "    </div>",
-            "",
-            "    <div class='filter-item'>",
-            "        <span class='label'>Level(s)</span>",
-            "        <span id='external-filter-levels' class='filter'></span>",
-            "    </div>",
-            "",
-            "    <div class='filter-item'>",
-            "        <span class='label'>Trend(s)</span>",
-            "        <span id='external-filter-trends' class='filter'></span>",
-            "    </div>",
-            "</div>",
-            ])
+sponsorview_filters = filtercontainerdiv()
+with sponsorview_filters:
+    # need loutilities-3.4 to call this as a function, hack below until url_for can be used
+    # button('Summary', url=url_for('admin.sponsorsummaryview', id='sponsordetails-summary-button', style='margin-right:5px;'))
+    button('Summary', url='/admin/sponsorsummaryview', id='sponsordetails-summary-button', style='margin-right:5px;')
+    filterdiv('external-filter-raceyear', 'Race Year')
+    filterdiv('external-filter-state', 'State(s)')
+    filterdiv('external-filter-levels', 'Level(s)')
+    filterdiv('external-filter-trends', 'Trend(s)')
 
 ## options for yadcf
 raceyearcol = 1
@@ -446,7 +434,7 @@ sponsorview_yadcf_options = [
           },
     ]
 
-class SponsorView(DbCrudApiRolePermissions):
+class ViewkeyView(DbCrudApiRolePermissions):
     def permission(self):
         allowed = super().permission()
         if allowed:
@@ -466,23 +454,23 @@ class SponsorView(DbCrudApiRolePermissions):
             'race': race,
         })
 
-sponsorview = SponsorView(
+sponsorview = ViewkeyView(
                     app = bp,   # use blueprint instead of app
                     db = db,
-                    model = Sponsor, 
+                    model = Sponsor,
                     roles_accepted = [],
                     template = 'datatables.jinja2',
-                    pagename = 'Sponsorships View', 
-                    endpoint = 'admin.sponsorshipsview', 
+                    pagename = 'Sponsorships View',
+                    endpoint = 'admin.sponsorshipsview',
                     rule = '/sponsorshipsview',   # NOTE: need to change sponsorshipsview.js if this changes
-                    dbmapping = sponsorview_dbmapping, 
-                    formmapping = sponsorview_formmapping, 
+                    dbmapping = sponsorview_dbmapping,
+                    formmapping = sponsorview_formmapping,
                     clientcolumns = [
-                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
+                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year',
                         },
-                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                        { 'data': 'race', 'name': 'race', 'label': 'Race',
                         },
-                        { 'data': 'client', 'name': 'client', 'label': 'Sponsor', 
+                        { 'data': 'client', 'name': 'client', 'label': 'Sponsor',
                         },
                         { 'data': 'client_name', 'name': 'client_name', 'label': 'Sponsor Name', 'type': 'readonly',
                         },
@@ -490,20 +478,20 @@ sponsorview = SponsorView(
                         },
                         { 'data': 'state', 'name': 'state', 'label': 'State',
                         },
-                        { 'data': 'level', 'name': 'level', 'label': 'Sponsorship Level', 
+                        { 'data': 'level', 'name': 'level', 'label': 'Sponsorship Level',
                         },
                         { 'data': 'amount', 'name': 'amount', 'label': 'Amount',
                         },
-                        { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
+                        { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact',
                         },
                         { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'readonly',
                         },
                         { 'data': 'notes', 'name': 'notes', 'label': 'Notes', 'type':'textarea',
                           'render': '$.fn.dataTable.render.ellipsis( 20 )',
                         },
-                    ], 
+                    ],
                     servercolumns = None,  # not server side
-                    idSrc = 'rowid', 
+                    idSrc = 'rowid',
                     buttons = [
                                {
                                     'extend': 'csv',
@@ -523,13 +511,13 @@ sponsorview = SponsorView(
                                                       'leftColumns': 3,
                                                     },
                                   },
-                    pretablehtml = sponsorview_filters,
+                    pretablehtml = sponsorview_filters.render(),
                     yadcfoptions = sponsorview_yadcf_options,
                     )
 sponsorview.register()
 
 ##########################################################################################
-# sponsorsummarys endpoint
+# sponsorsummary endpoint
 ###########################################################################################
 
 sponsorsummary_dbattrs = 'id,raceyear,racecontact,amount,trend,race,client,state,level,level.treatment,datesolicited,dateagreed,invoicesent'.split(',')
@@ -572,42 +560,40 @@ sponsorsummary_yadcf_options = [
           },
     ]
 
-sponsorsummary = DbCrudApiRolePermissions(
+class SponsorSummary(DbCrudApiRolePermissions):
+    def __init__(self, **kwargs):
+        args = dict(
                     app = bp,   # use blueprint instead of app
                     db = db,
-                    model = Sponsor, 
-                    roles_accepted = ['super-admin', 'sponsor-admin'],
+                    model = Sponsor,
                     template = 'sponsor.summary.jinja2',
-                    pagename = 'Sponsorship Summary', 
-                    endpoint = 'admin.sponsorsummary', 
-                    rule = '/sponsorsummary', 
-                    dbmapping = sponsorsummary_dbmapping, 
-                    formmapping = sponsorsummary_formmapping, 
+                    dbmapping = sponsorsummary_dbmapping,
+                    formmapping = sponsorsummary_formmapping,
                     checkrequired = True,
                     clientcolumns = [
-                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year', 
+                        { 'data': 'raceyear', 'name': 'raceyear', 'label': 'Race Year',
                           'className': 'field_req',
                         },
-                        { 'data': 'race', 'name': 'race', 'label': 'Race', 
+                        { 'data': 'race', 'name': 'race', 'label': 'Race',
                           'className': 'field_req',
-                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorRace, 'labelfield':'race', 'formfield':'race',
                                                               'dbfield':'race', 'uselist':False, 'searchbox':True,
                            } },
                         },
-                        { 'data': 'client', 'name': 'client', 'label': 'Client', 
+                        { 'data': 'client', 'name': 'client', 'label': 'Client',
                           'className': 'field_req',
-                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Client, 'labelfield':'client', 'formfield':'client',
                                                               'dbfield':'client', 'uselist':False, 'searchbox':True,
                                                               'editable' : { 'api':client },
                            } },
                         },
-                        { 'data': 'state', 'name': 'state', 'label': 'State', 
+                        { 'data': 'state', 'name': 'state', 'label': 'State',
                           'className': 'field_req',
                           '_treatment' : { 'relationship' : { 'fieldmodel':State, 'labelfield':'state', 'formfield':'state', 'dbfield':'state', 'uselist':False } },
                         },
-                        { 'data': 'level', 'name': 'level', 'label': 'sponsorsummaryship Level', 
+                        { 'data': 'level', 'name': 'level', 'label': 'sponsorsummaryship Level',
                           'className': 'field_req',
-                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorLevel, 'labelfield':'race_level', 'formfield':'level', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':SponsorLevel, 'labelfield':'race_level', 'formfield':'level',
                                                               'dbfield':'level', 'uselist':False, 'searchbox':True,
                            } }
                         },
@@ -619,7 +605,7 @@ sponsorsummary = DbCrudApiRolePermissions(
                         },
                         { 'data': 'trend', 'name': 'trend', 'label': 'Trend', 'type':'select2',
                           'className': 'field_req',
-                          'options':['new','same','up','down','lost'], 
+                          'options':['new','same','up','down','lost'],
                         },
                         { 'data': 'datesolicited', 'name': 'datesolicited', 'label': 'Date Solicited', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Date Solicited (yyyy-mm-dd)' }
@@ -630,9 +616,9 @@ sponsorsummary = DbCrudApiRolePermissions(
                         { 'data': 'invoicesent', 'name': 'invoicesent', 'label': 'Invoice Sent', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
                         },
-                    ], 
+                    ],
                     servercolumns = None,  # not server side
-                    idSrc = 'rowid', 
+                    idSrc = 'rowid',
                     buttons = [],
                     dtoptions = {
                                     'scrollCollapse': True,
@@ -645,10 +631,45 @@ sponsorsummary = DbCrudApiRolePermissions(
                                                     },
                                     'drawCallback': { 'eval' : 'summary_drawcallback'  }
                                   },
-                    pretablehtml = sponsorsummary_filters,
-                    yadcfoptions = sponsorsummary_yadcf_options,
-                    )
+        )
+        args.update(kwargs)
+
+        # this initialization needs to be done before checking any self.xxx attributes
+        super().__init__(**args)
+
+sponsorsummary = SponsorSummary(
+    roles_accepted=['super-admin', 'sponsor-admin'],
+    pagename='Sponsorship Summary',
+    endpoint='admin.sponsorsummary',
+    rule='/sponsorsummary',
+    pretablehtml=sponsorsummary_filters,
+    yadcfoptions=sponsorsummary_yadcf_options,
+)
 sponsorsummary.register()
+
+##########################################################################################
+# sponsorsummaryview endpoint
+##########################################################################################
+
+## filters
+sponsorsummaryview_filters = filtercontainerdiv()
+with sponsorsummaryview_filters:
+    # need loutilities-3.4 to call this as a function, hack below until url_for can be used
+    # button('Details', url=url_for('admin.sponsorshipsview', id='sponsorsummary-details-button', style='margin-right:5px;'))
+    button('Details', url='/admin/sponsorshipsview', id='sponsorsummary-details-button', style='margin-right:5px;')
+    filterdiv('summary-race-year', 'Year')
+
+class SponsorSummaryView(SponsorSummary, ViewkeyView):
+    # SponsorSummary provides structure, ViewkeyView provides filtering on race
+    pass
+
+sponsorsummaryview_view = SponsorSummaryView (
+    pagename='Sponsorship Summary View',
+    endpoint='admin.sponsorsummaryview',
+    rule='/sponsorsummaryview',
+    pretablehtml=sponsorsummaryview_filters.render(),
+)
+sponsorsummaryview_view.register()
 
 ##########################################################################################
 # sponsorraces endpoint
@@ -723,7 +744,8 @@ sponsorrace = DbCrudApiRolePermissions(
                         { 'data': 'couponproviderid', 'name': 'couponproviderid', 'label': 'Coupon Provider ID', 
                         },
                         { 'data': 'viewkey', 'name': 'viewkey', 'label': 'View Key',
-                          'render': lambda: {'eval': 'sponsorview_link( "{}", "View Race" )'.format(url_for('admin.sponsorshipsview'))},
+                          'render': lambda: {'eval': 'sponsorview_link( [["{}", "Details"], ["{}", "Summary"]] )'.format(
+                              url_for('admin.sponsorshipsview'), url_for('admin.sponsorsummaryview'))},
                           },
                         { 'data': 'display', 'name': 'display', 'label': 'Display',
                           'className': 'field_req',

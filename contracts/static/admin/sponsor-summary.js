@@ -4,6 +4,21 @@ var summary_focusyear;
 var loyear = 9999; 
 var hiyear = 0;
 
+// try to initialize a couple of buttons. only one will be initialized, depending on the page this is on
+$(function() {
+    var navbuttons = ['#sponsorsummary-details-button', '#sponsordetails-summary-button'];
+    for (var i = 0; i < navbuttons.length; i++) {
+        nbid = navbuttons[i];
+        var navbutton = $(nbid);
+        navbutton.button();
+        navbutton.on('click', function () {
+            var that = this;
+            var params = location.search;
+            window.location.href = $(that).attr('url') + params;
+        });
+    };
+});
+
 function summary_drawcallback( settings ) {
     console.log('summary_drawcallback()');
 

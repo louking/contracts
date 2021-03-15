@@ -52,10 +52,21 @@ var Password = {
 // only define afterdatatables if needed
 if ( ['/admin/sponsorraces'].includes(location.pathname) ) {
 
-    function sponsorview_link( url, text ) {
+    /**
+     * create links with url, text
+     * @param urltexts[] - [url, text] for each link
+     * @returns {function(*, *, *, *): (string|*)}
+     */
+    function sponsorview_link( urltexts ) {
         return function(data, type, row, meta) {
             if (type === 'display' && data !== '') {
-                return `<a href=${url}?viewkey=${data}>${text}</a>`;
+                var links = [];
+                for (var i=0; i<urltexts.length; i++) {
+                    var url = urltexts[i][0];
+                    var text = urltexts[i][1];
+                    links.push( `<a href=${url}?viewkey=${data}>${text}</a>` );
+                }
+                return links.join(' ');
             }
             return data;
         };
