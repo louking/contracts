@@ -162,6 +162,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                         if sponsordb.race.couponprovider.lower() == 'runsignup':
                             with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET'], debug=debug) as rsu:
                                 coupons = rsu.getcoupons(raceid, couponcode)
+                                # rsu search includes any coupons with the couponcode with the coupon string, so we need to filter
+                                coupons = [c for c in coupons if c['coupon_code']==couponcode]
                                 if coupons:
                                     coupon = coupons[-1]     # should be only one entry, but last is the current one (?)
                                     coupon_id = coupon['coupon_id']
