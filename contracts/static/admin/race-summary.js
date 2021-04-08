@@ -52,7 +52,7 @@ function racesummary_drawcallback( settings ) {
 
         let charttypeselect = '<select id="summary-race-charttype-select" name="charttype">\n';
         let charttypes = [
-            {val:'daystorace', text:'days to race'},
+            {val:'daystorace', text:'days to event finish'},
             {val:'daysfromreg', text:'days from registration open'},
             {val:'date', text:'date'},
         ];
@@ -218,7 +218,7 @@ function racesummary_drawcallback( settings ) {
         data : daystoraceset,
         margin : {top:30, left:60, right:100, bottom:80},
         containerselect : '#daystorace-chart',
-        chartheader : 'registrants by days to race',
+        chartheader : 'registrants by days to event finish',
         xrange : [maxdays, 0],
         xdirection : 'desc',
         yaxislabel : 'number of registrants',

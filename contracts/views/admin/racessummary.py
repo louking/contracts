@@ -114,7 +114,10 @@ class RaceSummaryApi(CrudApi):
                 events = rsu.getraceevents(race.couponproviderid)
 
                 for event in events:
+                    # race date is date of event start, unless end time is specified
                     racedate = getdate(event['start_time'])
+                    if event['end_time']:
+                        racedate = getdate(event['end_time'])
                     thisevent = event['name']
                     if thisevent not in racedata[thisrace]:
                         racedata[thisrace][thisevent] = {'event_id': event['event_id'], 'dates': {}}
