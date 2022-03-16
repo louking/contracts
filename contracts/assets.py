@@ -34,6 +34,9 @@ dt_editor_plugin_fieldtype_ver = '?'
 # currently in datatables.js
 s2_ver = '4.0.7'
 
+# smartmenus
+sm_ver = '1.1.1'
+
 # yadcf
 yadcf_ver = '0.9.4.beta.27'
 
@@ -132,6 +135,8 @@ asset_bundles = {
 
         'js/lodash-{ver}/lodash.js'.format(ver=lodash_ver),
 
+        f'js/smartmenus-{sm_ver}/jquery.smartmenus.js',
+
         'js/DataTables-{ver}/js/jquery.dataTables.js'.format(ver=dt_datatables_ver),
         'js/DataTables-{ver}/js/dataTables.jqueryui.js'.format(ver=dt_datatables_ver),
 
@@ -168,11 +173,11 @@ asset_bundles = {
         'filters.js',
         'charts.js',
         'admin/events.js',
-        'admin/sponsors.js',    # must be after events
+        'admin/sponsors.js',            # must be after events
         'admin/sponsorshipsview.js',    # must be after events
-        'admin/sponsorracevbls.js',    # must be after sponsors
-        'admin/sponsorbenefits.js',    # must be after sponsors
-        'admin/sponsorlevels.js',    # must be after sponsors
+        'admin/sponsorracevbls.js',     # must be after sponsors
+        'admin/sponsorbenefits.js',     # must be after sponsors
+        'admin/sponsorlevels.js',       # must be after sponsors
         'admin/sponsor-summary.js',
         'admin/sponsorrace-view.js',
         'admin/race-summary.js',
@@ -181,10 +186,10 @@ asset_bundles = {
         'admin/admin_eventscalendar.js',
         'admin/sponsorquerylog.js',
 
-        # 'editor.select2.mymethods.js',  # from loutilities
-        'datatables.js',  # from loutilities
-        'datatables.dataRender.ellipsis.js',  # from loutilities
-        'editor.buttons.editrefresh.js',  # from loutilities
+        # 'editor.select2.mymethods.js',        # from loutilities
+        'datatables.js',                        # from loutilities
+        'datatables.dataRender.ellipsis.js',    # from loutilities
+        'editor.buttons.editrefresh.js',        # from loutilities
 
         output='gen/admin.js',
         filters='jsmin',
@@ -194,6 +199,10 @@ asset_bundles = {
         'js/jquery-ui-{ver}.custom/jquery-ui.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
+
+        f'js/smartmenus-{sm_ver}/css/sm-core-css.css',
+        f'js/smartmenus-{sm_ver}/css/sm-blue/sm-blue.css',
+
         'js/DataTables-{ver}/css/dataTables.jqueryui.css'.format(ver=dt_datatables_ver),
         'js/Buttons-{ver}/css/buttons.jqueryui.css'.format(ver=dt_buttons_ver),
         'js/FixedColumns-{ver}/css/fixedColumns.jqueryui.css'.format(ver=dt_fixedcolumns_ver),
