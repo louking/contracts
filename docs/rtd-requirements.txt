@@ -8,7 +8,7 @@ backports-abc==0.5
 backports.shutil-get-terminal-size==1.0.0
 backports.shutil-which==3.5.2
 bcrypt==3.1.7
-bleach==3.1.4
+bleach==3.3.0
 blinker==1.4
 cachetools==4.0.0
 certifi==2019.11.28
