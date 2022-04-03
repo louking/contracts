@@ -22,9 +22,9 @@ configpath = os.path.join(os.path.dirname(abspath), 'config', 'contracts.cfg')
 userconfigpath = os.path.join(os.path.dirname(abspath), 'config', 'users.cfg')
 configfiles = [userconfigpath, configpath]
 
-# local_update=False because when we create app this would use database and cause
+# init_for_operation=False because when we create app this would use database and cause
 # sqlalchemy.exc.OperationalError if one of the updating tables needs migration
-app = create_app(Production(configfiles), configfiles, local_update=False)
+app = create_app(Production(configfiles), configfiles, init_for_operation=False)
 
 # set up scoped session
 with app.app_context():

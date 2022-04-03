@@ -874,3 +874,13 @@ def initdbmodels(modelitems):
 
         # need to commit within loop because next model might use this model's data
         db.session.commit()
+
+# supporting functions
+def update_local_tables():
+    '''
+    keep LocalUser table consistent with external db User table
+    '''
+    # appname needs to match Application.application
+    localtables = ManageLocalTables(db, 'contracts', LocalUser, LocalInterest, hasuserinterest=True)
+    localtables.update()
+

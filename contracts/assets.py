@@ -186,7 +186,11 @@ asset_bundles = {
         'admin/admin_eventscalendar.js',
         'admin/sponsorquerylog.js',
 
+        # must be before datatables
+        'user/admin/beforedatatables.js',       # from loutilities
+        'admin/beforedatatables.js',
         # 'editor.select2.mymethods.js',        # from loutilities
+        
         'datatables.js',                        # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities
         'editor.buttons.editrefresh.js',        # from loutilities

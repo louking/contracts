@@ -88,8 +88,8 @@ def nav_menu():
         sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
         sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))
 
-        navbar.items.append(View('Users', 'admin.users'))
-        navbar.items.append(View('Roles', 'admin.roles'))
+        navbar.items.append(View('Users', 'userrole.users'))
+        navbar.items.append(View('Roles', 'userrole.roles'))
 
         events.items.append(View('States', 'admin.states'))
 

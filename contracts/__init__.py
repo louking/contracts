@@ -18,6 +18,7 @@ from loutilities.user.model import Interest, Application, User, Role
 from loutilities.flask_helpers.mailer import sendmail
 
 # homegrown
+from .dbmodel import update_local_tables
 
 # bring in js, css assets
 from . import assets
@@ -37,7 +38,7 @@ security = None
 app = None
 
 # create application
-def create_app(config_obj, configfiles=None, local_update=True):
+def create_app(config_obj, configfiles=None, init_for_operation=True):
     '''
     apply configuration object, then configuration files
     '''
@@ -82,12 +83,13 @@ def create_app(config_obj, configfiles=None, local_update=True):
     # bring in js, css assets here, because app needs to be created first
     from .assets import asset_env, asset_bundles
     with app.app_context():
-        # uncomment when working on 
         # needs to be set before update_local_tables called and before UserSecurity() instantiated
         g.loutility = Application.query.filter_by(application=app.config['APP_LOUTILITY']).one()
-        #
-        # # update LocalUser and LocalInterest tables
-        # if local_update:
+
+        # update LocalUser and LocalInterest tables
+        if init_for_operation:
+            update_local_tables()
+
         #     update_local_tables()
 
         # js/css files
@@ -133,6 +135,9 @@ def create_app(config_obj, configfiles=None, local_update=True):
     security = UserSecurity(app, user_datastore, send_mail=security_send_mail)
 
     # activate views
+    from .views import userrole as userroleviews
+    from loutilities.user.views import bp as userrole
+    app.register_blueprint(userrole)
     from contracts.views.frontend import bp as frontend
     app.register_blueprint(frontend)
 
