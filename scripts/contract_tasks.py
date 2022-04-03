@@ -35,7 +35,7 @@ from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import TAG_PRERACERENEWEDREMINDEREMAILSENT, TAG_PRERACERENEWEDCANCELED
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, STATE_CANCELED
 from contracts.settings import Production
-from contracts.mailer import sendmail
+from loutilities.flask_helpers.mailer import sendmail
 from contracts.utils import renew_event, renew_sponsorship
 from contracts.applogging import setlogging
 from loutilities.configparser import getitems

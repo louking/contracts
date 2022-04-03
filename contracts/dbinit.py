@@ -10,6 +10,7 @@
 '''
 dbinit - contracts database initialization
 ==================================================
+obsolete
 '''
 
 # homegrown

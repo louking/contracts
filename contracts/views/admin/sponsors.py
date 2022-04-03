@@ -76,15 +76,9 @@ sponsor_filters = '\n'.join([
             ])
 
 ## options for yadcf
-raceyearcol = 1
-racecol = 2
-statecol = 4
-levelcol = 5
-trendcol = 11
-tagcol = 20
 sponsor_yadcf_options = [
           {
-           'column_number': raceyearcol,
+           'column_selector': 'raceyear:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '100px',
@@ -99,7 +93,7 @@ sponsor_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-           'column_number': racecol,
+           'column_selector': 'race.race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -114,7 +108,7 @@ sponsor_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-           'column_number': statecol, 
+           'column_selector': 'state.state:name', 
             'select_type': 'select2',
             'select_type_options': {
                 'width': '150px',
@@ -129,7 +123,7 @@ sponsor_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-            'column_number': levelcol,
+            'column_selector': 'level.race_level:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -147,7 +141,7 @@ sponsor_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-            'column_number': trendcol,
+            'column_selector': 'trend:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -164,7 +158,7 @@ sponsor_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-              'column_number': tagcol,
+              'column_selector': 'tags.tag:name',
               'select_type': 'select2',
               'select_type_options': {
                   'width': '200px',
@@ -195,7 +189,7 @@ def sponsor_validate(action, formdata):
     return results
 
 
-sponsor = SponsorContract(
+sponsor_view = SponsorContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Sponsor, 
@@ -337,7 +331,7 @@ sponsor = SponsorContract(
                     pretablehtml = sponsor_filters,
                     yadcfoptions = sponsor_yadcf_options,
                     )
-sponsor.register()
+sponsor_view.register()
 
 ##########################################################################################
 # sponsorviews endpoint
@@ -368,7 +362,7 @@ levelcol = 5
 trendcol = 8
 sponsorview_yadcf_options = [
           {
-           'column_number': raceyearcol,
+           'column_selector': 'raceyear:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '100px',
@@ -383,7 +377,7 @@ sponsorview_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-           'column_number': statecol, 
+           'column_selector': 'state.state:name', 
             'select_type': 'select2',
             'select_type_options': {
                 'width': '150px',
@@ -398,7 +392,7 @@ sponsorview_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-            'column_number': levelcol,
+            'column_selector': 'level.race_level:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -416,7 +410,7 @@ sponsorview_yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-            'column_number': trendcol,
+            'column_selector': 'trend:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -541,10 +535,9 @@ sponsorsummary_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 2
 sponsorsummary_yadcf_options = [
           {
-           'column_number': racecol,
+           'column_selector': 'race.race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -790,10 +783,9 @@ sponsorlevel_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 1
 sponsorlevel_yadcf_options = [
           {
-           'column_number': racecol,
+           'column_selector': 'race.race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -953,10 +945,9 @@ sponsorracevbl_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 1
 sponsorracevbl_yadcf_options = [
           {
-           'column_number': racecol,
+           'column_selector': 'race.race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -1035,10 +1026,9 @@ sponsorbenefit_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 1
 sponsorbenefit_yadcf_options = [
           {
-           'column_number': racecol,
+           'column_selector': 'race.race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',

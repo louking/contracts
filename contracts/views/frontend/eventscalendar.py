@@ -24,7 +24,7 @@ from contracts.dbmodel import db, Event, EventAvailabilityException, DateRule
 from contracts.dbmodel import STATE_CANCELED
 from contracts.daterule import daterule2dates
 from contracts.utils import time24
-from contracts.mailer import sendmail
+from loutilities.flask_helpers.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 
 class parameterError(Exception): pass

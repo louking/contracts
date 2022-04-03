@@ -23,7 +23,7 @@ from jinja2 import Template
 from contracts.dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
 from contracts.contractmanager import ContractManager
-from contracts.mailer import sendmail
+from loutilities.flask_helpers.mailer import sendmail
 from loutilities.tables import DbCrudApiRolePermissions, get_request_data
 from loutilities.timeu import asctime
 

@@ -33,6 +33,7 @@ mdy = asctime('%m/%d/%Y')
 getdate = lambda d: ymd.dt2asc(mdy.asc2dt(d.split(' ')[0]))
 
 debug = False
+class parameterError(Exception): pass
 
 ##########################################################################################
 class RaceSummaryApi(CrudApi):
@@ -200,12 +201,10 @@ racesummary_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racecol = 1
-eventcol = 3
 racesummary_yadcf_options = {
     'columns' : [
         {
-            'column_number': racecol,
+            'column_selector': 'race:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '300px',
@@ -220,7 +219,7 @@ racesummary_yadcf_options = {
             'filter_reset_button_text': False,  # hide yadcf reset button
         },
         {
-            'column_number': eventcol,
+            'column_selector': 'event:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -240,7 +239,7 @@ racesummary_yadcf_options = {
     ],
 }
 
-racesummary = RaceSummaryApi(
+racesummary_view = RaceSummaryApi(
                     app = bp,   # use blueprint instead of app
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'race.summary.jinja2',
@@ -274,4 +273,4 @@ racesummary = RaceSummaryApi(
                     pretablehtml = racesummary_filters,
                     yadcfoptions = racesummary_yadcf_options,
                     )
-racesummary.register()
+racesummary_view.register()

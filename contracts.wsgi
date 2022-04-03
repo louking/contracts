@@ -25,6 +25,7 @@ os.environ['CONFIG_FILE'] = 'contracts.cfg'
 config = SafeConfigParser()
 thisdir = os.path.dirname(__file__)
 configpath = os.path.join(os.path.dirname(thisdir), 'contracts', 'config', os.environ['CONFIG_FILE'])
+userconfigpath = os.path.join(os.path.dirname(thisdir), 'contracts', 'config', 'users.cfg')
 config.readfp(open(os.path.join(configpath)))
 PROJECT_DIR = config.get('project', 'PROJECT_DIR')
 # remove quotes if present
@@ -45,7 +46,9 @@ if False:
 # from contracts import app as application
 from contracts import create_app
 from contracts.settings import Production
-application = create_app(Production(configpath), configpath)
+# userconfigpath first so configpath can override
+configfiles = [userconfigpath, configpath]
+application = create_app(Production(configfiles), configfiles)
 
 # see https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/#deploying-proxy-setups
 from werkzeug.middleware.proxy_fix import ProxyFix

@@ -1,17 +1,37 @@
 {# use loutilities.tables-assets datatables.jinja2 #}
 {% extends "datatables.jinja2" %}
 
-{# add metanav block #}
+{# add metanav block, copied from layout.jinja2 #}
 {% block metanav %}
-    <div class=metanav>
-      <a href="https://contractility.readthedocs.io/en/latest/contract-admin-guide.html#" target="_blank" class="ui-button">Admin Guide</a>
-      {% if not session._ga_google_email %}
-        {# TODO: update with google sign in button image #}
-        <button id="signinButton" class="ui-button ui-widget ui-corner-all">Google Log In</button>
+<div class=metanav>
+  {% if current_user.name %}
+    {{ current_user.name }} |
+  {% endif %}
+
+  <label for="metanav-select-interest" class="interest-label">Interest:</label>
+  <select id="metanav-select-interest">
+      {# set in members.__init__ #}
+      {% for interest in user_interests %}
+          <option value="{{ interest.interest }}">{{ interest.description }}</option>
+      {% endfor %}
+  </select>
+  {# used by layout.js, needs to be urlencoded else may look like tag #}
+  <span id="metanav-url-rule" hidden>{{ request.url_rule | urlencode }}</span>
+  {% if url_rule %}
+    <span id="metanav-url-rule-filtered" hidden>{{ url_rule | urlencode }}</span>
+  {% endif %}
+
+  {% if not frontend_page %}
+      {% if adminguide %}
+        <a href={{ adminguide }} target="_blank" class="ui-button">Admin Guide</a>
       {% else %}
-{#         {{ session.user_name }}
- #}
-        <a href="{{ url_for('logout') }}" class="ui-button">log out</a>
+        <a href={{ config.DEFAULT_ADMIN_GUIDE }} target="_blank" class="ui-button">Admin Guide</a>
       {% endif %}
-    </div>
+  {% endif %}
+  {% if current_user.name %}
+    <a href="{{ url_for('security.logout') }}" class="ui-button">log out</a>
+  {% else %}
+    <a href="{{ url_for('security.login') }}" class="ui-button">log in</a>
+  {% endif %}
+</div>
 {% endblock %}

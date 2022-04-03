@@ -26,7 +26,7 @@ from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED
 from contracts.contractmanager import ContractManager
-from contracts.mailer import sendmail
+from loutilities.flask_helpers.mailer import sendmail
 from contracts.runsignup import RunSignUp
 from contracts.trends import calculateTrend
 

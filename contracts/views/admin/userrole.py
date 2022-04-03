@@ -1,13 +1,3 @@
-###########################################################################################
-# userroles - manage application users and roles
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       07/09/18        Lou King        Create
-#
-#   Copyright 2018 Lou King
-#
-###########################################################################################
 '''
 userroles - manage application users and roles
 ====================================================
@@ -17,11 +7,11 @@ userroles - manage application users and roles
 
 # pypi
 from flask_security import roles_accepted, current_user
-
+from loutilities.tables import DbCrudApiRolePermissions
+from loutilities.user.model import User, Role
 # homegrown
 from . import bp
-from contracts.dbmodel import db, User, Role
-from loutilities.tables import DbCrudApiRolePermissions
+from contracts.dbmodel import db
 
 ##########################################################################################
 # users endpoint

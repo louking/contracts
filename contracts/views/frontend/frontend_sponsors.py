@@ -28,7 +28,7 @@ from flask.views import MethodView
 from . import bp
 from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorQueryLog, SponsorRaceDate
 from contracts.dbmodel import State, STATE_COMMITTED
-from contracts.mailer import sendmail
+from loutilities.flask_helpers.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
 dt = asctime('%Y-%m-%d %H:%M:%S')

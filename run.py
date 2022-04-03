@@ -28,7 +28,10 @@ from contracts.settings import Development
 configfile = "contracts.cfg"
 abspath = os.path.abspath(__file__)
 configpath = os.path.join(os.path.dirname(abspath), 'config', configfile)
-app = create_app(Development(configpath), configpath)
+userconfigpath = os.path.join(os.path.dirname(abspath), 'config', 'users.cfg')
+# userconfigpath first so configpath can override
+configfiles = [userconfigpath, configpath]
+app = create_app(Development(configfiles), configfiles)
 
 from loutilities.flask_helpers.blueprints import list_routes
 

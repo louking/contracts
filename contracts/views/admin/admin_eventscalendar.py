@@ -30,8 +30,8 @@ from contracts.daterule import daterule2dates
 from contracts.utils import time24
 from loutilities.flask_helpers.blueprints import add_url_rules
 
-from .events import event
-event_dte = event.dte
+from .events import event_view
+event_dte = event_view.dte
 
 class parameterError(Exception): pass
 
@@ -223,7 +223,7 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
     def get(self):
     #----------------------------------------------------------------------
-        from .events import event
+        from .events import event_view
 
         # get the editor options, need url_root minus trailing /
         dt = requests.get('{}{}/saform'.format( request.url_root[:-1], url_for( '.events-superadmin' )))
@@ -233,7 +233,7 @@ class EventsCalendar(MethodView):
                    'pagename'     : 'events',
                    'tableurl'     : url_for( '.events-superadmin' ),
                    'edoptions'    : edoptions,
-                   'saformjsurls' : event.saformjsurls()
+                   'saformjsurls' : event_view.saformjsurls()
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )
 

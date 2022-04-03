@@ -474,13 +474,9 @@ filters = '\n'.join([
             ])
 
 ## options for yadcf
-datecol = 2
-statecol = 3
-servicecol = 15
-tagcol = 22
 yadcf_options = [
           {
-           'column_number': statecol, 
+           'column_selector': 'state.state:name', 
             'select_type': 'select2',
             'select_type_options': {
                 'width': '150px',
@@ -495,13 +491,13 @@ yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-           'column_number': datecol,
+           'column_selector': 'date:name',
             'filter_type': 'range_date',
             'date_format': 'yyyy-mm-dd',
             'filter_container_id': 'external-filter-dates',
           },
           {
-            'column_number': servicecol,
+            'column_selector': 'services.service:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -518,7 +514,7 @@ yadcf_options = [
             'filter_reset_button_text': False, # hide yadcf reset button
           },
           {
-            'column_number': tagcol,
+            'column_selector': 'tags.tag:name',
             'select_type': 'select2',
             'select_type_options': {
                 'width': '200px',
@@ -540,7 +536,7 @@ def event_state_default():
     return State.query.filter_by(state=STATE_TENTATIVE).one().id
 
 ## finally the endpoint definition
-event = EventsContract(
+event_view = EventsContract(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Event, 
@@ -693,5 +689,5 @@ event = EventsContract(
                                 },
                     yadcfoptions = yadcf_options,
                     )
-event.register()
+event_view.register()
 

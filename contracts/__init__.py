@@ -1,37 +1,23 @@
-###########################################################################################
-# contracts - package
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       06/27/18        Lou King        Create
-#
-#   Copyright 2018 Lou King.  All rights reserved
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
-###########################################################################################
+'''
+contracts - package
+========================
+'''
 
 # standard
 import os.path
 
 # pypi
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, g, session, request, url_for, current_app, render_template
+from flask_mail import Mail
 from jinja2 import ChoiceLoader, PackageLoader
-from flask_security import Security, SQLAlchemyUserDatastore
-
-# homegrown
+from flask_security import SQLAlchemyUserDatastore, current_user
 import loutilities
 from loutilities.configparser import getitems
+from loutilities.user import UserSecurity
+from loutilities.user.model import Interest, Application, User, Role
+from loutilities.flask_helpers.mailer import sendmail
+
+# homegrown
 
 # bring in js, css assets
 from . import assets
@@ -47,10 +33,13 @@ from .assets import asset_env, asset_bundles
 user_datastore = None
 security = None
 
+# hold application here
+app = None
+
 # create application
 def create_app(config_obj, configfiles=None, local_update=True):
     '''
-    apply configuration object, then configuration filename
+    apply configuration object, then configuration files
     '''
     global app
     app = Flask('contracts')
@@ -70,6 +59,11 @@ def create_app(config_obj, configfiles=None, local_update=True):
     # define product name (don't import nav until after app.jinja_env.globals['_productname'] set)
     app.jinja_env.globals['_productname'] = app.config['THISAPP_PRODUCTNAME']
     app.jinja_env.globals['_productname_text'] = app.config['THISAPP_PRODUCTNAME_TEXT']
+    for configkey in ['SECURITY_EMAIL_SUBJECT_PASSWORD_RESET',
+                      'SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE',
+                      'SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE',
+                      ]:
+        app.config[configkey] = app.config[configkey].format(productname=app.config['THISAPP_PRODUCTNAME_TEXT'])
 
     # initialize database
     from contracts.dbmodel import db
@@ -88,9 +82,9 @@ def create_app(config_obj, configfiles=None, local_update=True):
     # bring in js, css assets here, because app needs to be created first
     from .assets import asset_env, asset_bundles
     with app.app_context():
-        # uncomment when working on #346
-        # # needs to be set before update_local_tables called and before UserSecurity() instantiated
-        # g.loutility = Application.query.filter_by(application=app.config['APP_LOUTILITY']).one()
+        # uncomment when working on 
+        # needs to be set before update_local_tables called and before UserSecurity() instantiated
+        g.loutility = Application.query.filter_by(application=app.config['APP_LOUTILITY']).one()
         #
         # # update LocalUser and LocalInterest tables
         # if local_update:
@@ -111,11 +105,32 @@ def create_app(config_obj, configfiles=None, local_update=True):
     asset_env.init_app(app)
     asset_env.register(asset_bundles)
 
+    # Set up Flask-Mail [configuration in <application>.cfg] and security mailer
+    mail = Mail(app)
+
+    def security_send_mail(subject, recipient, template, **context):
+        # this may be called from view which doesn't reference interest
+        # if so pick up user's first interest to get from_email address
+        # if not g.interest:
+        #     g.interest = context['user'].interests[0].interest if context['user'].interests else None
+        from_email = current_app.config['SECURITY_EMAIL_SENDER']
+        # if g.interest:
+        #     from_email = localinterest().from_email
+        # # use default if user didn't have any interests
+        # else:
+        #     from_email = current_app.config['SECURITY_EMAIL_SENDER']
+        #     # copied from flask_security.utils.send_mail
+        #     if isinstance(from_email, LocalProxy):
+        #         from_email = from_email._get_current_object()
+        ctx = ('security/email', template)
+        html = render_template('%s/%s.html' % ctx, **context)
+        text = render_template('%s/%s.txt' % ctx, **context)
+        sendmail(subject, from_email, recipient, html=html, text=text)
+
     # Set up Flask-Security
-    from contracts.dbmodel import User, Role
     global user_datastore, security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
+    security = UserSecurity(app, user_datastore, send_mail=security_send_mail)
 
     # activate views
     from contracts.views.frontend import bp as frontend
@@ -139,11 +154,55 @@ def create_app(config_obj, configfiles=None, local_update=True):
 
         # set up scoped session
         from sqlalchemy.orm import scoped_session, sessionmaker
+        # see https://github.com/pallets/flask-sqlalchemy/blob/706982bb8a096220d29e5cef156950237753d89f/flask_sqlalchemy/__init__.py#L990
         db.session = scoped_session(sessionmaker(autocommit=False,
                                                  autoflush=False,
-                                                 bind=db.engine))
+                                                 binds=db.get_binds(app)))
         db.query = db.session.query_property()
 
+        # handle favicon request for old browsers
+        app.add_url_rule('/favicon.ico', endpoint='favicon',
+                        redirect_to=url_for('static', filename='favicon.ico'))
+
+    # ----------------------------------------------------------------------
+    @app.before_request
+    def before_request():
+        g.loutility = Application.query.filter_by(application=app.config['APP_LOUTILITY']).one()
+
+        if current_user.is_authenticated:
+            user = current_user
+            email = user.email
+
+            # used in layout.jinja2
+            app.jinja_env.globals['user_interests'] = sorted([{'interest': i.interest, 'description': i.description}
+                                                              for i in user.interests if g.loutility in i.applications],
+                                                             key=lambda a: a['description'].lower())
+            session['user_email'] = email
+
+        else:
+            # used in layout.jinja2
+            pubinterests = Interest.query.filter_by(public=True).all()
+            app.jinja_env.globals['user_interests'] = sorted([{'interest': i.interest, 'description': i.description}
+                                                              for i in pubinterests if g.loutility in i.applications],
+                                                             key=lambda a: a['description'].lower())
+            session.pop('user_email', None)
+
+    # ----------------------------------------------------------------------
+    @app.after_request
+    def after_request(response):
+        # # check if there are any changes needed to LocalUser table
+        # userupdated = User.query.order_by(desc('updated_at')).first().updated_at
+        # localuserupdated = LocalUser.query.order_by(desc('updated_at')).first().updated_at
+        # interestupdated = Interest.query.order_by(desc('updated_at')).first().updated_at
+        # localinterestupdated = LocalInterest.query.order_by(desc('updated_at')).first().updated_at
+        # if userupdated > localuserupdated or interestupdated > localinterestupdated:
+        #     update_local_tables()
+
+        if not app.config['DEBUG']:
+            app.logger.info(
+                '{}: {} {} {}'.format(request.remote_addr, request.method, request.url, response.status_code))
+        return response
+    
     # app back to caller
     return app
 

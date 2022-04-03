@@ -26,7 +26,8 @@ from flask import current_app
 class parameterError(Exception): pass
 
 # set up database - SQLAlchemy() must be done after app.config SQLALCHEMY_* assignments
-db = SQLAlchemy()
+from loutilities.user.model import db, LocalUserMixin, ManageLocalTables, EMAIL_LEN
+
 Table = db.Table
 Column = db.Column
 Integer = db.Integer
@@ -659,38 +660,27 @@ class SponsorQueryLog(Base):
     level           = Column( String(LEVEL_LEN) )
     comments        = Column( String(NOTES_LEN) )
 
-# user role management
-# adapted from 
-#   http://flask-dance.readthedocs.io/en/latest/backends.html#sqlalchemy
-#   TODO: flaskdance is not used, so need better reference
-   
-class RolesUsers(Base):
-    __tablename__ = 'roles_users'
-    id = Column(Integer(), primary_key=True)
-    user_id = Column('user_id', Integer(), ForeignKey('user.id'))
-    role_id = Column('role_id', Integer(), ForeignKey('role.id'))
+# copied by update_local_tables
+class LocalUser(LocalUserMixin, Base):
+    __tablename__ = 'localuser'
+    id                  = Column(Integer(), primary_key=True)
+    interest_id         = Column(Integer, ForeignKey('localinterest.id'))
+    interest            = relationship('LocalInterest', backref=backref('users'))
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
-class Role(Base, RoleMixin):
-    __tablename__ = 'role'
-    id = Column(Integer(), primary_key=True)
-    name = Column(String(ROLENAME_LEN), unique=True)
-    description = Column(String(DESCR_LEN))
+# note update_local_tables only copies Interests for current application (g.loutility)
+class LocalInterest(Base):
+    __tablename__ = 'localinterest'
+    id                  = Column(Integer(), primary_key=True)
+    interest_id         = Column(Integer)
 
-class User(Base, UserMixin):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    email               = Column( String(EMAIL_LEN), unique=True )
-    name                = Column( String(NAME_LEN) )
-    given_name          = Column( String(NAME_LEN) )
-    last_login_at       = Column( DateTime() )
-    current_login_at    = Column( DateTime() )
-    last_login_ip       = Column( String(100) )
-    current_login_ip    = Column( String(100) )
-    login_count         = Column( Integer )
-    active              = Column( Boolean() )
-    confirmed_at        = Column( DateTime() )
-    roles               = relationship('Role', secondary='roles_users',
-                          backref=backref('users', lazy='dynamic'))
+    version_id          = Column(Integer, nullable=False, default=1)
+    __mapper_args__ = {
+        'version_id_col' : version_id
+    }
 
 #####################################################
 class priorityUpdater(): 

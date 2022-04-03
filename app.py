@@ -17,11 +17,10 @@ from contracts.applogging import setlogging
 
 abspath = os.path.abspath(__file__)
 configpath = os.path.join(os.path.dirname(abspath), 'config', 'contracts.cfg')
-# uncomment when working on #346
-# # userconfigpath first so configpath can override
-# userconfigpath = os.path.join(os.path.dirname(abspath), 'config', 'users.cfg')
-# configfiles = [userconfigpath, configpath]
-configfiles = [configpath]
+
+# userconfigpath first so configpath can override
+userconfigpath = os.path.join(os.path.dirname(abspath), 'config', 'users.cfg')
+configfiles = [userconfigpath, configpath]
 
 # local_update=False because when we create app this would use database and cause
 # sqlalchemy.exc.OperationalError if one of the updating tables needs migration

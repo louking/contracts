@@ -42,10 +42,6 @@ def nav_menu():
     services  = Subgroup('Services')
     sponsors  = Subgroup('Signature Races')
 
-    # did we lose our google sign-in session? if so, keep server in sync
-    if '_ga_google_email' not in session or not session['_ga_google_email']:
-        logout_user()
-
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
 
@@ -109,10 +105,12 @@ def nav_menu():
         contracts.items.append(View('Template Types', 'admin.templatetypes')),
         contracts.items.append(View('Block Types', 'admin.contractblocktypes')),
 
+        navbar.items.append(View('My Account', 'security.change_password'))
         navbar.items.append(View('Debug', 'admin.debug'))
 
     # finally for non super-admin
     else:
+        navbar.items.append(View('My Account', 'security.change_password'))
         navbar.items.append(View('About', 'admin.sysinfo'))
 
     return navbar

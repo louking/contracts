@@ -34,8 +34,7 @@ from googleapiclient.http import MediaFileUpload
 # homegrown
 from contracts.dbmodel import db, Contract, ContractType, TemplateType
 from loutilities import timeu
-from loutilities.googleauth import get_credentials
-from contracts.views.admin.login import APP_CRED_FOLDER
+from loutilities.googleauth import GoogleAuthService
 from .html2docx import convert
 
 class parameterError(Exception): pass
@@ -238,6 +237,7 @@ class ContractManager():
         _date_ = dt.dt2asc( date.today() )
         
         # copy caller's mergefields and add built-in fields
+        course = mergefields.course # otherwise lazy load doesn't work
         merge = deepcopy(mergefields)
         merge._date_ = _date_
 
@@ -363,58 +363,23 @@ class ContractManager():
         if debug: current_app.logger.debug('ContractManager.create(): created temporary {}'.format(path))
 
         # upload to google drive
-        ## load credentials for drive instance
-        credentials = get_credentials(APP_CRED_FOLDER)
-        if not credentials:
-            stophere # looking for root cause of https://github.com/louking/contracts/issues/163
-            return redirect('authorize')
-
-        ## set up drive service
-        drive = build(DRIVE_SERVICE, DRIVE_VERSION, credentials=credentials)
-
-        ## upload (adapted from https://developers.google.com/drive/api/v3/manage-uploads)
-        file_metadata = {
-            'name': drivename,
-            # see https://developers.google.com/drive/api/v3/mime-types
-            'mimeType': 'application/vnd.google-apps.document',
-            # see https://developers.google.com/drive/api/v3/folder
-            'parents': [current_app.config['CONTRACTS_DB_FOLDER']],
-        }
-        media = MediaFileUpload(path,
-            mimetype=mimetype,
-            resumable=True)
-        file = drive.files().create(body=file_metadata,
-                                    media_body=media,
-                                    fields='id').execute()
-        fid = file.get('id')
+        gs = GoogleAuthService(current_app.config['GSUITE_SERVICE_KEY_FILE'], current_app.config['GSUITE_SCOPES'])
+        fid = gs.create_file(current_app.config['CONTRACTS_DB_FOLDER'], drivename, path, doctype='docx')
         if debug: current_app.logger.debug('uploaded fid={}'.format(fid))
 
-        ## TODO: set file to be publicly readable
-        # see https://developers.google.com/drive/api/v3/manage-sharing
-        def batch_callback(request_id, response, exception):
-            if exception:
-                # Handle error
-                if debug: current_app.logger.error("batch_callback(): permission exception {}".format(exception) )
-                raise PermissionError(exception)
-            else:
-                if debug: current_app.logger.debug("batch_callback(): permission id {}".format(response.get('id')) )
-
-        batch = drive.new_batch_http_request(callback=batch_callback)
+        ## set file to be publicly readable
         public_permission = {
             'type': 'anyone',
             'role': 'reader',
         }
-        batch.add(drive.permissions().create(
-                fileId=fid,
-                body=public_permission,
-                fields='id',
-        ))
-        batch.execute()
+        gs.set_permission(fid, public_permission)   
 
         # remove temporary folder
         # NOTE: in windows at least, this gets an error because file is still in use
-        # TODO: uncomment
-        # rmtree(dirpath, ignore_errors=True)
+        try:
+            rmtree(dirpath, ignore_errors=True)
+        except:
+            pass
 
         # send email
 

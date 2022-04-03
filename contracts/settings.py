@@ -83,17 +83,16 @@ class RealDb(Config):
         db_uri = 'mysql://{uname}:{pw}@{server}/{dbname}'.format(uname=dbuser,pw=password,server=dbserver,dbname=dbname)
         self.SQLALCHEMY_DATABASE_URI = db_uri
 
-        # uncomment when working on #346
-        # # https://flask-sqlalchemy.palletsprojects.com/en/2.x/binds/
-        # userdbuser = config['userdbuser']
-        # userpassword = config['userdbpassword']
-        # userdbserver = config['userdbserver']
-        # userdbname = config['userdbname']
-        # userdb_uri = 'mysql://{uname}:{pw}@{server}/{dbname}'.format(uname=userdbuser, pw=userpassword, server=userdbserver,
-        #                                                          dbname=userdbname)
-        # self.SQLALCHEMY_BINDS = {
-        #     'users': userdb_uri
-        # }
+        # https://flask-sqlalchemy.palletsprojects.com/en/2.x/binds/
+        userdbuser = config['userdbuser']
+        userpassword = config['userdbpassword']
+        userdbserver = config['userdbserver']
+        userdbname = config['userdbname']
+        userdb_uri = 'mysql://{uname}:{pw}@{server}/{dbname}'.format(uname=userdbuser, pw=userpassword, server=userdbserver,
+                                                                 dbname=userdbname)
+        self.SQLALCHEMY_BINDS = {
+            'users': userdb_uri
+        }
 
 class Development(RealDb):
     DEBUG = True
