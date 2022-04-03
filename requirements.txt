@@ -75,7 +75,7 @@ jupyter-client==5.3.4
 jupyter-console==6.1.0
 jupyter-core==4.6.1
 lazy==1.4
-loutilities==3.5.2
+loutilities==3.5.3
 lxml==4.7.1
 Mako==1.1.1
 MarkupSafe==2.0.1
