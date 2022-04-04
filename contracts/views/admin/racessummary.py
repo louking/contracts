@@ -266,7 +266,12 @@ racesummary_view = RaceSummaryApi(
                         'scrollX': True,
                         'scrollXInner': "100%",
                         'scrollY': True,
-                        'order': [[1, 'asc'], [2, 'asc'], [3, 'asc'], [4, 'asc']],
+                        'order': [
+                            ['race:name', 'asc'], 
+                            ['race_date:name', 'asc'], 
+                            ['event:name', 'asc'], 
+                            ['registration_date:name', 'asc']
+                        ],
                         'lengthMenu': [[-1], ["All"]],
                         'drawCallback': {'eval': 'racesummary_drawcallback'}
                     },

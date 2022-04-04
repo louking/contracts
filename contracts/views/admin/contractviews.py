@@ -178,7 +178,11 @@ contract = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'asc'], [2, 'asc']],
+                                        'order': [
+                                            ['contractType.contractType:name', 'asc'], 
+                                            ['templateType.templateType:name', 'asc'],
+                                            ['blockPriority:name', 'asc'],
+                                        ],
                                   },
                     )
 contract.register()

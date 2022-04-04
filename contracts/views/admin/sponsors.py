@@ -852,7 +852,7 @@ sponsorlevel = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'asc'], [2, 'desc']],
+                                        'order': [['race.race:name', 'asc'], ['minsponsorship:name', 'desc']],
                                   },
                     pretablehtml = sponsorlevel_filters,
                     yadcfoptions = sponsorlevel_yadcf_options,
@@ -910,7 +910,11 @@ sponsorracedate = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'asc'], [2, 'desc']],
+                                        'order': [
+                                          ['raceyear:name', 'desc'], 
+                                          ['race.race:name', 'asc'], 
+                                          ['racedate:name', 'desc']
+                                        ],
                                   },
                     )
 sponsorracedate.register()
@@ -999,7 +1003,7 @@ sponsorracevbl = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'asc'], [2, 'desc']],
+                                        'order': [['race.race:name', 'asc'], ['variable:name', 'asc']],
                                   },
                     pretablehtml = sponsorracevbl_filters,
                     yadcfoptions = sponsorracevbl_yadcf_options,
@@ -1099,7 +1103,7 @@ sponsorbenefit = DbCrudApiRolePermissions(
                                         'scrollXInner': "100%",
                                         'lengthMenu': [ [-1, 10, 25, 50], ["All", 10, 25, 50] ],
                                         'scrollY': True,
-                                        'order': [[3, 'asc']],
+                                        'order': [['race.race:name', 'asc'], ['order:name', 'asc']],
                                   },
                     pretablehtml = sponsorbenefit_filters,
                     yadcfoptions = sponsorbenefit_yadcf_options,
@@ -1153,7 +1157,7 @@ sponsorquerylog = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'desc']],
+                                        'order': [['time:name', 'desc']],
                                   },
                     )
 sponsorquerylog.register()

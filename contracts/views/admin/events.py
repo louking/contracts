@@ -210,7 +210,7 @@ feebasedon = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
-                                        'order': [[1, 'asc'], [2, 'asc']],
+                                        'order': [['service.service:name', 'asc'], ['fieldValue:name', 'asc']],
                                   },
                     )
 feebasedon.register()
@@ -681,7 +681,7 @@ event_view = EventsContract(
                                     'fixedColumns': {
                                                       'leftColumns': 3
                                                     },
-                                    'order': [[2, 'asc']],
+                                    'order': [['date:name', 'desc']],
                                 },
                     edoptions = {
                                     'template':'#customForm',
