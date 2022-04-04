@@ -466,7 +466,7 @@ class DateRule(Base):
         'version_id_col' : version_id
     }
 
-    # build rulename automatically unless overridden
+    # build rulename automatically
     def __init__(self, **kwargs):
         super(DateRule, self).__init__(**kwargs)
         if self.rule == 'Easter':
