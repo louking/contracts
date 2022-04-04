@@ -469,23 +469,22 @@ class DateRule(Base):
     # build rulename automatically unless overridden
     def __init__(self, **kwargs):
         super(DateRule, self).__init__(**kwargs)
-        if not self.rulename:
-            if self.rule == 'Easter':
-                self.rulename = 'Easter'
-            elif self.rule == 'date':
-                if not self.year:
-                    self.rulename = '{} {}'.format(self.month, self.date)
-                else:
-                    self.rulename = '{} {}, {}'.format(self.month, self.date, self.year)
+        if self.rule == 'Easter':
+            self.rulename = 'Easter'
+        elif self.rule == 'Date':
+            if not self.year:
+                self.rulename = '{} {}'.format(self.month, self.date)
             else:
-                self.rulename = '{} {} {}'.format(self.rule, self.day, self.month)
-                if self.year:
-                    self.rulename += ', {}'.format(self.year)
-                # handle text 0 if present
-                if self.deltaday and int(self.deltaday):
-                    self.rulename += ', {} days from'.format(self.deltaday)
-                if self.addldays and int(self.addldays):
-                    self.rulename += ", {} add'l days".format(self.addldays)
+                self.rulename = '{} {}, {}'.format(self.month, self.date, self.year)
+        else:
+            self.rulename = '{} {} {}'.format(self.rule, self.day, self.month)
+            if self.year:
+                self.rulename += ', {}'.format(self.year)
+            # handle text 0 if present
+            if self.deltaday and int(self.deltaday):
+                self.rulename += ', {} days from'.format(self.deltaday)
+            if self.addldays and int(self.addldays):
+                self.rulename += ", {} add'l days".format(self.addldays)
 
 # sponsor
 # sponsor races
