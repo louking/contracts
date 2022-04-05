@@ -36,7 +36,7 @@ debug = False
 class parameterError(Exception): pass
 
 ##########################################################################################
-class RaceSummaryApi(CrudApi):
+class RaceRegistrationsApi(CrudApi):
 ##########################################################################################
 
     from flask_security import current_user
@@ -44,7 +44,7 @@ class RaceSummaryApi(CrudApi):
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
     #----------------------------------------------------------------------
-        if debug: current_app.logger.debug('RaceSummaryApi.__init__()')
+        if debug: current_app.logger.debug('RaceRegistrationsApi.__init__()')
 
         # the args dict has default values for arguments added by this derived class
         # caller supplied keyword args are used to update these
@@ -53,7 +53,7 @@ class RaceSummaryApi(CrudApi):
         args.update(kwargs)
 
         # this initialization needs to be done before checking any self.xxx attributes
-        super(RaceSummaryApi, self).__init__(**args)
+        super(RaceRegistrationsApi, self).__init__(**args)
 
         # Caller should use roles_accepted OR roles_required but not both
         if self.roles_accepted and self.roles_required:
@@ -173,11 +173,11 @@ class RaceSummaryApi(CrudApi):
         pass
 
 ##########################################################################################
-# racesummary endpoint
+# raceregistrations endpoint
 ###########################################################################################
 
 ## yadcf external filters
-racesummary_filters = '\n'.join([
+raceregistrations_filters = '\n'.join([
             "<div class='external-filter filter-container'>",
             "    <div class='filter-item'>",
             "        <span class='label'>Race</span>",
@@ -201,7 +201,7 @@ racesummary_filters = '\n'.join([
             ])
 
 ## options for yadcf
-racesummary_yadcf_options = {
+raceregistrations_yadcf_options = {
     'columns' : [
         {
             'column_selector': 'race:name',
@@ -239,13 +239,13 @@ racesummary_yadcf_options = {
     ],
 }
 
-racesummary_view = RaceSummaryApi(
+raceregistrations_view = RaceRegistrationsApi(
                     app = bp,   # use blueprint instead of app
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'race.summary.jinja2',
-                    pagename = 'Race Summary',
-                    endpoint = 'admin.racesummary',
-                    rule = '/racesummary',
+                    pagename = 'Race Registrations',
+                    endpoint = 'admin.raceregistrations',
+                    rule = '/raceregistrations',
                     clientcolumns = [
                         { 'data': 'race', 'name': 'race', 'label': 'Race',
                         },
@@ -273,9 +273,9 @@ racesummary_view = RaceSummaryApi(
                             ['registration_date:name', 'asc']
                         ],
                         'lengthMenu': [[-1], ["All"]],
-                        'drawCallback': {'eval': 'racesummary_drawcallback'}
+                        'drawCallback': {'eval': 'raceregistrations_drawcallback'}
                     },
-                    pretablehtml = racesummary_filters,
-                    yadcfoptions = racesummary_yadcf_options,
+                    pretablehtml = raceregistrations_filters,
+                    yadcfoptions = raceregistrations_yadcf_options,
                     )
-racesummary_view.register()
+raceregistrations_view.register()

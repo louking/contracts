@@ -38,42 +38,37 @@ def nav_menu():
     navbar.items.append(View('Home', 'frontend.index'))
 
     contracts = Subgroup('Contracts')
-    events    = Subgroup('Events')
-    services  = Subgroup('Services')
+    client_races = Subgroup('Contract Races')
+    services  = Subgroup('Contract Services')
     sponsors  = Subgroup('Signature Races')
+    superadmin = Subgroup('Super')
 
     # event administrative stuff
     if current_user.has_role('event-admin') or current_user.has_role('super-admin'):
 
-        # note calendar is in menu twice
-        navbar.items.append(View('Calendar', 'admin.calendar'))
-
-        navbar.items.append(events)
-        events.items.append(View('Calendar', 'admin.calendar'))
-        events.items.append(View('Table', 'admin.events-superadmin'))
-        events.items.append(View('Races', 'admin.races'))
-        events.items.append(View('Courses', 'admin.courses'))
-        events.items.append(View('Leads', 'admin.leads'))
-        events.items.append(View('Exceptions', 'admin.eventexceptions'))
-        events.items.append(View('Tags', 'admin.tags'))
-        if current_user.has_role('super-admin'):
-            # replace Tags with super_tags
-            events.items.pop()
-            events.items.append(View('Tags', 'admin.super-tags'))
-
-        navbar.items.append(View('Date Rules', 'admin.daterules'))
+        navbar.items.append(client_races)
+        client_races.items.append(View('Race Calendar', 'admin.calendar'))
+        client_races.items.append(View('Race Table', 'admin.events-superadmin'))
+        client_races.items.append(View('Races', 'admin.races'))
+        client_races.items.append(View('Courses', 'admin.courses'))
+        client_races.items.append(View('Leads', 'admin.leads'))
+        client_races.items.append(View('Exceptions', 'admin.eventexceptions'))
+        client_races.items.append(View('Date Rules', 'admin.daterules'))
+        if not current_user.has_role('super-admin'):
+            client_races.items.append(View('Tags', 'admin.tags'))
+        else:
+            client_races.items.append(View('Tags', 'admin.super-tags'))
 
     # sponsor stuff
     if current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
         navbar.items.append(sponsors)
+        sponsors.items.append(View('Race Registrations', 'admin.raceregistrations'))
         sponsors.items.append(View('Sponsorship Summary', 'admin.sponsorsummary'))
-        sponsors.items.append(View('Race Summary', 'admin.racesummary'))
         sponsors.items.append(View('Sponsorships', 'admin.sponsorships'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))
-        sponsors.items.append(View('Tags', 'admin.sponsortags'))
-        if current_user.has_role('super-admin'):
-            # replace Tags with super_sponsortags
-            sponsors.items.pop()
+        if not current_user.has_role('super-admin'):
+            sponsors.items.append(View('Tags', 'admin.sponsortags'))
+        else:
             sponsors.items.append(View('Tags', 'admin.super-sponsortags'))
 
     if current_user.has_role('event-admin') or current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
@@ -82,28 +77,29 @@ def nav_menu():
     # superadmin stuff
     if current_user.has_role('super-admin'):
 
-        sponsors.items.append(View('Races', 'admin.sponsorraces'))
-        sponsors.items.append(View('Race Dates', 'admin.sponsorracedates'))
-        sponsors.items.append(View('Race Variables', 'admin.sponsorracevbls'))
-        sponsors.items.append(View('Levels', 'admin.sponsorlevels'))
-        sponsors.items.append(View('Benefits', 'admin.sponsorbenefits'))
+        navbar.items.append(superadmin)
+        superadmin.items.append(View('Sponsor Races', 'admin.sponsorraces'))
+        superadmin.items.append(View('Sponsor Race Dates', 'admin.sponsorracedates'))
+        superadmin.items.append(View('Sponsor Race Variables', 'admin.sponsorracevbls'))
+        superadmin.items.append(View('Sponsor Levels', 'admin.sponsorlevels'))
+        superadmin.items.append(View('Sponsor Benefits', 'admin.sponsorbenefits'))
 
-        navbar.items.append(View('Users', 'userrole.users'))
-        navbar.items.append(View('Roles', 'userrole.roles'))
-
-        events.items.append(View('States', 'admin.states'))
-
-        navbar.items.append(services)
+        superadmin.items.append(services)
         services.items.append(View('Services', 'admin.services'))
         services.items.append(View('Add-Ons', 'admin.addon'))
         services.items.append(View('Fee Types', 'admin.feetype'))
         services.items.append(View('Fee Based On', 'admin.feebasedon'))
 
-        navbar.items.append(contracts)
-        contracts.items.append(View('Contracts', 'admin.contracts')),
+        superadmin.items.append(contracts)
+        contracts.items.append(View('Contract Content', 'admin.contracts')),
         contracts.items.append(View('Contract Types', 'admin.contracttypes')),
         contracts.items.append(View('Template Types', 'admin.templatetypes')),
         contracts.items.append(View('Block Types', 'admin.contractblocktypes')),
+
+        superadmin.items.append(View('Contract States', 'admin.states'))
+
+        superadmin.items.append(View('Users', 'userrole.users'))
+        superadmin.items.append(View('Roles', 'userrole.roles'))
 
         navbar.items.append(View('My Account', 'security.change_password'))
         navbar.items.append(View('Debug', 'admin.debug'))

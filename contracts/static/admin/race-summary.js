@@ -1,28 +1,28 @@
 // summarize table, only used when rendering race.summary.jinja2
-let racesummary_firstdraw = true;
+let raceregistrations_firstdraw = true;
 let rsloyear = 9999;
 let rshiyear = 0;
-let racesummary_charts = [];
+let raceregistrations_charts = [];
 let years;
 
-function racesummary_showchart( charttype ) {
+function raceregistrations_showchart( charttype ) {
     $( '.race-chart' ).hide();
     $( '#' + charttype + '-chart' ).show();
 }
 
-function racesummary_setshowlabels ( numyears ) {
+function raceregistrations_setshowlabels ( numyears ) {
     let labels = [];
     if (numyears != -1) {
         labels = years.slice(0, numyears);
     }
-    for (let i=0; i<racesummary_charts.length; i++) {
-        let chart = racesummary_charts[i];
+    for (let i=0; i<raceregistrations_charts.length; i++) {
+        let chart = raceregistrations_charts[i];
         chart.setshowlabels(labels);
     }
 }
 
-function racesummary_drawcallback( settings ) {
-    console.log('racesummary_drawcallback()');
+function raceregistrations_drawcallback( settings ) {
+    console.log('raceregistrations_drawcallback()');
 
     let api = this.api();
     let alldata;
@@ -36,8 +36,8 @@ function racesummary_drawcallback( settings ) {
 
     // if this is the first draw, look at all the data to set the year under review
     // also chart can be drawn now
-    if (racesummary_firstdraw) {
-        racesummary_firstdraw = false;
+    if (raceregistrations_firstdraw) {
+        raceregistrations_firstdraw = false;
         alldata = api.rows({
                         page:'all',
                         search: 'none',
@@ -69,7 +69,7 @@ function racesummary_drawcallback( settings ) {
         // remember current setting (set after charts drawn)
         summaryrace_charttype = $( '#summary-race-charttype-select' ).val();
         $( '#summary-race-charttype-select' ).on('change', function(event) {
-            racesummary_showchart( $( '#summary-race-charttype-select' ).val() );
+            raceregistrations_showchart( $( '#summary-race-charttype-select' ).val() );
         });
 
         let numyearselect = '<select id="summary-race-numyear-select" name="numyear">\n';
@@ -92,13 +92,13 @@ function racesummary_drawcallback( settings ) {
                                             width: '75px',
                                         });
         $( '#summary-race-numyear-select' ).on('change', function(event) {
-            racesummary_setshowlabels( $( '#summary-race-numyear-select' ).val() );
+            raceregistrations_setshowlabels( $( '#summary-race-numyear-select' ).val() );
         });
 
-    } // if (racesummary_firstdraw)
+    } // if (raceregistrations_firstdraw)
 
-    // clear racesummary_charts each draw
-    racesummary_charts = [];
+    // clear raceregistrations_charts each draw
+    raceregistrations_charts = [];
 
     // draw date chart
     // transform dataset into what chart wants to see
@@ -180,7 +180,7 @@ function racesummary_drawcallback( settings ) {
         lastseq: datelastseq,
     });
     datechart.draw();
-    racesummary_charts.push(datechart);
+    raceregistrations_charts.push(datechart);
 
     // now accumulate values
     // note dataset has already been sorted nicely
@@ -226,7 +226,7 @@ function racesummary_drawcallback( settings ) {
         lastseq : daystoracelastseq,
     });
     daystoracechart.draw();
-    racesummary_charts.push(daystoracechart);
+    raceregistrations_charts.push(daystoracechart);
 
     // days from registration chart
     $('#daysfromreg-chart svg').remove();
@@ -242,18 +242,18 @@ function racesummary_drawcallback( settings ) {
         lastseq : daysfromreglastseq,
     });
     daysfromregopenchart.draw();
-    racesummary_charts.push(daysfromregopenchart);
+    raceregistrations_charts.push(daysfromregopenchart);
 
     // can show the current chart now
-    racesummary_showchart( $( '#summary-race-charttype-select' ).val() );
+    raceregistrations_showchart( $( '#summary-race-charttype-select' ).val() );
 
     // show labels based on current setting
-    racesummary_setshowlabels( $( '#summary-race-numyear-select' ).val() );
+    raceregistrations_setshowlabels( $( '#summary-race-numyear-select' ).val() );
 
-} // racesummary_drawcallback
+} // raceregistrations_drawcallback
 
 // only define afterdatatables if needed
-if ( ['/admin/racesummary'].includes(location.pathname) ) {
+if ( ['/admin/raceregistrations'].includes(location.pathname) ) {
     // set up registered filters
     fltr_register('external-filter-race', null, false);
 

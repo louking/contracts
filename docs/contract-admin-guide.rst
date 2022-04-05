@@ -49,16 +49,12 @@ Common Use Cases (What To Do...)
 
 When You Want to Log In
 -------------------------
-From the contractility home page, click on *Google Log In* in the upper right corner. You will be shown a google sign in 
-challenge similar to below. Sign in with your steeplechasers.org account.
+From the contractility home page, click on *Log In* in the upper right corner. You will be shown a log in 
+page. Sign in with your contractility account.
 
-.. image:: images/choose-account.*
-   :align: center
-
-You will then be shown the following, which will give the application permission to create files in G Suite on your behalf. Click Allow
-
-.. image:: images/sign-in-challenge.*
-   :align: center
+.. note::
+    contractility shares passwords with membertility. If you change the password
+    in one of these apps, it will be changed for both.
 
 
 .. toctree::

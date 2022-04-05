@@ -27,14 +27,19 @@ tag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
 tag_dbmapping = dict(list(zip(tag_dbattrs, tag_formfields)))
 tag_formmapping = dict(list(zip(tag_formfields, tag_dbattrs)))
 
-tag = DbCrudApiRolePermissions(
+class ContractTagsView(DbCrudApiRolePermissions):
+    def beforequery(self):
+        super().beforequery()
+        self.queryparams['isBuiltIn'] = False
+
+tag = ContractTagsView(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = Tag, 
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
-                    pagename = 'tags', 
+                    pagename = 'contract tags', 
                     endpoint = 'admin.tags', 
                     rule = '/tags', 
                     dbmapping = tag_dbmapping, 
@@ -81,7 +86,7 @@ super_tag = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
-                    pagename = 'super tags', 
+                    pagename = 'super contract tags', 
                     endpoint = 'admin.super-tags', 
                     rule = '/super-tags', 
                     dbmapping = super_tag_dbmapping, 
@@ -120,12 +125,17 @@ sponsortag_formfields = 'rowid,tag,description,isBuiltIn'.split(',')
 sponsortag_dbmapping = dict(list(zip(sponsortag_dbattrs, sponsortag_formfields)))
 sponsortag_formmapping = dict(list(zip(sponsortag_formfields, sponsortag_dbattrs)))
 
-sponsortag = DbCrudApiRolePermissions(
+class SponsorTagsView(DbCrudApiRolePermissions):
+    def beforequery(self):
+        super().beforequery()
+        self.queryparams['isBuiltIn'] = False
+
+sponsortag = SponsorTagsView(
                     app = bp,   # use blueprint instead of app
                     db = db,
                     model = SponsorTag,
                     version_id_col = 'version_id',  # optimistic concurrency control
-                    roles_accepted = ['super-admin', 'sponsir-admin'],
+                    roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'datatables.jinja2',
                     pagename = 'Sponsorship Tags',
                     endpoint = 'admin.sponsortags', 

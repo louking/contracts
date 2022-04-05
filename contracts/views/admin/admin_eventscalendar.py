@@ -230,7 +230,7 @@ class EventsCalendar(MethodView):
         edoptions = dumps(dt.json()['edoptions'])
 
         context = {
-                   'pagename'     : 'events',
+                   'pagename'     : 'contract races',
                    'tableurl'     : url_for( '.events-superadmin' ),
                    'edoptions'    : edoptions,
                    'saformjsurls' : event_view.saformjsurls()

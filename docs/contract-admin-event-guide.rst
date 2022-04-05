@@ -39,8 +39,8 @@ communication is shared with the race services team.
 
 .. _event-life-cycle:
 
-Event Life Cycle
-======================
+Contract Race Life Cycle
+============================
 
 Summary:
 
@@ -53,14 +53,14 @@ Summary:
 #. Race Director agrees to contract electronically
 #. FSRC Treasurer generates invoice
 #. Race Director and FSRC Race Lead receive automated emails 5 days before 
-   event with logistical information
-#. Race Director receives email after event with link to survey
+   contract race with logistical information
+#. Race Director receives email after contract race with link to survey
 #. Race is automatically renewed for following year and placed in renewed pending 
    state until FSRC and race director resume correspondence
 
 Detail:
 
-This describes the life cycle for event management.
+This describes the life cycle for contract race management.
 
    * New Race: Race director sends Race Services Request email
      
@@ -70,57 +70,56 @@ This describes the life cycle for event management.
 
      * if the race director says that the race will not be held
 
-       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-         select the :term:`event`, click **Edit**, then click **Delete**
+       * from :ref:`admin-calendar-view` click on the :term:`contract race` or from :ref:`event-overview-view`, 
+         select the :term:`contract race`, click **Edit**, then click **Delete**
 
      * if the race director says they're not sure, or they don't have all the required information yet
 
-       * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-         select the :term:`event`, click **Edit**, change **State** to *tentative*, 
+       * from :ref:`admin-calendar-view` click on the :term:`contract race` or from :ref:`event-overview-view`, 
+         select the :term:`contract race`, click **Edit**, change **State** to *tentative*, 
          then click **Update**
 
-   * Details are learned from the race director about an :term:`event` that is
+   * Details are learned from the race director about an :term:`contract race` that is
      in the system but not yet committed
 
      * see :ref:`race-details-confirmed`
-     * from :ref:`admin-calendar-view` click on the :term:`event` or from :ref:`event-overview-view`, 
-       select the :term:`event`, click **Edit**
+     * from :ref:`admin-calendar-view` click on the :term:`contract race` or from :ref:`event-overview-view`, 
+       select the :term:`contract race`, click **Edit**
      * make sure **State** is set to *tentative*
      * update the details which are known, then click **Update**
 
-   * All details are known for the :term:`event`, and the race director is ready to move forward 
+   * All details are known for the :term:`contract race`, and the race director is ready to move forward 
 
      * see :ref:`race-details-confirmed`
      * click **Update and Send Contract** to generate a contract
      * :ref:`contract-email` is automatically generated to the race director 
 
-   * About 5 days before the :term:`event`
+   * About 5 days before the :term:`contract race`
 
-     * :ref:`pre-event-coordination-email` is automatically generated, to the race director and event :term:`lead`
+     * :ref:`pre-event-coordination-email` is automatically generated, to the race director and contract race :term:`lead`
 
-   * About 2 days before the :term:`event`
+   * About 2 days before the :term:`contract race`
      
-     * a reminder email automatically generated, just to the :term:`event` :term:`lead`
+     * a reminder email automatically generated, just to the :term:`contract race` :term:`lead`
 
-   * About 5 days after the :term:`event`
+   * About 5 days after the :term:`contract race`
 
-     * for :term:`events <event>` which have *finishline* or *coursemarking* :term:`services <service>`, 
+     * for :term:`contract races <contract race>` which have *finishline* or *coursemarking* :term:`services <service>`, 
        :ref:`post-event-email` is automatically generated
-     * regardless of service, the :term:`event` is :term:`renewed <renew>`
+     * regardless of service, the :term:`contract race` is :term:`renewed <renew>`
      * see :ref:`post-event-processing` for additional details
 
-   * If the :term:`event` is still in *renewed-pending* state 120 days before the expected date of the race
+   * If the :term:`contract race` is still in *renewed-pending* state 120 days before the expected date of the race
 
      * :ref:`post-event-email-reminder` is automatically generated to the race director 
-       [pending implementation of https://github.com/louking/contracts/issues/155]
 
-   * If the :term:`event` is still in *renewed-pending* state 30 days before the expected date of the race
+   * If the :term:`contract race` is still in *renewed-pending* state 30 days before the expected date of the race
 
-     * an email is automatically generated to raceservices@steeplechasers.org to indicate event
+     * an email is automatically generated to raceservices@steeplechasers.org to indicate contract race
        is still outstanding [pending implementation of https://github.com/louking/contracts/issues/165]
-     * admin should delete the event manually
-     * from :ref:`admin-calendar-view` click on the :term:`event` or from 
-       :ref:`event-overview-view`, select the :term:`event`, click **Edit** to get to the :ref:`edit-event-view`, 
+     * admin should delete the contract race manually
+     * from :ref:`admin-calendar-view` click on the :term:`contract race` or from 
+       :ref:`event-overview-view`, select the :term:`contract race`, click **Edit** to get to the :ref:`edit-event-view`, 
        then click **Delete**
 
 
@@ -143,7 +142,7 @@ Event State Flow
       "contract-sent" -> "committed" [label="RD agrees to contract"]
       "contract-sent" -> "canceled" [label="RD cancels race"]
       "committed" -> "canceled" [label="RD cancels race"]
-      "committed" -> "renewed-pending" [label="5 days after event"]
+      "committed" -> "renewed-pending" [label="5 days after contract race"]
       "renewed-pending" -> "(delete)" [label="RD says no go"]
       "tentative" -> "(delete)" [label="RD says no go"]
       
@@ -173,12 +172,12 @@ When We Learn About a New Race
 We learn about a completely new :term:`race` that we have never provided
 services for. The inquiry could arrive either through email generated by the
 :ref:`race-services-request-view`,  a direct email, etc. Often there is
-incomplete information. Regardless, you should create the :term:`event` with
+incomplete information. Regardless, you should create the :term:`contract race` with
 whatever information you have.
 
-You can create an :term:`event` in one of two ways.
+You can create an :term:`contract race` in one of two ways.
 
-1. From :ref:`admin-calendar-view` click on the :term:`event` date
+1. From :ref:`admin-calendar-view` click on the :term:`contract race` date
 2. From :ref:`event-overview-view` click **New**
 
 Once the form is displayed
@@ -203,30 +202,31 @@ When We're Contacted for a Race We've Done Before
 ------------------------------------------------------
 
 If we've done a :term:`race` before, there will already be a database entry for
-the :term:`race`, and likely the :term:`event` was :term:`renewed <renew>` after
+the :term:`race`, and likely the :term:`contract race` was :term:`renewed <renew>` after
 the previous year's race. 
 
 You need to verify the current details with the race director and update the
-:term:`event` which was created as a result of the automatic renewal process.
+:term:`contract race` which was created as a result of the automatic renewal process.
 
-You can find the event to edit in one of two ways.
+You can find the contract race to edit in one of two ways.
 
    1. from :ref:`event-overview-view`, use the Search box at the top of the table, and enter the race name
 
-      * you should see all the :term:`events <event>` associated with this :term:`race`
-      * click on the :term:`event` for the coming year, then click **Edit**
+      * you should see all the :term:`contract races <contract race>` associated with this :term:`race`
+      * click on the :term:`contract race` for the coming year, then click **Edit**
 
-   2. from :ref:`admin-calendar-view`, navigate to the date of the :term:`race's <race>` :term:`event`
+   2. from :ref:`admin-calendar-view`, navigate to the date of the :term:`race's <race>` :term:`contract race`
 
-      * click on the :term:`event`
+      * click on the :term:`contract race`
 
-Now you can edit the :term:`event` with the current details and when ready send the contract.
+Now you can edit the :term:`contract race` with the current details and when ready send the contract.
 
    * fill in as much information as you have available to you
    * change **State** to *tentative* 
 
-     * **this is very important, if you don't do this the race
-       director will receive extra confusing emails and we'll lose track of what we're doing**
+     .. note:: 
+        this is very important, if you don't do this the race
+        director will receive extra confusing emails and we'll lose track of what we're doing
 
    * click **Update**
 
@@ -253,40 +253,40 @@ the database and you're not copied, he'll need to get it to you.
 When Race Details are Confirmed by Race Director
 ------------------------------------------------
 
-As the details are confirmed by the race director, use the :ref:`edit-event-view` to update the :term:`event`. When
+As the details are confirmed by the race director, use the :ref:`edit-event-view` to update the :term:`contract race`. When
 all the details are known and the race director is ready, generate the contract. 
 
-You can edit an :term:`event` in one of two ways.
+You can edit an :term:`contract race` in one of two ways.
 
-1. from :ref:`admin-calendar-view` navigate to the :term:`event` date and then click on the :term:`event` 
+1. from :ref:`admin-calendar-view` navigate to the :term:`contract race` date and then click on the :term:`contract race` 
 2. from :ref:`event-overview-view` click **Edit**
 
 Before you can generate a contract for finish line services, you need at least the following:
 
    :Race: the name of the :term:`race`
-   :Date: the date of the :term:`event`
+   :Date: the date of the :term:`contract race`
    :Course: the :term:`course` the :term:`race` will be run on
-   :Start Time: time of day that the main :term:`event` starts
+   :Start Time: time of day that the main :term:`contract race` starts
    :Distance: distance for the :term:`race`
    :Client: the name of the :term:`client`
-   :Services: one or more services which the client is contracting for
+   :Services: one or more :term:`services <service>` which the client is contracting for
    :Max Participants: this is used to determine the pricing for 
-       finishline :term:`services <service>` services (this is set to 200 for a new race or
+       finishline :term:`services <service>`  (this is set to 200 for a new race or
        a race that had fewer than 201 finishers the previous year. If it is a repeat
        race and the number of finishers in the previous year was greater than 200, it’s
        the number of finishers the previous year rounded up to the next 100.
 
    :Lead: the leader who will run the finish line operation on the day of the
-       :term:`event`. This needs to be 
-       finalized well before the event so that emails are sent properly to all concerned
+       :term:`contract race`. This needs to be 
+       finalized well before the contract race so that emails are sent properly to all concerned
 
 Before you can generate a contract for premium promotion service (only), you need at least the following:
 
    :Race: the name of the :term:`race`
-   :Date: the date of the :term:`event`
+   :Date: the date of the :term:`contract race`
    :Course: the :term:`course` the :term:`race` will be run on
    :Client: the name of the :term:`client`
-   :Services: one or more services which the client is contracting for
+   :Services: one or more :term:`services <service>` which the client is contracting for
 
 The remaining fields are useful as well, and should be filled in if applicable and known.
 
@@ -296,7 +296,7 @@ The remaining fields are useful as well, and should be filled in if applicable a
 When Race Director Accepts Agreement (Treasurer)
 -------------------------------------------------
 
-When a race director accepts the agreement, the treasurer will receive an email. The :term:`event` will 
+When a race director accepts the agreement, the treasurer will receive an email. The :term:`contract race` will 
 automatically be transitioned into the *committed* :term:`state`. 
 
 An invoice should be generated to the :term:`client` as indicated by the financial policies. Once an invoice is 
@@ -308,10 +308,10 @@ generated, the treasurer should click the **Invoice Sent** button on the :ref:`e
 When Race Director Accepts Agreement (Race Services Admin)
 -----------------------------------------------------------
 
-When a race director accepts the agreement, the race services admin will receive an email. The :term:`event` will 
+When a race director accepts the agreement, the race services admin will receive an email. The :term:`contract race` will 
 automatically be transitioned into the *committed* :term:`state`. 
 
-The :term:`lead` for the race needs to be identified well before the event so that resources are allocated 
+The :term:`lead` for the race needs to be identified well before the contract race so that resources are allocated 
 correctly and emails are sent to the appropriate people. Generally we should have a commitment for a :term:`lead`
 before sending the contract to the race director, however the system does not enforce this.
 
@@ -324,15 +324,15 @@ When We Contract for Premium Promotion (Communications)
 The communications team handles all premium promotion, regardless of whether the race has also contracted for
 other services.
 
-To determine the events for the next premium promotion email, use the :ref:`event-overview-view` filters:
+To determine the contract races for the next premium promotion email, use the :ref:`event-overview-view` filters:
 
    :States: select *committed*
    :Date Range: From the day the email goes out, To [3 months] after that
    :Service(s): select *premiumpromotion*
 
-The table will be filtered to only the :term:`events <event>` which should be in the next email.
+The table will be filtered to only the :term:`contract races <contract race>` which should be in the next email.
 
-The **CSV** button can be used to download these :term:`events <event>`, if desired.
+The **CSV** button can be used to download these :term:`contract races <contract race>`, if desired.
 
 
 .. _changes-to-committed-agreement:
@@ -348,12 +348,12 @@ When the contract is in *committed* :term:`state`, the **Update and Send
 Contract** button is desensitized.
 
 If it's necessary to change the contract after the initial agreement, simply
-edit the :term:`event`, make the  needed changes (e.g., add *premiumpromotion*),
+edit the :term:`contract race`, make the  needed changes (e.g., add *premiumpromotion*),
 and change the :term:`state` to *tentative*. By changing  the :term:`state`, the
 **Update and Send Contract** button will be sensitized, and can be clicked to
 send another contract.
 
-Note once this is done, the system voids previous contract and it is not accessible.
+Note once this is done, the system voids the previous contract and it is not accessible.
 
 
 .. _exception-required:
@@ -361,8 +361,8 @@ Note once this is done, the system voids previous contract and it is not accessi
 When an Exception to Standard Availability Rules is Needed
 ----------------------------------------------------------------
 
-Normally, events are allowed on weekends and not allowed on weekdays. There are some holidays during the week when
-we want to allow events, and some weekend days we don't want to allow events. For these, we need to configure
+Normally, contract races are allowed on weekends and not allowed on weekdays. There are some holidays during the week when
+we want to allow contract races, and some weekend days we don't want to allow contract races. For these, we need to configure
 :term:`exceptions <exception>`.
 
 To create exceptions, use the :ref:`event-exceptions-view`.

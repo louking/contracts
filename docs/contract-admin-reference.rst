@@ -11,13 +11,13 @@ This page has views and emails used by the administrator. Note some of the views
 to you, depending on your privilege setting.
 
 
-.. _client-management:
+.. _clients-view:
 
 
-Client Management
+Clients View
 -------------------
 
-A :term:`client` can either be an :term:`event` race director or a :term:`signature race` sponsor.
+A :term:`client` can either be a :term`contract race` race director or a :term:`signature race` sponsor.
 
 
 .. _create-client-view:
@@ -33,27 +33,27 @@ Create Client view
 .. _event-management:
 
 
-Event Management
------------------
+Contract Race Management
+------------------------------
 
 
 .. _admin-calendar-view:
 
-Admin Calendar view
-===================
+Race Calendar view
+=============================
 
-**Navigation:** Calendar
+**Navigation:** Contract Races > Race Calendar
 
-The main administrative interface is a calendar of the :term:`events <event>` in the
-database. The administrator can create a new :term:`event`, or select an :term:`event` for 
+The main administrative interface is a calendar of the :term:`contract races <contract race>` in the
+database. The administrator can create a new :term:`contract race`, or select a :term`contract race` for 
 Edit, or Delete operations.
 
-To create a new :term:`event`, click on a date. To edit an :term:`event`, click on the event.
+To create a new :term:`contract race`, click on a date. To edit a :term`contract race`, click on the contract race.
 
 .. image:: images/admin-calendar.*
 
-The colors for the days and events help the administrator understand the state of the :term:`event`, 
-whether finish line :term:`services <service>` are required, or if this :term:`event` just has 
+The colors for the days and contract races help the administrator understand the state of the :term:`contract race`, 
+whether finish line :term:`services <service>` are required, or if this :term:`contract race` just has 
 premium promotion :term:`service`.
 
 .. image:: images/admin-calendar-legend.*
@@ -62,14 +62,14 @@ premium promotion :term:`service`.
 
 .. _event-overview-view:
 
-Event Overview view
+Race Table view
 ===================
 
-**Navigation:** Events > Table
+**Navigation:** Contract Races > Race Table
 
-While the :ref:`admin-calendar-view` may be the easiest way to view all the :term:`events <event>`,
-this view  provides a table  of all the events in the database which can be used as well. The admin
-can create a new :term:`event`, or  select an :term:`event` for Edit, Notes, or Delete 
+While the :ref:`admin-calendar-view` may be the easiest way to view all the :term:`contract races <contract race>`,
+this view  provides a table  of all the contract races in the database which can be used as well. The admin
+can create a new :term:`contract race`, or  select a :term`contract race` for Edit or Delete 
 operations.
 
 Notice the :term:`State` column. The :term:`State` may be updated automatically by the tool or the
@@ -83,12 +83,12 @@ action.
 
    :Edit: (requires single selection) takes you to :ref:`edit-event-view`
 
-   :CSV: download a csv file of the currently filtered events. **Note** only the displayed events will be downloaded, 
-      so if there are multiple pages of events, some may be missing.
+   :CSV: download a csv file of the currently filtered contract races. **Note** only the displayed contract races will be downloaded, 
+      so if there are multiple pages of contract races, some may be missing.
 
    :Calendar: switch to the :ref:`admin-calendar-view`
 
-The top row of controls provides a way to filter the table display down to only show the events
+The top row of controls provides a way to filter the table display down to only show the contract races
 which are in a particular :term:`State`, within a Date Range, or which has contracted for specific
 :term:`Services <service>`.
 
@@ -97,11 +97,11 @@ which are in a particular :term:`State`, within a Date Range, or which has contr
 
 .. _create-event-view:
 
-Create Event view
-=================
+Create Contract Race view
+============================
 
-The Create Event view is one way a race entry is created in the tool. Generally, this is used when a
-request is received for a new race. See  :ref:`post-event-processing` for details on how existing
+The Create Contract Race view is one way a race entry is created in the tool. Generally, this is used when a
+request is received for a new race. See :ref:`post-event-processing` for details on how existing
 races are automatically “renewed” for the following year.
 
 Notice the :term:`State` field. The :term:`State` may be updated automatically by the tool or the
@@ -134,25 +134,25 @@ Create Course view
 
 .. _edit-event-view:
 
-Edit Event view
-=================
+Edit Contract Race view
+============================
 
-The Edit Event view can be used to update the specifics about the race,
+The Edit Contract Race view can be used to update the specifics about the race,
 and to generate a contract.
 
-Click **Update** to update any changed fields in the :term:`event`.
+Click **Update** to update any changed fields in the :term:`contract race`.
 
 Click **Update and Send Contract** button to generate the contract and send the
 :ref:`contract-email`  to the race director (Contact email), treasurer, and
-raceservices. The event state  is automatically set to *contract-sent*.
+raceservices. The contract race state  is automatically set to *contract-sent*.
 
 The **Resend Contract** button is only active if contact has been sent. If in
 *contract-sent* :term:`state`, :ref:`contract-email` will be resent. If in
 *committed* :term:`state`, :ref:`agreement-accepted-email` will be resent.
 
-If the :term:`event` needs to be deleted, click **Delete**. You will be asked
-for confirmation before the :term:`event` is deleted. Note another option is to
-change the :term:`event` :term:`state` to *canceled*.
+If the :term:`contract race` needs to be deleted, click **Delete**. You will be asked
+for confirmation before the :term:`contract race` is deleted. Note another option is to
+change the :term:`contract race` :term:`state` to *canceled*.
 
 .. image:: images/edit-event-view.*
 
@@ -277,13 +277,13 @@ and can be changed by a superadmin.
 
 .. _pre-event-coordination-email:
 
-Pre Event Coordination email
-==============================
+Pre Contract Race Coordination email
+==========================================
 
-Before the :term:`event`, an email is sent to assure proper coordination.
+Before the :term:`contract race`, an email is sent to assure proper coordination.
 
 If the race director contracted for finishline and/or for coursemarking, [5 days]
-prior to the race, the Pre Event Coordination email is sent.
+prior to the race, the Pre Contract Race Coordination email is sent.
 
 The email will be something like the following. Note this is configured in the system
 and can be changed by a superadmin.
@@ -336,13 +336,13 @@ and can be changed by a superadmin.
 
 .. _post-event-processing:
 
-Post Event Processing
-=======================
+Post Contract Race Processing
+=====================================
 
-After the :term:`event`, a couple of automated tasks take place. This processing
-happens [5 days] after the event.
+After the :term:`contract race`, a couple of automated tasks take place. This processing
+happens [5 days] after the contract race.
 
--  :term:`Race` is automatically “renewed” meaning a *renewed-pending* :term:`event` is created
+-  :term:`Race` is automatically “renewed” meaning a *renewed-pending* :term:`contract race` is created
    the following year, on the same date, depending on the :term:`date rule` specified for this
    race. See :ref:`date-rules-view` for more information.
 
@@ -352,25 +352,25 @@ happens [5 days] after the event.
    **Note** if the :term:`date rule` for the :term:`race` is not set, the system creates
    one automatically, based on nth day of week in month.
 
--  for :term:`events <event>` which have *finishline* or *coursemarking* services, 
+-  for :term:`contract races <contract race>` which have *finishline* or *coursemarking* services, 
    a :ref:`post-event-email` is sent to thank the race
    director for the opportunity to provide our services, to let them
    know they’ve been penciled in for the following year, and to ask
    them to complete a short survey on how well we did
 
--  for :term:`events <event>` which have only *premiumpromotion* service, an email is sent
-   about 120 days before the next year's event is expected to occur
+-  for :term:`contract races <contract race>` which have only *premiumpromotion* service, an email is sent
+   about 120 days before the next year's contract race is expected to occur
 
 
 
 .. _post-event-email:
 
-Post Event email
-=================
+Post Contract Race email
+==============================
 
-The Post Event email is sent several days after the event completes. This
+The Post Contract Race email is sent several days after the contract race completes. This
 email is tailored based on the contracted services and solicits input
-through a post event survey.
+through a post contract race survey.
 
 The email will be something like the following. Note this is configured in the system
 and can be changed by a superadmin.
@@ -416,19 +416,19 @@ and can be changed by a superadmin.
 
 .. _post-event-email-reminder:
 
-Post Event email reminder
-===========================
+Post Contract Race email reminder
+====================================
 
-The Post Event email reminder is sent 120 days before an expected event which has not been 
+The Post Contract Race email reminder is sent 120 days before an expected contract race which has not been 
 confirmed. This email is similar to :ref:`post-event-email`.
 
 
 .. _agreement:
 
-Event Agreement
-==================
+Contract Race Agreement
+=============================
 
-The :term:`event` agreement will be similar to the following. Note this is configured in the system and 
+The :term:`contract race` agreement will be similar to the following. Note this is configured in the system and 
 can be changed by a superadmin.
 
 When viewing, this will
@@ -511,14 +511,14 @@ document.
 
 .. _event-exceptions-view:
 
-Event Exceptions view
-======================
+Contract Race Exceptions view
+==================================
 
-**Navigation:** Events > Exceptions
+**Navigation:** Contract Races > Exceptions
 
 :term:`Exceptions <exception>` are required to alter the normal rules for allowing races. Normally races are allowed on weekends and not allowed on weekdays. So the first Monday of September (Labor Day) is an example of an exception because we will allow races on that day.
 
-To create a new :term:`exception`, click on New from the Event Exceptions view. To edit an :term:`exception`, click on Edit.
+To create a new :term:`exception`, click on New from the Contract Race Exceptions view. To edit an :term:`exception`, click on Edit.
 
 .. image:: images/create-event-exception.*
 
@@ -543,7 +543,7 @@ To create a new :term:`exception`, click on New from the Event Exceptions view. 
 Date Rules view
 ================
 
-**Navigation:** Date Rules
+**Navigation:** Contract Races > Date Rules
 
 For items which need to be carried from year to year (e.g., :term:`races <race>`, :term:`exceptions <exception>`) a :term:`date rule` can be created to describe how to carry over the item.
 
@@ -608,14 +608,14 @@ states and whether they are set by the tool or by the administrator.
 Clicking the buttons at the top will take you to specific views or perform some
 action.
 
-   :New: takes you to :ref:`create-event-view`
+   :New: takes you to :ref:`create-sponsorship-view`
 
-   :Edit: (requires single selection) takes you to :ref:`edit-event-view`
+   :Edit: (requires single selection) takes you to :ref:`edit-sponsorship-view`
 
-   :CSV: download a csv file of the currently filtered events. **Note** only the displayed events will be downloaded, 
-      so if there are multiple pages of events, some may be missing.
+   :CSV: download a csv file of the currently filtered sponsorships. **Note** only the displayed sponsorships will be downloaded, 
+      so if there are multiple pages of sponsorships, some may be missing.
 
-The top row of controls provides a way to filter the table display down to only show the events
+The top row of controls provides a way to filter the table display down to only show the sponsorships
 which are in a particular race year, for a particular :term:`race <signature race>`, which are in one or
 more :term:`states <state>`, or are at one or more :term:`sponsor levels <sponsor level>`.
 
@@ -659,7 +659,7 @@ Click **Update** to update any changed fields in the :term:`sponsorship`.
 
 Click **Send Agreement** button to generate the agreement and send the
 to the sponsor :term:`client`'s contact email, treasurer, and
-races. The event state  is automatically set to *committed*.
+races. The sponsorship state  is automatically set to *committed*.
 
 The **Resend Agreement** button is only active if agreement has been sent. The
 agreement email will be resent.
@@ -714,7 +714,7 @@ saved in the Sponsor Query Log.
 Sponsor Race Dates Overview
 ===============================
 
-**Navigation:** Signature Races > Race Dates [super-admin only]
+**Navigation:** Super > Race Dates [super-admin only]
 
 .. image:: images/sponsor-race-dates-overview.*
 
@@ -724,6 +724,6 @@ Sponsor Race Dates Overview
 Sponsor Race Variables Overview
 ===============================
 
-**Navigation:** Signature Races > Race Variables [super-admin only]
+**Navigation:** Super > Race Variables [super-admin only]
 
 .. image:: images/sponsor-race-variables-overview.*

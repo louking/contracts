@@ -7,9 +7,12 @@ Definitions
     :sorted:
 
     client
-        Name of the entity with whom the contract is being entered with. For :term:`events <event>`, 
+        Name of the entity with whom the contract is being entered with. For :term:`contract races <contract race>`, 
         the contract is sent to the client 'Contact Email' for approval. For :term:`sponsorships <sponsorship>`,
         the agreement is sent to the client 'Contact Email', already deemed approved.
+
+    contract race
+        :term:`Race` on a particular date. E.g., the contract race record saves information about the 9/14/2019 Market Street Mile 
 
     course
         The course has an address where the finish line will be set up. Generally, we work with loop courses, so this is the same as the starting line.
@@ -18,23 +21,20 @@ Definitions
         A rule which defines a date on which a :term:`race` or :term:`exception` is created. E.g., Third Sat Aug is
         a date rule.
 
-    event
-        :term:`Race` on a particular date. E.g., the event record saves information about the 9/14/2019 Market Street Mile 
-
     exception
         An exception to the normal rules for allowing races. Normally races are allowed on weekends and not allowed
         on weekdays. So the first Monday of September (Labor Day) is an example of an exception because we will 
         allow races on that day.
 
     lead
-        the leader who will run the finish line operation on the day of the :term:`event`
+        the leader who will run the finish line operation on the day of the :term:`contract race`
 
     race
         A race can be run annually. The 'race' (e.g., Market Street Mile) has information which doesn't generally change, 
-        e.g., it's run on the second Saturday of September. Compare to :term:`event` which is a race on a particular date.
+        e.g., it's run on the second Saturday of September. Compare to :term:`contract race` which is a race on a particular date.
 
     renew
-        A :term:`race` is renewed a few days after the :term:`event` for the current year. The :term:`date rule` for the
+        A :term:`race` is renewed a few days after the :term:`contract race` for the current year. The :term:`date rule` for the
         race is used to schedule the race for the following year.
 
     service
@@ -62,11 +62,11 @@ Definitions
         :term:`client`. Different :term:`sponsor benefits <sponsor benefit>` are assigned for each sponsor level.
 
     state
-        - :term:`events <event>`
+        - :term:`contract races <contract race>`
             - *renewed-pending* - :term:`race` was copied automatically to the next year ("renewed") during 
               :ref:`post-event-processing`. The admin is expected to 
-              confirm with race director that the :term:`event` will happen and that the date and other 
-              :term:`event` details are correct. This is set automatically through :ref:`post-event-processing` or after clicking Renew.
+              confirm with race director that the :term:`contract race` will happen and that the date and other 
+              :term:`contract race` details are correct. This is set automatically through :ref:`post-event-processing` or after clicking Renew.
 
             - *tentative* - race director has confirmed :term:`race` will be run again this year, but is not ready to receive 
               the contract. This is set by the admin.
@@ -76,8 +76,8 @@ Definitions
 
             - *committed* - race director has signed contract (electronically). This is set automatically.
 
-            - *canceled* - :term:`event` has been canceled, but we don't want to lose track of it. E.g., if the race 
-              owed or paid money it's better to change the state to canceled than to delete the :term:`event`.
+            - *canceled* - :term:`contract race` has been canceled, but we don't want to lose track of it. E.g., if the race 
+              owed or paid money it's better to change the state to canceled than to delete the :term:`contract race`.
 
             The transition from *renewed-pending* to *tentative* is done by the admin using the :ref:`create-event-view` 
             or :ref:`edit-event-view`. This should be used to help remember which races have
