@@ -6,7 +6,7 @@ let raceregistrations_charts = [];
 let years;
 
 function raceregistrations_showchart( charttype ) {
-    $( '.race-chart' ).hide();
+    $( '.stats-chart' ).hide();
     $( '#' + charttype + '-chart' ).show();
 }
 
@@ -163,10 +163,9 @@ function raceregistrations_drawcallback( settings ) {
     };
 
     // need to show all charts while drawing, else error calculating width, height
-    $( '.race-chart' ).show();
+    $( '.stats-chart' ).show();
 
     // date chart
-    $('#date-chart svg').remove();
     let datechart = new Chart({
         data : dataset,
         margin : {top:30, left:60, right:100, bottom:80},
@@ -178,6 +177,7 @@ function raceregistrations_drawcallback( settings ) {
         yaxislabel : 'number of registrants',
         ytickincrement : 100,
         lastseq: datelastseq,
+        statstable: {containerid: 'date-table', 'headers': ['Year', 'Date', 'Registrations']}
     });
     datechart.draw();
     raceregistrations_charts.push(datechart);
@@ -213,7 +213,6 @@ function raceregistrations_drawcallback( settings ) {
     }
 
     // days to race chart
-    $('#daystorace-chart svg').remove();
     let daystoracechart = new Chart({
         data : daystoraceset,
         margin : {top:30, left:60, right:100, bottom:80},
@@ -224,12 +223,12 @@ function raceregistrations_drawcallback( settings ) {
         yaxislabel : 'number of registrants',
         ytickincrement : 100,
         lastseq : daystoracelastseq,
+        statstable: {containerid: 'daystorace-table', 'headers': ['Year', 'Days to Finish', 'Registrations']}
     });
     daystoracechart.draw();
     raceregistrations_charts.push(daystoracechart);
 
     // days from registration chart
-    $('#daysfromreg-chart svg').remove();
     let daysfromregopenchart = new Chart({
         data : daysfromregset,
         margin : {top:30, left:60, right:100, bottom:80},
@@ -240,6 +239,7 @@ function raceregistrations_drawcallback( settings ) {
         yaxislabel : 'number of registrants',
         ytickincrement : 100,
         lastseq : daysfromreglastseq,
+        statstable: {containerid: 'daysfromreg-table', 'headers': ['Year', 'Days from Open', 'Registrations']}
     });
     daysfromregopenchart.draw();
     raceregistrations_charts.push(daysfromregopenchart);

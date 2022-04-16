@@ -6,34 +6,41 @@
         display: none;
     }
 
-    .flex-container {
+    .stats-container {
         display: flex;
         flex-flow: row wrap;
         align-items: flex-start;
     }
 
-    .flex-item {
-      padding: 5px;
-      /*width: 200px;*/
-      margin-right: 10px;
-      margin-bottom: 10px;
+    .stats-chart {
+        min-width: 600px; 
+        max-width: 1200px; 
+        flex: 4;
     }
 
-    .race-chart {
-        width:900px;
-        height:600px;
+    .stats-table {
+        flex: 1;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 0 10px 0 0;
     }
 
   </style>
 {% endblock %}
 {% block body %}
   {{ super() }}
-  <div class=flex-container>
-    <div id=date-chart class="flex-item race-chart">
-    </div>
-    <div id=daystorace-chart class="flex-item race-chart">
-    </div>
-    <div id=daysfromreg-chart class="flex-item race-chart">
-    </div>
+  <div class="stats-container">
+    <div id=date-chart class="stats-chart"></div>
+    <div id=date-table class="stats-table"></div>
+  </div>
+  <div class="stats-container">
+    <div id=daystorace-chart class="stats-chart"></div>
+    <div id=daystorace-table class="stats-table"></div>
+  </div>
+  <div class="stats-container">
+    <div id=daysfromreg-chart class="stats-chart"></div>
+    <div id=daysfromreg-table class="stats-table"></div>
   </div>
 {% endblock %}

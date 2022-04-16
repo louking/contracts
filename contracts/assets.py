@@ -44,7 +44,7 @@ moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
 fullcalendar_ver = '3.9.0'  # fullcalendar.io
 materialize_ver = '1.0.0'   # materializecss.com
-d3_ver = '5.9.2'            # d3js.org (see https://d3js.org/)
+d3_ver = '7.4.2'            # d3js.org (see https://d3js.org/)
 
 materialize_bundle_js = Bundle(
         'js/materialize-v{ver}/materialize/js/materialize.js'.format(ver=materialize_ver),
