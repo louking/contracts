@@ -237,7 +237,7 @@ class ContractManager():
         _date_ = dt.dt2asc( date.today() )
         
         # copy caller's mergefields and add built-in fields
-        course = mergefields.course # otherwise lazy load doesn't work
+        course =  getattr(mergefields, 'course', None)  # otherwise lazy load doesn't work
         merge = deepcopy(mergefields)
         merge._date_ = _date_
 
