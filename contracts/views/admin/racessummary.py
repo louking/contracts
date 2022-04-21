@@ -19,13 +19,16 @@ from tempfile import TemporaryFile
 # pypi
 from flask import current_app, jsonify
 from flask.views import MethodView
+from loutilities.timeu import asctime
+from loutilities.tables import CrudApi
 
 # homegrown
 from . import bp
-from contracts.dbmodel import SponsorRace
-from contracts.runsignup import RunSignUp
-from loutilities.timeu import asctime
-from loutilities.tables import CrudApi
+from ...dbmodel import SponsorRace
+from ...runsignup import RunSignUp
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-sponsor-guide.html'
 
 # convert mm/dd/yyyy hh:mm to yyyy-mm-dd
 ymd = asctime('%Y-%m-%d')
@@ -243,6 +246,7 @@ raceregistrations_view = RaceRegistrationsApi(
                     app = bp,   # use blueprint instead of app
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'race.summary.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Race Registrations',
                     endpoint = 'admin.raceregistrations',
                     rule = '/raceregistrations',

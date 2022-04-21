@@ -18,18 +18,21 @@ from re import match
 
 # pypi
 from flask_security import roles_accepted, current_user
+from loutilities.tables import DbCrudApiRolePermissions
+from loutilities.tables import REGEX_URL
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Event, Race, Client, State, Lead, Course, Service, Tag
-from contracts.dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
-from contracts.dbmodel import DateRule
-from contracts.dbmodel import STATE_TENTATIVE
-from loutilities.tables import DbCrudApiRolePermissions
+from ...dbmodel import db, Event, Race, Client, State, Lead, Course, Service, Tag
+from ...dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
+from ...dbmodel import DateRule
+from ...dbmodel import STATE_TENTATIVE
 from .daterules import daterule
 from .common import client
 from .eventscontract import EventsContract
-from loutilities.tables import REGEX_URL
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-event-guide.html'
 
 ##########################################################################################
 # leads endpoint
@@ -47,6 +50,7 @@ lead = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'leads', 
                     endpoint = 'admin.leads', 
                     rule = '/leads', 
@@ -95,6 +99,7 @@ course = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'courses', 
                     endpoint = 'admin.courses', 
                     rule = '/courses', 
@@ -142,6 +147,7 @@ feetype = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Fee Types', 
                     endpoint = 'admin.feetype', 
                     rule = '/feetype', 
@@ -184,6 +190,7 @@ feebasedon = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Fee Based On', 
                     endpoint = 'admin.feebasedon', 
                     rule = '/feebasedon', 
@@ -231,6 +238,7 @@ addon = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Add-Ons', 
                     endpoint = 'admin.addon', 
                     rule = '/addon', 
@@ -276,6 +284,7 @@ service = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'services', 
                     endpoint = 'admin.services', 
                     rule = '/services', 
@@ -324,6 +333,7 @@ eventexception = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'event exceptions', 
                     endpoint = 'admin.eventexceptions', 
                     rule = '/eventexceptions', 
@@ -378,6 +388,7 @@ race = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'races', 
                     endpoint = 'admin.races', 
                     rule = '/races', 
@@ -545,6 +556,7 @@ event_view = EventsContract(
                     pagename = 'contract races', 
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'events.superadmin.jinja2',
+                    templateargs={'adminguide': adminguide},
                     endpoint = 'admin.events-superadmin', 
                     rule = '/events', 
                     dbmapping = event_dbmapping, 

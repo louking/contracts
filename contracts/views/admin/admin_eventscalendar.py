@@ -21,19 +21,22 @@ from flask import request, jsonify, render_template, url_for
 from flask.views import MethodView
 from flask_security.decorators import roles_accepted
 import requests
+from loutilities.flask_helpers.blueprints import add_url_rules
 
 # home grown
 from . import bp
-from contracts.dbmodel import db, Event, EventAvailabilityException, DateRule
-from contracts.dbmodel import STATE_CANCELED, STATE_COMMITTED
-from contracts.daterule import daterule2dates
-from contracts.utils import time24
-from loutilities.flask_helpers.blueprints import add_url_rules
+from ...dbmodel import db, Event, EventAvailabilityException, DateRule
+from ...dbmodel import STATE_CANCELED, STATE_COMMITTED
+from ...daterule import daterule2dates
+from ...utils import time24
+from ...version import __docversion__
 
 from .events import event_view
 event_dte = event_view.dte
 
 class parameterError(Exception): pass
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-event-guide.html'
 
 #######################################################################
 class EventsCalendarApi(MethodView):
@@ -233,6 +236,7 @@ class EventsCalendar(MethodView):
                    'pagename'     : 'contract races',
                    'tableurl'     : url_for( '.events-superadmin' ),
                    'edoptions'    : edoptions,
+                   'adminguide'   : adminguide,
                    'saformjsurls' : event_view.saformjsurls()
                   }
         return render_template( 'admin_eventscalendar.jinja2', **context )

@@ -15,11 +15,14 @@ daterules - manage daterules tables
 
 # pypi
 from flask import current_app
+from loutilities.tables import DbCrudApiRolePermissions, DataTablesEditor
 
 # homegrown
 from . import bp
-from loutilities.tables import DbCrudApiRolePermissions, DataTablesEditor
-from contracts.dbmodel import db, DateRule
+from ...dbmodel import db, DateRule
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-event-guide.html'
 
 ##########################################################################################
 # daterules endpoint
@@ -67,6 +70,7 @@ daterule = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Date Rules', 
                     endpoint = 'admin.daterules', 
                     rule = '/daterules', 

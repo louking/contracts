@@ -19,17 +19,20 @@ from re import match
 # pypi
 from flask import request, url_for
 from dominate.tags import button
-
-# homegrown
-from . import bp
-from contracts.dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit, SponsorTag
-from contracts.dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
-from contracts.dbmodel import Client, State
-from .common import client
-from .sponsorcontract import SponsorContract
 from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
 from loutilities.tables import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 from loutilities.filters import filtercontainerdiv, filterdiv
+
+# homegrown
+from . import bp
+from ...dbmodel import db, Sponsor, SponsorRace, SponsorLevel, SponsorBenefit, SponsorTag
+from ...dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
+from ...dbmodel import Client, State
+from .common import client
+from .sponsorcontract import SponsorContract
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-sponsor-guide.html'
 
 ##########################################################################################
 # sponsors endpoint
@@ -196,6 +199,7 @@ sponsor_view = SponsorContract(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'sponsors.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsorships', 
                     endpoint = 'admin.sponsorships', 
                     rule = '/sponsorships', 
@@ -454,6 +458,7 @@ sponsorview = ViewkeyView(
                     model = Sponsor,
                     roles_accepted = [],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsorships View',
                     endpoint = 'admin.sponsorshipsview',
                     rule = '/sponsorshipsview',   # NOTE: need to change sponsorshipsview.js if this changes
@@ -560,6 +565,7 @@ class SponsorSummary(DbCrudApiRolePermissions):
                     db = db,
                     model = Sponsor,
                     template = 'sponsor.summary.jinja2',
+                    templateargs={'adminguide': adminguide},
                     dbmapping = sponsorsummary_dbmapping,
                     formmapping = sponsorsummary_formmapping,
                     checkrequired = True,
@@ -696,6 +702,7 @@ sponsorrace = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Races', 
                     endpoint = 'admin.sponsorraces', 
                     rule = '/sponsorraces', 
@@ -808,6 +815,7 @@ sponsorlevel = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Levels', 
                     endpoint = 'admin.sponsorlevels', 
                     rule = '/sponsorlevels', 
@@ -875,6 +883,7 @@ sponsorracedate = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Race Dates', 
                     endpoint = 'admin.sponsorracedates', 
                     rule = '/sponsorracedates', 
@@ -974,6 +983,7 @@ sponsorracevbl = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Race Variables', 
                     endpoint = 'admin.sponsorracevbls', 
                     rule = '/sponsorracevbls', 
@@ -1055,6 +1065,7 @@ sponsorbenefit = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Benefits', 
                     endpoint = 'admin.sponsorbenefits', 
                     rule = '/sponsorbenefits', 
@@ -1125,6 +1136,7 @@ sponsorquerylog = DbCrudApiRolePermissions(
                     model = SponsorQueryLog, 
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsor Query Log', 
                     endpoint = 'admin.sponsorquerylog', 
                     rule = '/sponsorquerylog', 

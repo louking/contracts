@@ -12,11 +12,15 @@
 tags - manage tags
 ====================================================
 '''
+# pypi
+from loutilities.tables import DbCrudApiRolePermissions
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Tag, SponsorTag
-from loutilities.tables import DbCrudApiRolePermissions
+from ...dbmodel import db, Tag, SponsorTag
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
 
 ###########################################################################################
 # tags endpoint
@@ -39,6 +43,7 @@ tag = ContractTagsView(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'event-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'contract tags', 
                     endpoint = 'admin.tags', 
                     rule = '/tags', 
@@ -86,6 +91,7 @@ super_tag = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'super contract tags', 
                     endpoint = 'admin.super-tags', 
                     rule = '/super-tags', 
@@ -137,6 +143,7 @@ sponsortag = SponsorTagsView(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin', 'sponsor-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Sponsorship Tags',
                     endpoint = 'admin.sponsortags', 
                     rule = '/sponsorshiptags',
@@ -184,6 +191,7 @@ super_sponsortag = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'super sponsorship tags',
                     endpoint = 'admin.super-sponsortags', 
                     rule = '/super-sponsorshiptags',

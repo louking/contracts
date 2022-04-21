@@ -16,11 +16,14 @@ contract - class and helpers to manage contract
 # standard
 
 # pypy
+from loutilities.tables import DbCrudApiRolePermissions
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
-from loutilities.tables import DbCrudApiRolePermissions
+from ...dbmodel import db, Contract, ContractType, TemplateType, ContractBlockType
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
 
 ##########################################################################################
 # templatetype endpoint
@@ -38,6 +41,7 @@ templatetype = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'Template types', 
                     endpoint = 'admin.templatetypes', 
                     rule = '/templatetypes', 
@@ -78,6 +82,7 @@ contracttype = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'contracttypes', 
                     endpoint = 'admin.contracttypes', 
                     rule = '/contracttypes', 
@@ -115,6 +120,7 @@ contractblocktype = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'contractblocktypes', 
                     endpoint = 'admin.contractblocktypes', 
                     rule = '/contractblocktypes', 
@@ -152,6 +158,7 @@ contract = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'contract content', 
                     endpoint = 'admin.contracts', 
                     rule = '/contractcontent', 

@@ -18,12 +18,15 @@ from re import match
 
 # pypi
 from flask_security import roles_accepted, current_user
+from loutilities.tables import DbCrudApiRolePermissions
+from loutilities.tables import REGEX_URL, REGEX_EMAIL
 
 # homegrown
 from . import bp
-from contracts.dbmodel import db, Client, State
-from loutilities.tables import DbCrudApiRolePermissions
-from loutilities.tables import REGEX_URL, REGEX_EMAIL
+from ...dbmodel import db, Client, State
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
 
 ##########################################################################################
 # clients endpoint
@@ -56,6 +59,7 @@ client = DbCrudApiRolePermissions(
                     pagename = 'clients', 
                     roles_accepted = ['event-admin', 'sponsor-admin', 'super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     endpoint = 'admin.clients-admin', 
                     rule = '/clients', 
                     dbmapping = client_dbmapping, 
@@ -111,6 +115,7 @@ state = DbCrudApiRolePermissions(
                     version_id_col = 'version_id',  # optimistic concurrency control
                     roles_accepted = ['super-admin'],
                     template = 'datatables.jinja2',
+                    templateargs={'adminguide': adminguide},
                     pagename = 'contract states', 
                     endpoint = 'admin.states', 
                     rule = '/states', 

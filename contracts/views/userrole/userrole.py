@@ -12,8 +12,8 @@ from loutilities.user.views.userrole import UserView, InterestView, RoleView
 from loutilities.user.roles import ROLE_SUPER_ADMIN, ROLE_MEMBERSHIP_ADMIN, ROLE_MEETINGS_ADMIN
 from loutilities.user.roles import ROLE_LEADERSHIP_ADMIN
 
-orgadminguide = f'https://contracts.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
-superadminguide = f'https://contracts.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
+orgadminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
+superadminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
 
 class LocalUserView(UserView):
     def editor_method_postcommit(self, form):

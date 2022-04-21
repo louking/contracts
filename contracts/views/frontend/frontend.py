@@ -15,10 +15,13 @@ frontend - views for contracts database
 # pypi
 from flask import render_template
 from flask.views import MethodView
+from loutilities.flask_helpers.blueprints import add_url_rules
 
 # home grown
 from . import bp
-from loutilities.flask_helpers.blueprints import add_url_rules
+from ...version import __docversion__
+
+adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-guide.html'
 
 #######################################################################
 class Index(MethodView):
@@ -28,7 +31,7 @@ class Index(MethodView):
                 }
 
     def get(self):
-        return render_template('index.jinja2')
+        return render_template('index.jinja2', adminguide=adminguide)
 
 #----------------------------------------------------------------------
 add_url_rules(bp, Index)
