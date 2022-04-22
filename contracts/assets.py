@@ -49,7 +49,7 @@ d3_ver = '7.4.2'            # d3js.org (see https://d3js.org/)
 materialize_bundle_js = Bundle(
         'js/materialize-v{ver}/materialize/js/materialize.js'.format(ver=materialize_ver),
 
-        filters='jsmin',
+        filters='rjsmin',
         output='gen/materialize.js',
         )
 materialize_bundle_css = Bundle(
@@ -77,7 +77,7 @@ asset_bundles = {
         'datatables.dataRender.ellipsis.js',    # from loutilities
         'editor.buttons.editrefresh.js',        # from loutilities
 
-        filters='jsmin',
+        filters='rjsmin',
         output='gen/frontend.js',
         ),
 
@@ -110,7 +110,7 @@ asset_bundles = {
         materialize_bundle_js,
         'frontend/events-servicesquery.js',
 
-        filters='jsmin',
+        filters='rjsmin',
         output='gen/events-servicesquery.js',
         ),
 
@@ -118,7 +118,7 @@ asset_bundles = {
         materialize_bundle_js,
         'frontend/racesponsorship.js',
         
-        filters='jsmin',
+        filters='rjsmin',
         output='gen/racesponsorship.js',
         ),
 
@@ -196,7 +196,7 @@ asset_bundles = {
         'editor.buttons.editrefresh.js',        # from loutilities
 
         output='gen/admin.js',
-        filters='jsmin',
+        filters='rjsmin',
         ),
 
     'admin_css': Bundle(
