@@ -26,6 +26,7 @@ from jinja2 import Template
 from click import argument
 
 # homegrown
+from contracts import create_app
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag, State
 from contracts.dbmodel import Sponsor, SponsorRaceDate
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
@@ -43,30 +44,16 @@ from loutilities.timeu import asctime
 
 class parameterError(Exception): pass
 
-# create app and get configuration
-app = Flask(__name__)
+# get configuration and create app
 dirname = os.path.dirname(__file__)
-# one level up
-dirname = os.path.dirname(dirname)
-configdir = os.path.join(dirname, 'config')
-configfile = "contracts.cfg"
-configpath = os.path.join(configdir, configfile)
-app.config.from_object(Production(configpath))
-appconfig = getitems(configpath, 'app')
-app.config.update(appconfig)
+oneup = os.path.dirname(dirname)
+configpath = os.path.join(oneup, 'config', 'contracts.cfg')
 
-# set up database
-db.init_app(app)
+# userconfigpath first so configpath can override
+userconfigpath = os.path.join(oneup, 'config', 'users.cfg')
+configfiles = [userconfigpath, configpath]
 
-# set up scoped session
-with app.app_context():
-    db.session = scoped_session(sessionmaker(autocommit=False,
-                                             autoflush=False,
-                                             bind=db.engine))
-    db.query = db.session.query_property()
-
-    # turn on logging
-    setlogging()
+app = create_app(Production(configfiles), configfiles)
 
 # set up datatabase date formatter
 dbdate = asctime('%Y-%m-%d')
