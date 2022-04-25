@@ -25,8 +25,10 @@
             "request": "launch",
             "type": "pwa-chrome",
             "url": "http://dev.localhost:5000",
-            // "webRoot": "${workspaceFolder}"
-            "webRoot": "${workspaceFolder}contracts"
+            "webRoot": "${workspaceFolder}/contracts",
+            // see https://code.visualstudio.com/docs/editor/variables-reference#_variables-scoped-per-workspace-folder
+            "pathMapping": {"/loutilities/static": "${workspaceFolder:loutilities}/loutilities/tables-assets/static"},
+            "justMyCode": false,
         },
         {
             "name": "Python: flask db migrate -m \"common user database\"",
