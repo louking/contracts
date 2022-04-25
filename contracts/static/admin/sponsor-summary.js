@@ -356,7 +356,6 @@ function summary_drawcallback( settings ) {
         }
     };
 
-    $('#weekly-chart svg').remove();
     // charts_line_chart_annual({
     let weeklychart = new Chart({
         data : dataset,
@@ -369,6 +368,7 @@ function summary_drawcallback( settings ) {
         lastseq: sponsorlastseq,
         yaxislabel : 'total sponsorship dollars',
         ytickincrement : 500,
+        statstable: {containerid: 'weekly-chart-table', 'headers': ['Year', 'Date', 'Sponsor $']}
     });
     weeklychart.draw();
 

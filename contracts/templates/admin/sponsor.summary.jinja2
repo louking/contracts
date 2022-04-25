@@ -53,8 +53,8 @@
         text-align: center;
     }
     #weekly-chart {
-        width:600px;
-        height:300px;
+        min-width: 900px; 
+        max-width: 1200px; 
     }
 
   </style>
@@ -93,7 +93,9 @@
         <tbody></tbody>
         <tfoot></tfoot>
     </table>
-    <div id=weekly-chart class=flex-item>
+    <div class=flex-item>
+        <div id=weekly-chart></div>
+        <div id=weekly-chart-table></div>
     </div>
   </div>
 {% endblock %}
