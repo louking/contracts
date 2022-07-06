@@ -71,7 +71,7 @@ jsmin==3.0.1
 jsonschema==3.2.0
 lazy==1.4
 loutilities==3.6.0
-lxml==4.8.0
+lxml==4.9.1
 Mako==1.1.1
 MarkupSafe==2.0.1
 mistune==0.8.4
