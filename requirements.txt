@@ -74,7 +74,7 @@ loutilities==3.6.0
 lxml==4.8.0
 Mako==1.1.1
 MarkupSafe==2.0.1
-mistune==0.8.4
+mistune==2.0.3
 mock==3.0.5
 mod-wsgi==4.7.0
 more-itertools==8.1.0
