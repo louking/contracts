@@ -164,7 +164,7 @@ def renew_sponsorship(sponsorship):
     # set up tag to indicate event was renewed
     renewedtag = SponsorTag.query.filter_by(tag=SPONSORTAG_RACERENEWED).one()
 
-    # don't renew the race twice
+    # don't renew the sponsorship twice
     if renewedtag not in sponsorship.tags:
 
         # create new sponsorship based on this sponsorship's daterule
