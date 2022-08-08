@@ -318,6 +318,10 @@ function summary_drawcallback( settings ) {
         if (!item.hasOwnProperty('state') || item.state.state != 'committed' || item.treatment != 'summarize') {
             return true;
         }
+        // skip when year is outside of range
+        if (item.raceyear < minyear || item.raceyear > maxyear) {
+            return true;
+        }
         (result[item.raceyear] || (result[item.raceyear] = {
             label:item.raceyear,
             values:[]})).values.push({x:item.mdateagreed,
