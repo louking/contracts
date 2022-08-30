@@ -76,7 +76,7 @@ Mako==1.1.1
 MarkupSafe==2.0.1
 mistune==0.8.4
 mock==3.0.5
-mod-wsgi==4.7.0
+mod-wsgi==4.9.3
 more-itertools==8.1.0
 mysqlclient==1.4.6
 nbconvert==5.6.1
