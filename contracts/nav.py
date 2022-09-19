@@ -5,31 +5,43 @@ define navigation bar based on privileges
 '''
 
 # standard
+from json import dumps
 
 # pypi
+from flask import url_for
 from flask_nav import Nav
-from flask_nav.elements import Navbar, View, Subgroup
+from flask_nav.elements import Navbar, View, Subgroup, RawTag
 from flask_nav.renderers import SimpleRenderer
-from dominate import tags
+from dominate.tags import a, ul, li
+from dominate.util import raw
 from flask_security import current_user, logout_user
 from flask import current_app, session
+
+# homegrown
+from .dbmodel import SponsorRace
 
 thisnav = Nav()
 
 @thisnav.renderer()
 class NavRenderer(SimpleRenderer):
+    '''
+    this generates nav_renderer renderer, referenced in the jinja2 code which builds the nav
+    '''
     def visit_Subgroup(self, node):
-        # 'a' tag required by smartmenus
-        title = tags.a(node.title, href="#")
-        group = tags.ul(_class='subgroup')
+        # a tag required by smartmenus
+        title = a(node.title, href="#")
+        group = ul(_class='subgroup')
 
         if node.active:
             title.attributes['class'] = 'active'
 
         for item in node.items:
-            group.add(tags.li(self.visit(item)))
+            group.add(li(self.visit(item)))
 
         return [title, group]
+
+    def visit_RawTag(self, node):
+        return li(raw(node.content), **node.attribs)
 
 @thisnav.navigation()
 def nav_menu():
@@ -62,7 +74,50 @@ def nav_menu():
     # sponsor stuff
     if current_user.has_role('sponsor-admin') or current_user.has_role('super-admin'):
         navbar.items.append(sponsors)
-        sponsors.items.append(View('Race Registrations', 'admin.raceregistrations'))
+        
+        races = SponsorRace.query.filter_by(display=True).all()
+        raceopts = [{'label': r.race, 'value': r.id} for r in races if r.couponprovider=='RunSignUp' and r.couponproviderid]
+        
+        sponsors.items.append(
+            RawTag( 
+                # popup_form is referenced in beforedatatablesz.js $("a").click function
+                a('Race Registrations', href='#', raceregistrations_popup=dumps({
+                    'title': 'Choose Race',
+                    'editoropts': {
+                        'className': 'choose-race-form',
+                        'fields': [
+                            {'name': 'race', 'label': 'Race', 'type': 'select2', 'options': raceopts, 'def': 'racesession'},
+                        ]
+                    },
+                    'buttons': [
+                        {'label': 'Show Registrations',
+                        'action': f'''
+                                {{ 
+                                    var args = {{race: this.get("race")}};
+                                    var error = false;
+                                    this.error("");
+                                    for (var field in args) {{
+                                        this.error(field, "");
+                                        if (!args[field]) {{
+                                            error = true;
+                                            this.error(field, "must be supplied");
+                                        }}
+                                    }}
+                                    if (error) {{
+                                        this.error("check field errors");
+                                        return;
+                                    }}
+                                    // args.desc = this.field("club").inst().find(":selected").text() + " - " + this.get("year") + " " + this.get("series");
+                                    this.close();
+                                    window.location.href = "{url_for('admin.raceregistrations')}?\" + $.param( args );
+                                }}'''},
+                    ],
+                    # name of functions called with standalone editor instance and buttons field from above
+                    'onopen': 'navraceregs_onopen',
+                    'onclose': 'navraceregs_onclose',
+                })
+                ).render()
+        ))
         sponsors.items.append(View('Sponsorship Summary', 'admin.sponsorsummary'))
         sponsors.items.append(View('Sponsorships', 'admin.sponsorships'))
         sponsors.items.append(View('Query Log', 'admin.sponsorquerylog'))

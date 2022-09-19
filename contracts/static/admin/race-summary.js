@@ -255,8 +255,8 @@ function raceregistrations_drawcallback( settings ) {
 // only define afterdatatables if needed
 if ( ['/admin/raceregistrations'].includes(location.pathname) ) {
     // set up registered filters
-    fltr_register('external-filter-race', null, false);
-
+    // none
+    
     // set up buttons for edit form after datatables has been initialized
     function afterdatatables() {
         // initialize filters

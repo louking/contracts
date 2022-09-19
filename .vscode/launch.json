@@ -23,7 +23,7 @@
         {
             "name": "Launch Chrome",
             "request": "launch",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "url": "http://dev.localhost:5000",
             "webRoot": "${workspaceFolder}/contracts",
             // see https://code.visualstudio.com/docs/editor/variables-reference#_variables-scoped-per-workspace-folder
@@ -47,6 +47,14 @@
                 "common user database",
             ],
             "jinja": true,
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
         },
     ]
 }

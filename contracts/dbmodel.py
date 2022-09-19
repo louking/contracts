@@ -548,6 +548,7 @@ class SponsorRace(Base):
     description      = Column( String(DESCR_LEN) )
     display          = Column( Boolean )
     viewkey          = Column( Text )
+    cacheupdatets    = Column( Integer, nullable=False, default=0 )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
@@ -584,6 +585,23 @@ class SponsorRaceVbl(Base):
     __mapper_args__ = {
         'version_id_col' : version_id
     }
+
+# sponsor rache registration cache
+class SponsorRaceRegCache(Base):
+    __tablename__ = 'sponsorraceregcache'
+    id              = Column( Integer, primary_key=True )
+    registration_id = Column( Integer )
+    event_id        = Column( Integer, index=True )
+    event_name      = Column( Text )
+    registration_date = Column( DateTime )
+    last_modified_ts = Column( Integer ) # timestamp
+    first_name      = Column ( Text )
+    last_name       = Column ( Text )
+    email           = Column ( Text )
+    gender          = Column ( Text )
+    dob             = Column ( Date )
+    is_active       = Column( Boolean )
+    removed_reason  = Column( Text )
 
 # sponsor levels / sponsor benefits
 # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many

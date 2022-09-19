@@ -34,6 +34,7 @@ logout_url = 'https://runsignup.com/rest/logout'
 coupons_url = 'https://runsignup.com/rest/race/{race_id}/coupons'
 race_url = 'https://runsignup.com/rest/race/{race_id}'
 raceparticipants_url = 'https://runsignup.com/rest/race/{race_id}/participants'
+removedparticipants_url = 'https://runsignup.com/rest/race/{race_id}/removed-participants'
 
 class accessError(Exception): pass
 class parameterError(Exception): pass
@@ -278,7 +279,7 @@ class RunSignUp():
 
 
     # ----------------------------------------------------------------------
-    def getraceparticipants(self, race_id, event_id):
+    def getraceparticipants(self, race_id, event_id, **kwargs):
     # ----------------------------------------------------------------------
         """
         return race information accessible to this application
@@ -302,6 +303,7 @@ class RunSignUp():
                 'page': page,
                 'results_per_page': BITESIZE,
             }
+            params.update(**kwargs)
 
             # note list is returned; only asking for one event, so data gets the first item in list
             data = self._rsuget(raceparticipants_url.format(race_id=race_id),
@@ -318,6 +320,50 @@ class RunSignUp():
             if len(data['participants']) < BITESIZE: break
 
         return raceparticipants
+
+    # ----------------------------------------------------------------------
+    def getremovedparticipants(self, race_id, event_id, **kwargs):
+    # ----------------------------------------------------------------------
+        """
+        return race information accessible to this application
+
+        :param race_id: id of race
+        :param event_id: id of event (instance of event for race in a given year)
+        """
+
+        if self.debug:
+            current_app.logger.debug('getremovedparticipants({}, event_id={})'.format(race_id, event_id))
+
+        # max number of raceparticipants in raceparticipant list is 100, so need to loop, collecting
+        # BITESIZE raceparticipants at a time.  These are all added to raceparticipants list, and final
+        # list is returned to the caller
+        BITESIZE = 100
+        page = 1
+        removedparticipants = []
+        while True:
+            params = {
+                'event_id': event_id,
+                'page': page,
+                'results_per_page': BITESIZE,
+            }
+            params.update(**kwargs)
+
+            # note list is returned; only asking for one event, so data gets the first item in list
+            data = self._rsuget(removedparticipants_url.format(race_id=race_id),
+                                **params
+                                )[0]
+            if 'event' not in data: break
+            if 'participants' not in data['event'] or len(data['event']['participants']) == 0: break
+
+            theseremovedparticipants = data['event']['participants']
+
+            removedparticipants += theseremovedparticipants
+            page += 1
+
+            # stop iterating if we've reached the end of the data
+            if len(data['event']['participants']) < BITESIZE: break
+
+        return removedparticipants
 
     #----------------------------------------------------------------------
     def _rsuget(self, methodurl, **payload):
