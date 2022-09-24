@@ -73,6 +73,12 @@ asset_bundles = {
         'legend.js',
         'frontend/eventscalendar.js',
 
+        'js/DataTables-{ver}/js/jquery.dataTables.js'.format(ver=dt_datatables_ver),
+        'js/DataTables-{ver}/js/dataTables.jqueryui.js'.format(ver=dt_datatables_ver),
+
+        'js/Buttons-{ver}/js/dataTables.buttons.js'.format(ver=dt_buttons_ver),
+        'js/Buttons-{ver}/js/buttons.jqueryui.js'.format(ver=dt_buttons_ver),
+
         'datatables.js',                        # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities
         'editor.buttons.editrefresh.js',        # from loutilities
