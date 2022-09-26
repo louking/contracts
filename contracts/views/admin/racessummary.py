@@ -119,7 +119,7 @@ class RaceRegistrationsApi(CrudApi):
                 if event['registration_opens']:
                     racedata[thisrace][thisevent]['dates'][racedate]['regopendate'] = getdate(event['registration_opens'])
 
-            participants = SponsorRaceRegCache.query.filter_by(event_id=event['event_id']).all()
+            participants = SponsorRaceRegCache.query.filter_by(event_id=event['event_id'], is_active=True).all()
 
             for participant in participants:
                 regdate = ymd.dt2asc(participant.registration_date)
