@@ -11,7 +11,9 @@
             "module": "flask",
             "env": {
                 "FLASK_APP": "run.py",
-                "FLASK_ENV": "development"
+                // normally development, production for test of applogging
+                // but see https://flask.palletsprojects.com/en/2.2.x/changes/?highlight=flask_env#version-2-2-0
+                "FLASK_DEBUG": "true"
             },
             "args": [
                 "run",
