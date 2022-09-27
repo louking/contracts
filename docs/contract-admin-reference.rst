@@ -678,7 +678,7 @@ Post Sponsorship Processing
 =============================
 
 After the :term:`signature race` associated with a :term:`sponsorship`, an 
-automated task take place. This processing happens [5 days] after the race.
+automated task take place. This processing happens [15 days] after the race.
 
 -  :term:`Sponsorship` is automatically "renewed" meaning a *renewed-pending* :term:`sponsorship`
    is created for the following year.
