@@ -85,7 +85,7 @@ jupyter_client==7.3.5
 jupyterlab-pygments==0.2.2
 jupyterlab-widgets==3.0.3
 lazy==1.5
-loutilities==3.6.1
+loutilities==3.7.0
 lxml==4.9.1
 Mako==1.2.3
 MarkupSafe==2.1.1
