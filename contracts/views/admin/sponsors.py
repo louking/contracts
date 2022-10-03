@@ -38,8 +38,8 @@ adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract
 # sponsors endpoint
 ###########################################################################################
 
-sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
-sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
+sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,client.clientAddr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
+sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,client_addr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
 sponsor_dbmapping = dict(list(zip(sponsor_dbattrs, sponsor_formfields)))
 sponsor_formmapping = dict(list(zip(sponsor_formfields, sponsor_dbattrs)))
 
@@ -254,6 +254,8 @@ sponsor_view = SponsorContract(
                         { 'data': 'client_name', 'name': 'client_name', 'label': 'Client Name', 'type': 'readonly',
                         },
                         { 'data': 'client_email', 'name': 'client_email', 'label': 'Client Email', 'type': 'readonly',
+                        },
+                        { 'data': 'client_addr', 'name': 'client_addr', 'label': 'Client Addr', 'type': 'readonly',
                         },
                         { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
                           'className': 'field_req',
