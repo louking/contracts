@@ -549,6 +549,7 @@ class SponsorRace(Base):
     display          = Column( Boolean )
     viewkey          = Column( Text )
     cacheupdatets    = Column( Integer, nullable=False, default=0 )
+    timezone         = Column( Text )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {

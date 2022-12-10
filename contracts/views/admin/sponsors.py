@@ -19,6 +19,7 @@ from re import match
 # pypi
 from flask import request, url_for
 from dominate.tags import button
+from pytz import all_timezones
 from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
 from loutilities.tables import REGEX_URL, REGEX_EMAIL, REGEX_VBL
 from loutilities.filters import filtercontainerdiv, filterdiv
@@ -677,9 +678,9 @@ sponsorsummaryview_view.register()
 ###########################################################################################
 
 sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
-                      'couponprovider,couponproviderid,description,display,viewkey'.split(',')
+                      'couponprovider,couponproviderid,description,display,viewkey,timezone'.split(',')
 sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
-                         'couponprovider,couponproviderid,description,display,viewkey'.split(',')
+                         'couponprovider,couponproviderid,description,display,viewkey,timezone'.split(',')
 sponsorrace_dbmapping = dict(list(zip(sponsorrace_dbattrs, sponsorrace_formfields)))
 sponsorrace_formmapping = dict(list(zip(sponsorrace_formfields, sponsorrace_dbattrs)))
 
@@ -696,6 +697,8 @@ def race_validate(action, formdata):
             results.append({ 'name' : field, 'status' : 'invalid email: correct format is like john.doe@example.com' })
 
     return results
+
+us_timezones = [t for t in all_timezones if t[0:3] == "US/"]
 
 sponsorrace = DbCrudApiRolePermissions(
                     app = bp,   # use blueprint instead of app
@@ -741,7 +744,12 @@ sponsorrace = DbCrudApiRolePermissions(
                         { 'data': 'email', 'name': 'email', 'label': 'Email', 
                           'className': 'field_req',
                         },
-                        { 'data': 'couponprovider', 'name': 'couponprovider', 'label': 'Coupon Provider', 
+                        {'data': 'timezone', 'name': 'timezone', 'label': 'Timezone',
+                        'className': 'field_req',
+                        'type': 'select2',
+                        'options': us_timezones,
+                        },
+                         { 'data': 'couponprovider', 'name': 'couponprovider', 'label': 'Coupon Provider', 
                         },
                         { 'data': 'couponproviderid', 'name': 'couponproviderid', 'label': 'Coupon Provider ID', 
                         },

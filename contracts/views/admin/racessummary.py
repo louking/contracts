@@ -99,8 +99,14 @@ class RaceRegistrationsApi(CrudApi):
             thisrace = race.race
             racedata[thisrace] = {}
 
+        # normally cache is used, but if url arg resetcache is present, the cache will be reset
+        onlyrecentevents = True
+        resetcache = request.args.get('resetcache', None)
+        if resetcache:
+            onlyrecentevents = False
+        
         try:
-            events = update_raceregcache(race.couponproviderid)
+            events = update_raceregcache(race.couponproviderid, onlyrecentevents=onlyrecentevents)
             db.session.commit()
         except:
             db.session.rollback()

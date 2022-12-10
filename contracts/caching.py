@@ -10,6 +10,7 @@ from time import time
 from flask import current_app
 from loutilities.timeu import asctime, dt2epoch
 from loutilities.transform import Transform
+from pytz import timezone
 
 # homegrown
 from .dbmodel import db, SponsorRace, SponsorRaceRegCache
@@ -52,8 +53,11 @@ def update_raceregcache(race_id, onlyrecentevents=True):
     if race.couponprovider != 'RunSignUp':
         raise f'service provider for {race.race} must be RunSignUp'
 
-    # track last time we updated cache
+    # track last time we updated cache (GMT)
     cacheupdatets = int(time())
+    
+    # get race timezone text from race configuration
+    racetz = timezone(race.timezone)
 
     # get events from service provider
     with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET']) as rsu:
@@ -65,7 +69,9 @@ def update_raceregcache(race_id, onlyrecentevents=True):
             # skip events which completed before the last time we updated the cache
             latestenddate = 0
             for regperiod in event['registration_periods']:
-                thisregcloses = regtime.asc2epoch(regperiod['registration_closes'])
+                # the epoch times are UTC
+                regclosedt = racetz.localize(regtime.asc2dt(regperiod['registration_closes']))
+                thisregcloses = dt2epoch(regclosedt)
                 if thisregcloses > latestenddate:
                     latestenddate = thisregcloses
                     
@@ -77,8 +83,14 @@ def update_raceregcache(race_id, onlyrecentevents=True):
             # get participants updated since last registration update
             # NOTE: this includes the participants from the last second again, 
             # as it's possible there was a registration during the last second and we don't want to drop those
-            participants = rsu.getraceparticipants(race.couponproviderid, event['event_id'], modified_after_timestamp=race.cacheupdatets)
-            
+            if onlyrecentevents:
+                participants = rsu.getraceparticipants(race.couponproviderid, event['event_id'], modified_after_timestamp=race.cacheupdatets)
+                participant_regids = {p['registration_id'] for p in participants}
+                regparticipants = rsu.getraceparticipants(race.couponproviderid, event['event_id'], registered_after_timestamp=race.cacheupdatets)
+                participants += [p for p in regparticipants if p['registration_id'] not in participant_regids]
+            else:
+                participants = rsu.getraceparticipants(race.couponproviderid, event['event_id'])
+                
             # add participant to cache, or update their entry
             for participant in participants:
                 regid = participant['registration_id']
@@ -90,9 +102,12 @@ def update_raceregcache(race_id, onlyrecentevents=True):
                 thisparticipant.event_id = event['event_id']
                 thisparticipant.event_name = event['name']
                 thisparticipant.is_active = True
-                
-            remparticipants = rsu.getremovedparticipants(race.couponproviderid, event['event_id'], modified_after_timestamp=race.cacheupdatets)
             
+            if onlyrecentevents:
+                remparticipants = rsu.getremovedparticipants(race.couponproviderid, event['event_id'], modified_after_timestamp=race.cacheupdatets)
+            else:
+                remparticipants = rsu.getremovedparticipants(race.couponproviderid, event['event_id'])
+
             # make removed participants inactive
             for participant in remparticipants:
                 regid = participant['registration_id']
