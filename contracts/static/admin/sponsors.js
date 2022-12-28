@@ -106,6 +106,13 @@ if ( ['/admin/sponsorships'].includes(location.pathname) ) {
         // initialize filters
         fltr_init();
 
+        // check for needed popup after editing
+        editor.on('postEdit', function( e, json, data, id ) {
+            if (json.popup != undefined) {
+                showerrorpopup(json.popup);
+            }
+        });
+
         // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
         $.ui.dialog.prototype._focusTabbable = $.noop;
     }

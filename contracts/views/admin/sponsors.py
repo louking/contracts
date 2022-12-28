@@ -17,7 +17,7 @@ sponsors - manage sponsors and associated tables
 from re import match
 
 # pypi
-from flask import request, url_for
+from flask import request, url_for, flash
 from dominate.tags import button
 from pytz import all_timezones
 from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
@@ -31,6 +31,7 @@ from ...dbmodel import SponsorQueryLog, SponsorRaceDate, SponsorRaceVbl
 from ...dbmodel import Client, State
 from .common import client
 from .sponsorcontract import SponsorContract
+from ...trends import check_sponsorship_conflicts, render_sponsorship_conflicts
 from ...version import __docversion__
 
 adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-sponsor-guide.html'
@@ -638,6 +639,17 @@ class SponsorSummary(DbCrudApiRolePermissions):
 
         # this initialization needs to be done before checking any self.xxx attributes
         super().__init__(**args)
+
+    def open(self):
+        super().open()
+
+        # flag any errors found after copying then resetting self.rows
+        # NOTE: this assumes SponsorContract is instantiated as a client table (i.e., not serverside)
+        theserows = list(self.rows)
+        self.rows = iter(theserows)
+        error_list = check_sponsorship_conflicts(theserows)
+        if error_list:
+            flash(render_sponsorship_conflicts(error_list))
 
 sponsorsummary = SponsorSummary(
     roles_accepted=['super-admin', 'sponsor-admin'],

@@ -196,6 +196,7 @@ asset_bundles = {
         'user/admin/beforedatatables.js',       # from loutilities
         'admin/beforedatatables.js',
         'editor.select2.mymethods.js',          # from loutilities
+        'utils.js',                             # from loutilities
         
         'datatables.js',                        # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities

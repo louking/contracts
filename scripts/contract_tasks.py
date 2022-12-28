@@ -627,7 +627,7 @@ def renewsponsorship(startdate, enddate):
         if sponsorship.state.state != STATE_COMMITTED: continue
 
         # renew event
-        newsponsorship = renew_sponsorship(sponsorship)
+        newsponsorships = renew_sponsorship(sponsorship)
 
         # pick up any db changes related to renewal (renew, daterule, event.tags)
         db.session.commit()

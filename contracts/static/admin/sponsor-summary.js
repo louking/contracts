@@ -76,6 +76,7 @@ function summary_drawcallback( settings ) {
     for (var year = minyear; year <= maxyear; year++) {
         years[year] = {total:0, avg:0, count:0, weeks:{}}
     }
+    var thisyear, prevyear, thisamount, prevamount;
 
     let today = moment({hour: 0});  // midnight today morning
     let sponsorlastseq = {};
@@ -109,18 +110,20 @@ function summary_drawcallback( settings ) {
             var thisrace = thisrow.race.race;
             var sponsor = thisrow.client.client;
             var level = thisrow.level.race_level;
-            // console.log('race='+thisrace+' year='+raceyear+' sponsor='+sponsor);
-            if (!(thisrace in trends[raceyear])) {
-                trends[raceyear][thisrace] = {};
+            // console.log(`adding to trends: ${raceyear} "${thisrace}" "${sponsor}"`)
+            if (!_.has(trends, [raceyear, thisrace, sponsor])) {
+                !_.set(trends, [raceyear, thisrace, sponsor], [])
             }
-            trends[raceyear][thisrace][sponsor] = {
-                race:thisrace,
-                raceyear:raceyear,
-                state:state,
-                sponsor:sponsor, 
-                level:level, 
-                amount:amount,
-            };
+            trends[raceyear][thisrace][sponsor].push( 
+                {
+                    race:thisrace,
+                    raceyear:raceyear,
+                    state:state,
+                    sponsor:sponsor, 
+                    level:level, 
+                    amount:amount,
+                }
+            );
         }
 
         // track yearly data for committed sponsorships
@@ -178,67 +181,100 @@ function summary_drawcallback( settings ) {
     }
 
     // calculate trend
-    // *** note logic here must match that in sponsorcontract.py ***
+    // *** note logic here must match that in trends.calculateTrend (trends.py) ***
     $.each( trends, function(raceyear, races ) {
         $.each( races, function(thisrace, sponsors)  {
-            $.each( sponsors, function(sponsor, rec) {
+            $.each( sponsors, function(sponsor, sponsorships) {
+                // console.log(`trend loop processing ${raceyear} "${thisrace}" "${sponsor}"`)
                 // handle records for focused year
-                var thisrace = rec.race;
-                if (rec.raceyear == summary_focusyear) {
-                    thisyear = rec;
-                    prevyear = trends[summary_focusyear-1][thisrace];
-                    if (prevyear != undefined) prevyear = trends[summary_focusyear-1][thisrace][sponsor];
+                if (raceyear == summary_focusyear) {
+                    // filter out canceled and in kind sponsorships
+                    thisyear = sponsorships.filter(sship => sship.state != 'canceled' && sship.amount != 0);
+                    thisyearfirst = thisyear[0];
+
+                    // continue if no sponsorships to look at
+                    if (thisyearfirst == undefined) return true; // continue
+                    
+                    prevyearsships = _.get(trends, [summary_focusyear-1, thisrace, sponsor], []);
+
+                    // filter prevyear array to only committed, nonzero sponsorships, and calculate amount
+                    prevyear = prevyearsships.filter(sship => sship.state == 'committed' && sship.amount != 0);
+                    prevamount = prevyear.reduce((sum, s) => sum + s.amount, 0);
+
+                    // calculate amount for thisyear
+                    thisamount = thisyear.reduce((sum, s) => sum + s.amount, 0);
 
                     // did not sponsor last year
-                    if (undefined == prevyear || prevyear.state != 'committed') {
-                        if (thisyear.state == 'committed') {
+                    if (prevyear == undefined || prevyear.length == 0) {
+                        if (thisyearfirst.state == 'committed') {
                             trendsummary.new.count += 1;
-                            trendsummary.new.amount += thisyear.amount;
+                            trendsummary.new.amount += thisamount;
+                            // console.log(`new,${raceyear},${thisrace},${sponsor},${thisamount}`)
                         }
 
                     // did sponsor last year
                     } else {
                         // committed this year
-                        if (thisyear.state == 'committed') {
+                        if (thisyearfirst.state == 'committed') {
                         // same amount as last year
-                            if (thisyear.amount == prevyear.amount) {
+                            if (thisamount == prevamount) {
                                 trendsummary.same.count += 1;
                                 trendsummary.same.amount += 0;  // net is always 0
-                            // more than last year
-                            } else if (thisyear.amount > prevyear.amount) {
+                                // console.log(`same,${raceyear},${thisrace},${sponsor},0`)
+                                // more than last year
+                            } else if (thisamount > prevamount) {
                                 trendsummary.up.count += 1;
-                                trendsummary.up.amount += (thisyear.amount - prevyear.amount);
+                                trendsummary.up.amount += (thisamount - prevamount);
+                                // console.log(`up,${raceyear},${thisrace},${sponsor},${thisamount - prevamount}`)
                             // less than last year
-                            } else if (thisyear.amount < prevyear.amount) {
+                            } else if (thisamount < prevamount) {
                                 trendsummary.down.count += 1;
                                 // this will be negative
-                                trendsummary.down.amount += (thisyear.amount - prevyear.amount);
+                                trendsummary.down.amount += (thisamount - prevamount);
+                                // console.log(`down,${raceyear},${thisrace},${sponsor},${thisamount - prevamount}`)
                             }
                         }
                     }
 
                     // we have solicited a sponsorship
-                    if (thisyear.state == 'tentative') {
+                    if (thisyearfirst.state == 'tentative') {
                         trendsummary.solicited.count += 1;
+                        // if we've solicited a sponsor we had from a previous year, 
+                        // until they commit their amount from the previous year is viewed as negative
+                        if (prevyear != undefined && prevyear.length > 0) {
+                            trendsummary.solicited.amount -= prevamount;
+                        }
+                        // console.log(`solicited,${raceyear},${thisrace},${sponsor},${-prevamount}`)
                     
                     // we haven't solicited yet
-                    } else if (thisyear.state == 'renewed-pending') {
+                    } else if (thisyearfirst.state == 'renewed-pending') {
                         trendsummary.pending.count += 1;
+                        // if a sponsor we had from a previous year hasn't yet been solicitited, 
+                        // until they commit their amount from the previous year is viewed as negative
+                        if (prevyear != undefined && prevyear.length > 0) {
+                            trendsummary.pending.amount -= prevamount;
+                        }
+                        // console.log(`pending,${raceyear},${thisrace},${sponsor},${-prevamount}`)
                     }
                 
                 // handle records for previous year
                 } else {
-                    thisyear = trends[summary_focusyear][thisrace];
-                    if (thisyear != undefined) thisyear = trends[summary_focusyear][thisrace][sponsor];
-                    prevyear = rec;
+                    if (!_.has(trends, [summary_focusyear, thisrace, sponsor])) {
+                        _.set(trends, [summary_focusyear, thisrace, sponsor], [])
+                    }
+                    thisyear = trends[summary_focusyear][thisrace][sponsor];
+                    thisyearfirst = thisyear[0];
+
+                    // filter to committed sponsorships that are not in-kind
+                    prevyear = sponsorships.filter(sship => sship.state == 'committed' && sship.amount != 0);
+                    prevamount = prevyear.reduce((sum, s) => sum + s.amount, 0);
 
                     // lost sponsor from last year
-                    if (prevyear.state == 'committed') {
-                        if (undefined == thisyear || thisyear.state == 'canceled') {
-                            trendsummary.lost.count += 1;
-                            // record as negative
-                            trendsummary.lost.amount -= prevyear.amount;
-                        }
+                    if (prevyear.length != 0 && (thisyear.length == 0 || thisyearfirst.state == 'canceled')) {
+                        trendsummary.lost.count += 1;
+                        // record as negative
+                        trendsummary.lost.amount -= prevamount;
+                        // console.log(`lost,${raceyear},${thisrace},${sponsor},${prevamount}`)
                     }
                 }
             });

@@ -159,7 +159,7 @@ def renew_sponsorship(sponsorship):
 
     :param sponsorship: sponsorship to renew
 
-    :rtype: new sponsorship from renew process
+    :rtype: sponsorships from renew process (list)
     '''
     # set up tag to indicate event was renewed
     renewedtag = SponsorTag.query.filter_by(tag=SPONSORTAG_RACERENEWED).one()
@@ -194,24 +194,15 @@ def renew_sponsorship(sponsorship):
 
         # current sponsorship has been renewed
         sponsorship.tags.append(renewedtag)
+        
+        newsponsorships = [newsponsorship]
 
-    # determine the renewal sponsorship if race had already been renewed
+    # determine the renewal sponsorships if race had already been renewed
     else:
         # find all sponsorships with this race id after the current sponsorship date
-        # really should only be one
         thisraceyear = sponsorship.raceyear
-        try:
-            newsponsorship = Sponsor.query.filter(and_(Sponsor.race_id == sponsorship.race_id,
-                                                       Sponsor.client_id == sponsorship.client_id,
-                                                       Sponsor.raceyear > thisraceyear)).one_or_none()
+        newsponsorships = Sponsor.query.filter(and_(Sponsor.race_id == sponsorship.race_id,
+                                                    Sponsor.client_id == sponsorship.client_id,
+                                                    Sponsor.raceyear > thisraceyear)).all()
 
-        # well this shouldn't really have happened. Just return the first we find
-        except MultipleResultsFound:
-            current_app.logger.error(
-                'renew_sponsorship(): multiple renewed sponsorships found for {} {}'.format(sponsorship.raceyear, sponsorship.race.race))
-            sponsorships = Sponsor.query.filter(and_(Sponsor.race_id == Sponsor.race_id,
-                                                     Sponsor.client_id == sponsorship.client_id,
-                                                     Sponsor.raceyear > thisraceyear)).all()
-            newsponsorship = sponsorships[0]
-
-    return newsponsorship
+    return newsponsorships
