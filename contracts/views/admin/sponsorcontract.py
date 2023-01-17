@@ -218,7 +218,9 @@ class SponsorContract(DbCrudApiRolePermissions):
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
             # retrieve all sponsor records for this raceyear, race, client having this state
+            # data needs to be flushed first to pick up the updated state
             # TODO: if this introduces a state inconsistency, other records for raceyear, race, client now have incorrect trend
+            self.db.session.flush()
             thesesponsorships = Sponsor.query.filter_by(
                 raceyear=thissponsorship.raceyear, 
                 race=thissponsorship.race,
