@@ -79,11 +79,11 @@ ipython-genutils==0.2.0
 ipywidgets==8.0.2
 itsdangerous==2.1.2
 jedi==0.18.1
-Jinja2==3.1.2
+Jinja2==3.1.3
 jsmin==3.0.1
 jsonschema==4.16.0
-jupyter-core==4.11.1
 jupyter_client==7.3.5
+jupyter_core==5.7.1
 jupyterlab-pygments==0.2.2
 jupyterlab-widgets==3.0.3
 lazy==1.5
@@ -107,7 +107,7 @@ oauth2client==4.1.3
 oauthlib==3.2.2
 packaging==21.3
 pandocfilters==1.5.0
-paramiko==2.11.0
+paramiko==3.4.0
 parso==0.8.3
 passlib==1.7.4
 pathlib2==2.3.7
@@ -115,6 +115,7 @@ pbr==5.10.0
 pickleshare==0.7.5
 pip-upgrader==1.4.15
 pipdeptree==2.3.3
+platformdirs==4.1.0
 prometheus-client==0.14.1
 prompt-toolkit==3.0.43
 protobuf==4.21.6
@@ -125,7 +126,7 @@ pyasn1-modules==0.2.8
 pycparser==2.21
 pydantic==1.9.2
 pygls==0.12.1
-Pygments==2.13.0
+Pygments==2.17.2
 PyNaCl==1.5.0
 pyparsing==3.0.9
 pyrsistent==0.18.1
@@ -141,7 +142,7 @@ pywinpty==2.0.8
 pyzmq==24.0.1
 qtconsole==5.3.2
 QtPy==2.2.0
-requests==2.28.1
+requests==2.31.0
 requests-oauthlib==1.3.1
 rich==12.5.1
 rsa==4.9
@@ -174,7 +175,7 @@ terminaltables==3.1.10
 testpath==0.6.0
 text-unidecode==1.3
 tinycss2==1.1.1
-tornado==6.2
+tornado==6.4
 traitlets==5.4.0
 typeguard==2.13.3
 typer==0.6.1
@@ -185,7 +186,7 @@ tzdata==2022.2
 tzlocal==4.2
 unicodecsv==0.14.1
 uritemplate==4.1.1
-urllib3==1.26.12
+urllib3==2.1.0
 URLObject==2.4.3
 validators==0.20.0
 visitor==0.1.3
