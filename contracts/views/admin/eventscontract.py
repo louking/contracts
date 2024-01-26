@@ -18,14 +18,14 @@ from copy import deepcopy
 # pypi
 from flask import current_app, url_for, request
 from jinja2 import Template
-
-# homegrown
-from contracts.dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
-from contracts.dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
-from contracts.contractmanager import ContractManager
 from loutilities.flask_helpers.mailer import sendmail
 from loutilities.tables import DbCrudApiRolePermissions, get_request_data
 from loutilities.timeu import asctime
+
+# homegrown
+from ...dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
+from ...dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
+from ...contractmanager import ContractManager
 
 dt = asctime('%Y-%m-%d')
 

@@ -13,15 +13,7 @@ $( function() {
   editor.on( 'submitSuccess', refresh_events);
 
   // needs to be same in events.js
-  editor.on('open', function( e, mode, action ) {
-      // set up the buttons
-      event_configureformbuttons( this, action );
-
-      // special processing for contractApproverNotes field to make readonly
-      editor.field( 'contractApproverNotes' ).disable();
-
-      return true;
-  });
+  event_setopentrigger( editor );
 
   // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
   // note this affects subforms as well as event form
@@ -106,6 +98,7 @@ $( function() {
       editor.title('Create new entry').buttons('Create').create();
       event_configureformbuttons( editor, 'create' );
       editor.set( 'date', date.format() );
+      event_setdependent( editor );
       // editor.field( 'race.id' ).focus();
 
       // set the triggers which case the form buttons to change
@@ -128,7 +121,13 @@ $( function() {
       refreshed_event = $('#calendar').fullCalendar( 'clientEvents', dayclickevent.id )[0];
       dayclickevent = null;
 
+      // need to unset dependent fields before .edit() so they don't accumulate
+      event_unsetdependent( editor );
+
       editor.title('Edit entry').buttons('Update').edit( refreshed_event.data.rowid );
+
+      // fill in refreshed data; note this fires dependent fields
+      event_setdependent( editor );
       $.each( editor.order(), function( i, field ) {
         editor.set( field, _.get(refreshed_event.data, field ) );
       })

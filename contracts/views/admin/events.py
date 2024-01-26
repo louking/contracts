@@ -17,7 +17,9 @@ events - manage events and associated tables
 from re import match
 
 # pypi
-from flask_security import roles_accepted, current_user
+from flask import request
+from flask.views import MethodView
+from flask_login import login_required
 from loutilities.tables import DbCrudApiRolePermissions
 from loutilities.tables import REGEX_URL
 
@@ -27,10 +29,12 @@ from ...dbmodel import db, Event, Race, Client, State, Lead, Course, Service, Ta
 from ...dbmodel import AddOn, FeeType, FeeBasedOn, EventAvailabilityException
 from ...dbmodel import DateRule
 from ...dbmodel import STATE_TENTATIVE
+from ...apicommon import failure_response, success_response
+from ...version import __docversion__
+from ...daterule import daterule2dates
 from .daterules import daterule
 from .common import client
 from .eventscontract import EventsContract
-from ...version import __docversion__
 
 adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract-admin-event-guide.html'
 
@@ -703,3 +707,19 @@ event_view = EventsContract(
                     )
 event_view.register()
 
+class AjaxCheckDate(MethodView):
+    decorators = [login_required]
+    
+    def get(self):
+        race_id = request.args.get('race_id', None)
+        date = request.args.get('date', None)
+        race = Race.query.filter_by(id=race_id).one()
+        daterule = race.daterule
+        year = int(date[0:4]) # ISO date yyyy-mm-dd
+        daterule_dates = daterule2dates(daterule, year)
+        # only look at first date in list
+        if date != daterule_dates[0]:
+            return failure_response(cause=f'Date "{date}" does not match daterule "{daterule.rulename}"')
+        else:
+            return success_response()
+bp.add_url_rule('/_checkdate',view_func=AjaxCheckDate.as_view('_checkdate'),methods=['GET'])
