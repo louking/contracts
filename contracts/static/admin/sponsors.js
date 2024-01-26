@@ -74,6 +74,10 @@ function sponsor_settriggers( editor ) {
         sponsor_configureformbuttons( editor, editor.mode() );
         return {};
     });
+    editor.dependent( 'client.id', function( val, data, callback ) {
+        event_sponsor_getclient( editor, val );
+        return {};
+    });
 }
 
 function sponsor_cleartriggers( editor ) {
