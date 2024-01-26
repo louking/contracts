@@ -229,6 +229,24 @@ function event_checkdate( editor, action ) {
     } );
 }
 
+function event_sponsor_getclient( editor, client_id ) {
+    let urlparams = setParams({
+        client_id: client_id
+    })
+    $.ajax( {
+        // application specific: my application has different urls for different methods
+        url: `/admin/_getclient?${urlparams}`,
+        type: 'get',
+        dataType: 'json',
+        success: function ( json ) {
+            let client = json.client;
+            // set fields
+            editor.set( 'client_name', client.name );
+            editor.set( 'client_email', client.contactEmail );
+        }
+    } );
+}
+
 /**
  * common behavior when event form opened
  * 
@@ -256,6 +274,10 @@ function event_setdependent( editor ) {
         event_checkdate( editor, editor.mode() );
         return {};
     });
+    editor.dependent( 'client.id', function( val, data, callback ) {
+        event_sponsor_getclient( editor, val );
+        return {};
+    });
 }
 
 /**
@@ -265,4 +287,5 @@ function event_setdependent( editor ) {
  */
 function event_unsetdependent( editor ) {
     editor.undependent( 'date' );
+    editor.undependent( 'client.id' );
 }

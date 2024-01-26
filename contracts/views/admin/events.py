@@ -428,8 +428,8 @@ race.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
 event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
 event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
 event_dbmapping['isContractUpdated'] = '__readonly__'
@@ -595,6 +595,8 @@ event_view = EventsContract(
                                                               'editable' : { 'api':client },
                            } },
                         },
+                        { 'data': 'client_name', 'name': 'client_name', 'label': 'Client Name', 'type':'readonly' },
+                        { 'data': 'client_email', 'name': 'client_email', 'label': 'Client Email', 'type':'readonly' },
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
@@ -713,13 +715,28 @@ class AjaxCheckDate(MethodView):
     def get(self):
         race_id = request.args.get('race_id', None)
         date = request.args.get('date', None)
-        race = Race.query.filter_by(id=race_id).one()
-        daterule = race.daterule
-        year = int(date[0:4]) # ISO date yyyy-mm-dd
-        daterule_dates = daterule2dates(daterule, year)
-        # only look at first date in list
-        if date != daterule_dates[0]:
-            return failure_response(cause=f'Date "{date}" does not match daterule "{daterule.rulename}"')
+        if race_id and date:
+            race = Race.query.filter_by(id=race_id).one()
+            daterule = race.daterule
+            year = int(date[0:4]) # ISO date yyyy-mm-dd
+            daterule_dates = daterule2dates(daterule, year)
+            # only look at first date in list
+            if date != daterule_dates[0]:
+                return failure_response(cause=f'Date "{date}" does not match daterule "{daterule.rulename}"')
+            else:
+                return success_response()
         else:
             return success_response()
 bp.add_url_rule('/_checkdate',view_func=AjaxCheckDate.as_view('_checkdate'),methods=['GET'])
+
+class AjaxGetClient(MethodView):
+    decorators = [login_required]
+    
+    def get(self):
+        client_id = request.args.get('client_id', None)
+        if client_id:
+            client = Client.query.filter_by(id=client_id).one()
+            return success_response(client={'name': client.name, 'contactEmail': client.contactEmail})
+        else:
+            return success_response()
+bp.add_url_rule('/_getclient',view_func=AjaxGetClient.as_view('_getclient'),methods=['GET'])
