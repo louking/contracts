@@ -204,6 +204,7 @@ class EventsContract(DbCrudApiRolePermissions):
                     raise parameterError('editor_method_posthook(): bad state seen for {}: {}'.format(form['addlaction'], eventdb.state.state))
 
                 # merge database fields into template and send email
+                garbage = eventdb.client    # force load of subrecord
                 mergefields = deepcopy(eventdb.__dict__)
                 mergefields['viewcontracturl'] = 'https://docs.google.com/document/d/{}/view'.format(docid)
                 mergefields['downloadcontracturl'] = 'https://docs.google.com/document/d/{}/export?format=pdf'.format(docid)
@@ -211,7 +212,6 @@ class EventsContract(DbCrudApiRolePermissions):
                 mergefields['acceptcontracturl'] = request.url_root[:-1] + url_for('frontend.acceptagreement', docid=docid)
                 mergefields['servicenames'] = [s.service for s in eventdb.services] 
                 mergefields['event'] = eventdb.race.race
-
 
                 html = template.render( mergefields )
                 tolist = eventdb.client.contactEmail
