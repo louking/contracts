@@ -27,7 +27,7 @@ from flask.views import MethodView
 # home grown
 from . import bp
 from contracts.dbmodel import db, SponsorRace, SponsorLevel, SponsorQueryLog, SponsorRaceDate
-from contracts.dbmodel import State, STATE_COMMITTED
+from contracts.dbmodel import State, STATE_COMMITTED, SPONSORRACE_CC_SEPARATOR
 from loutilities.flask_helpers.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
@@ -103,8 +103,6 @@ class SponsorshipQuery(MethodView):
 
             # figure out RD for this race
             race = SponsorRace.query.filter_by(race=form['race']['text']).one()
-            rdemail = race.email
-
 
             # log this request, won't be committed until after sendmail
             log = SponsorQueryLog(**{k:form[k]['text'] for k in form['_keyorder']})
@@ -118,8 +116,9 @@ class SponsorshipQuery(MethodView):
 
             # TODO: these could be in database
             tolist = '{} <{}>'.format(form['name']['text'], form['email']['text'])
-            cclist = [rdemail] + current_app.config['SPONSORSHIPQUERY_CC']
-            fromlist = '{} <{}>'.format(race.race, current_app.config['SPONSORSHIPQUERY_CONTACT'])
+            rdemail = '{} <{}>'.format(race.racedirector, race.rdemail)
+            cclist = [rdemail] + [cc.strip() for cc in race.query_cc.split(SPONSORRACE_CC_SEPARATOR)]
+            fromlist = race.email_from
             sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
             # everything seemed to work ok, so committing

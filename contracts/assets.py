@@ -21,18 +21,19 @@ jq_ver = '3.4.1'
 jq_ui_ver = '1.12.1'
 
 # dataTables
-dt_datatables_ver = '1.10.18'
-dt_editor_ver = '1.9.0'
-dt_buttons_ver = '1.5.4'
+dt_datatables_ver = '1.13.4'
+dt_editor_ver = '2.1.2'
+dt_buttons_ver = '2.3.6'
 dt_colvis_ver = '1.5.4'
-dt_fixedcolumns_ver = '3.2.5'
-dt_select_ver = '1.2.6'
+dt_fixedcolumns_ver = '4.2.2'
+dt_select_ver = '1.6.2'
+dt_datetime_ver = '1.4.1'
 dt_editor_plugin_fieldtype_ver = '?'
 
 # select2
 # NOTE: patch to jquery ui required, see https://github.com/select2/select2/issues/1246#issuecomment-17428249
 # currently in datatables.js
-s2_ver = '4.0.7'
+s2_ver = '4.0.13'
 
 # smartmenus
 sm_ver = '1.1.1'
@@ -157,6 +158,7 @@ asset_bundles = {
         'js/Editor-{ver}/js/editor.jqueryui.js'.format(ver=dt_editor_ver),
 
         'js/Select-{ver}/js/dataTables.select.js'.format(ver=dt_select_ver),
+        f'js/DateTime-{dt_datetime_ver}/js/dataTables.dateTime.js',
 
         # select2 is required for use by Editor forms
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
@@ -218,6 +220,7 @@ asset_bundles = {
         'js/Buttons-{ver}/css/buttons.jqueryui.css'.format(ver=dt_buttons_ver),
         'js/FixedColumns-{ver}/css/fixedColumns.jqueryui.css'.format(ver=dt_fixedcolumns_ver),
         'js/Editor-{ver}/css/editor.jqueryui.css'.format(ver=dt_editor_ver),
+        f'js/DateTime-{dt_datetime_ver}/css/dataTables.dateTime.css',
         'js/Select-{ver}/css/select.jqueryui.css'.format(ver=dt_select_ver),
         'js/select2-{ver}/css/select2.css'.format(ver=s2_ver),
         'js/yadcf-{ver}/jquery.dataTables.yadcf.css'.format(ver=yadcf_ver),

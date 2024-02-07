@@ -15,14 +15,18 @@ sponsors - manage sponsors and associated tables
 
 # standard
 from re import match
+from html import escape
 
 # pypi
 from flask import request, url_for, flash
 from dominate.tags import button
 from pytz import all_timezones
 from loutilities.tables import DbCrudApiRolePermissions, DteDbDependent
-from loutilities.tables import REGEX_URL, REGEX_EMAIL, REGEX_VBL
+from loutilities.tables import REGEX_URL, REGEX_VBL
 from loutilities.filters import filtercontainerdiv, filterdiv
+
+# allow name <email> format. TODO: update loutilities.tables to use this regex
+REGEX_EMAIL = r'^(?:"?)(\b[A-Za-z]+\b ?)*(?:"?) ?<([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)>|([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)$'
 
 # homegrown
 from . import bp
@@ -689,10 +693,12 @@ sponsorsummaryview_view.register()
 # sponsorraces endpoint
 ###########################################################################################
 
-sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
-                      'couponprovider,couponproviderid,description,display,viewkey,timezone'.split(',')
-sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,email,' \
-                         'couponprovider,couponproviderid,description,display,viewkey,timezone'.split(',')
+sponsorrace_dbattrs = 'id,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,' \
+                      'couponprovider,couponproviderid,description,display,viewkey,timezone,' \
+                      'email_from,query_cc,agreement_cc'.split(',')
+sponsorrace_formfields = 'rowid,race,raceshort,racedirector,rdphone,rdemail,isRDCertified,raceurl,sponsorurl,' \
+                         'couponprovider,couponproviderid,description,display,viewkey,timezone,' \
+                         'email_from,query_cc,agreement_cc'.split(',')
 sponsorrace_dbmapping = dict(list(zip(sponsorrace_dbattrs, sponsorrace_formfields)))
 sponsorrace_formmapping = dict(list(zip(sponsorrace_formfields, sponsorrace_dbattrs)))
 
@@ -704,9 +710,18 @@ def race_validate(action, formdata):
         if formdata[field] and not match(REGEX_URL, formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
-    for field in ['email']:
+    email_error = escape('invalid email: correct format is like john.doe@example.com or John Doe <john.doe@example.com>')
+    for field in ['email_from']:
         if formdata[field] and not match(REGEX_EMAIL, formdata[field]):
-            results.append({ 'name' : field, 'status' : 'invalid email: correct format is like john.doe@example.com' })
+            results.append({ 'name' : field, 'status' : email_error })
+
+    for field in ['query_cc', 'agreement_cc']:
+        if formdata[field]:
+            addrs = formdata[field].split(';')
+            for addr in addrs:
+                if not match(REGEX_EMAIL, addr.strip()):
+                    results.append({ 'name' : field, 'status' : email_error })
+                    break
 
     return results
 
@@ -753,8 +768,28 @@ sponsorrace = DbCrudApiRolePermissions(
                         { 'data': 'sponsorurl', 'name': 'sponsorurl', 'label': 'Sponsor URL', 
                           'className': 'field_req',
                         },
-                        { 'data': 'email', 'name': 'email', 'label': 'Email', 
+                        { 'data': 'email_from', 'name': 'email_from', 'label': 'Email From', 
                           'className': 'field_req',
+                          'fieldInfo': 'from field for Race Services Query and Race Services Agreement',
+                          # https://datatables.net/manual/data/renderers#Text-helper
+                          'render': 'DataTable.render.text()',
+                        },
+                        { 'data': 'agreement_cc', 'name': 'agreement_cc', 'label': 'Agreement Email Cc',
+                          'className': 'field_req',
+                          'fieldInfo': 'cc field for Race Services Agreement<br/>enter email addresses separated by semicolon (";")'
+                          '<br/>Director Email is automatically included',
+                          'render': 'DataTable.render.text()',
+                        # TODO: was unable to get this to work to add select values on the fly
+                        #   'type': 'select2', 'separator': ';',
+                        #   'opts': {'tags': True, 'multiple': True, 'tokenSeparators': [',', ' '], },
+                        },
+                        { 'data': 'query_cc', 'name': 'query_cc', 'label': 'Query Email Cc',
+                          'className': 'field_req',
+                          'fieldInfo': 'cc field for Race Services Query<br/>enter email addresses separated by semicolon (";")'
+                          '<br/>Director Email is automatically included',
+                          'render': 'DataTable.render.text()',
+                        #   'type': 'select2', 'separator': ';',
+                        #   'opts': {'tags': True, 'multiple': True, 'tokenSeparators': [',', ' '], },
                         },
                         {'data': 'timezone', 'name': 'timezone', 'label': 'Timezone',
                         'className': 'field_req',

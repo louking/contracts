@@ -15,7 +15,7 @@ from jinja2 import Template
 from contracts.dbmodel import db, State, Sponsor, SponsorRaceDate, SponsorBenefit, SponsorLevel
 from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
-from contracts.dbmodel import STATE_COMMITTED
+from contracts.dbmodel import STATE_COMMITTED, SPONSORRACE_CC_SEPARATOR
 from ...trends import check_sponsorship_conflicts, render_sponsorship_conflicts
 from contracts.contractmanager import ContractManager
 from loutilities.flask_helpers.mailer import sendmail
@@ -213,8 +213,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                 html = template.render( mergefields )
                 tolist = thissponsorship.client.contactEmail
                 rdemail = '{} <{}>'.format(thissponsorship.race.racedirector, thissponsorship.race.rdemail)
-                cclist = current_app.config['SPONSORSHIPAGREEMENT_CC'] + [rdemail]
-                fromlist = '{} <{}>'.format(thissponsorship.race.race, current_app.config['SPONSORSHIPQUERY_CONTACT'])
+                cclist = [rdemail] + [cc.strip() for cc in thissponsorship.race.agreement_cc.split(SPONSORRACE_CC_SEPARATOR)]
+                fromlist = thissponsorship.race.email_from
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
             # retrieve all sponsor records for this raceyear, race, client having this state

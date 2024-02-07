@@ -28,6 +28,9 @@ class parameterError(Exception): pass
 # set up database - SQLAlchemy() must be done after app.config SQLALCHEMY_* assignments
 from loutilities.user.model import db, LocalUserMixin, ManageLocalTables, EMAIL_LEN
 
+# separator for SponsorRace CC fields
+SPONSORRACE_CC_SEPARATOR = ';'
+
 Table = db.Table
 Column = db.Column
 Integer = db.Integer
@@ -541,7 +544,10 @@ class SponsorRace(Base):
     isRDCertified    = Column( Boolean )
     raceurl      = Column( String(URL_LEN) )
     sponsorurl   = Column( String(URL_LEN) )
-    email        = Column( String(EMAIL_LEN) )
+    email        = Column( String(EMAIL_LEN) )      # obsolete, see email_from
+    email_from   = Column( Text ) 
+    query_cc     = Column( Text )
+    agreement_cc = Column( Text )
     # logofilename = Column( String(LOGOFILENAME_LEN) )
     couponprovider = Column( String(PROVIDER_LEN) )
     couponproviderid = Column( String(PROVIDERID_LEN) )
