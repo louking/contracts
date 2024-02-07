@@ -428,8 +428,16 @@ race.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs = 'id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
-event_formfields = 'rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(',')
+event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,'
+                    'lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
+                    'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
+                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
+                    'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
+event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,'
+                    'lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
+                    'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
+                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
+                    'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
 event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
 event_dbmapping['isContractUpdated'] = '__readonly__'
