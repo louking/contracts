@@ -21,7 +21,7 @@ from flask import request
 from flask.views import MethodView
 from flask_login import login_required
 from loutilities.tables import DbCrudApiRolePermissions
-from loutilities.tables import REGEX_URL
+from loutilities.tables import REGEX_URL, SEPARATOR
 
 # homegrown
 from . import bp
@@ -42,8 +42,8 @@ adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract
 # leads endpoint
 ###########################################################################################
 
-lead_dbattrs = 'id,name,email,phone'.split(',')
-lead_formfields = 'rowid,name,email,phone'.split(',')
+lead_dbattrs = 'id,name,email,phone,roles,active'.split(',')
+lead_formfields = 'rowid,name,email,phone,roles,active'.split(',')
 lead_dbmapping = dict(list(zip(lead_dbattrs, lead_formfields)))
 lead_formmapping = dict(list(zip(lead_formfields, lead_dbattrs)))
 
@@ -71,10 +71,19 @@ lead = DbCrudApiRolePermissions(
                         { 'data': 'phone', 'name': 'phone', 'label': 'Phone', 
                           'className': 'field_req',
                         },
+                        { 'data': 'roles', 'name': 'roles', 'label': 'Roles', 'type': 'select2',
+                          'options': ['finishline', 'coursemarking'],
+                          'separator': SEPARATOR,   # separator is an Editor option, not select2 option
+                          'opts': {'multiple': True}
+                        },
+                        { 'data': 'active', 'name': 'active', 'label': 'Active', 
+                          'className': 'field_req',
+                          '_treatment' : { 'boolean' : { 'formfield':'active', 'dbfield':'active' } }
+                        },
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'editRefresh', 'remove'],
+                    buttons = ['create', 'editRefresh'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
@@ -429,12 +438,12 @@ race.register()
 ###########################################################################################
 
 event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,'
-                    'lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
+                    'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
                     'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
                     'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,'
-                    'lead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
+                    'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
                     'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
                     'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
@@ -621,43 +630,51 @@ event_view = EventsContract(
                           'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance',
-                          'className': 'field_req field_show_finishline field_show_coursemarking',
+                          'className': 'field_req field_show_finishline field_show_coursemarking table_hide',
                         },
                         { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
-                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking', 
+                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking table_hide', 
                           'options':['M', 'km'], 
                           'ed':{ 'def':'km' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time', 
-                          'className': 'field_show_finishline field_show_coursemarking', 
+                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
                           'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance',
-                          'className': 'field_show_finishline field_show_coursemarking', 
+                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
                         },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
-                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking', 
+                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking table_hide', 
                           'options':['M', 'km'], 'ed':{ 'def':'km' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
 
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
-                          'className': 'field_req field_show_finishline field_show_coursemarking', 
-                          '_treatment' : { 'relationship' : { 'fieldmodel':Lead, 'labelfield':'name', 'formfield':'lead', 'dbfield':'lead', 'uselist':False } },
+                          'className': 'field_req field_show_finishline', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Lead, 'labelfield':'name', 'formfield':'lead', 
+                                                             'dbfield':'lead', 'uselist':False, 'nullable': True,
+                                                             'queryfilters':[Lead.roles.like('%finishline%'), Lead.active==True]} },
+                        },
+                        { 'data': 'markinglead', 'name': 'markinglead', 'label': 'Marking Lead', 
+                          'className': 'field_req field_show_coursemarking', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Lead, 'labelfield':'name', 'formfield':'markinglead', 
+                                                             'dbfield':'markinglead', 'uselist':False, 'nullable': True,
+                                                             'queryfilters':[Lead.roles.like('%coursemarking%'), Lead.active==True] } },
                         },
                         { 'data': 'services', 'name': 'services', 'label': 'Services', 
                           'className': 'field_req', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'finishersPrevYear', 'name': 'finishersPrevYear', 'label': 'Prev Year #Finishers',
-                          'className': 'field_show_finishline field_show_coursemarking', 
+                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
                         },
                         { 'data': 'finishersCurrYear', 'name': 'finishersCurrYear', 'label': 'Curr Year #Finishers',
-                          'className': 'field_show_finishline field_show_coursemarking', 
+                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
                         },
                         { 'data': 'maxParticipants', 'name': 'maxParticipants', 
                           'label': 'Max Participants',
-                          'className': 'field_req field_show_finishline field_show_coursemarking', 
+                          'className': 'field_req field_show_finishline field_show_coursemarking table_hide', 
                         },
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
@@ -682,7 +699,7 @@ event_view = EventsContract(
                           },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc', 'opts':{'text':'click for contract'},
-                          'render': '$.fn.dataTable.render.ellipsis( 10 )',
+                          'className': 'table_hide'
                           },
                         { 'data': 'isContractUpdated', 'name': 'isContractUpdated', 'label': 'Has Been Updated', 'type':'readonly' },
                         { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },

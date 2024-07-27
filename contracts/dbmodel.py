@@ -103,6 +103,8 @@ class Lead(Base):
     name        = Column( String(NAME_LEN) )
     email       = Column( String(EMAIL_LEN) )
     phone       = Column( String(PHONE_LEN) )
+    roles       = Column( Text )
+    active      = Column( Boolean )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
@@ -390,7 +392,9 @@ class Event(Base):
     state_id            = Column( Integer, ForeignKey('state.id') )
     state               = relationship( 'State', backref='events', lazy=True )
     lead_id             = Column( Integer, ForeignKey('lead.id') )
-    lead                = relationship( 'Lead', backref='events', lazy=True )
+    lead                = relationship( 'Lead', backref='events', lazy=True, foreign_keys=[lead_id] )
+    markinglead_id      = Column( Integer, ForeignKey('lead.id') )
+    markinglead         = relationship( 'Lead', backref='markingevents', lazy=True, foreign_keys=[markinglead_id] ) 
     course_id           = Column( Integer, ForeignKey('course.id') )
     course              = relationship( 'Course', backref='events', lazy=True )
     client_id           = Column( Integer, ForeignKey('client.id') )

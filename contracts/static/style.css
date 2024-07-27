@@ -68,15 +68,20 @@ h2              { font-size: 1.2em; }
 }
 
 /* don't show finish line services if not selected */
-.field_show_finishline,
-.field_show_coursemarking
+.DTE_Field.field_show_finishline,
+.DTE_Field.field_show_coursemarking
 {
   display: none;
 }
 
+.dataTable .table_hide
+{
+    display: none;
+}
+
 /* show finish line services if selected */
-.service_finishline .field_show_finishline,
-.service_coursemarking .field_show_coursemarking
+.service_finishline .DTE_Field.field_show_finishline,
+.service_coursemarking .DTE_Field.field_show_coursemarking
 {
   display: block;
 }
