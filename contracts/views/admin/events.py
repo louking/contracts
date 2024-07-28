@@ -17,7 +17,7 @@ events - manage events and associated tables
 from re import match
 
 # pypi
-from flask import request
+from flask import request, url_for
 from flask.views import MethodView
 from flask_login import login_required
 from loutilities.tables import DbCrudApiRolePermissions
@@ -712,10 +712,18 @@ event_view = EventsContract(
                     ], 
                     validate = event_validate,
                     idSrc = 'rowid', 
-                    buttons = ['create', 'editRefresh', 'csv',
-                               # would use url_for('.calendar'), but this can't be done until bp created
-                               {'name':'calendar', 'text':'Calendar', 'url':'/admin/calendar'},
+                    buttons = lambda: ['create', 'editRefresh', 
+                               {
+                                    'extend': 'csv',
+                                    'text': 'CSV',
+                                    'exportOptions': {
+                                        'columns': ':gt(0)',    # skip first column
+                                        'orthogonal': 'export',
+                                    }
+                                },
+                               {'name':'calendar', 'text':'Calendar', 'url':url_for('.calendar')},
                     ],
+                        
                     dtoptions = {
                                     'scrollCollapse': True,
                                     'scrollX': True,

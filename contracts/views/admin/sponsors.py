@@ -302,6 +302,7 @@ sponsor_view = SponsorContract(
                         },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Agreement', 'type':'googledoc', 'opts':{'text':'click for contract'},
                           'render': '$.fn.dataTable.render.ellipsis( 10 )',
+                          'className': 'table_hide',
                           },
                         { 'data': 'tags', 'name': 'tags', 'label': 'Tags',
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorTag, 'labelfield':'tag', 'formfield':'tags', 'dbfield':'tags',
@@ -323,6 +324,7 @@ sponsor_view = SponsorContract(
                                     'text': 'CSV',
                                     'exportOptions': {
                                         'columns': ':gt(0)',    # skip first column
+                                        'orthogonal': 'export',
                                     }
                                 }
                             ],
