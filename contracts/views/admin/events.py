@@ -239,8 +239,8 @@ feebasedon.register()
 # addon endpoint
 ###########################################################################################
 
-addon_dbattrs = 'id,shortDescr,longDescr,fee'.split(',')
-addon_formfields = 'rowid,shortDescr,longDescr,fee'.split(',')
+addon_dbattrs = 'id,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed,services'.split(',')
+addon_formfields = 'rowid,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed,services'.split(',')
 addon_dbmapping = dict(list(zip(addon_dbattrs, addon_formfields)))
 addon_formmapping = dict(list(zip(addon_formfields, addon_dbattrs)))
 
@@ -265,6 +265,21 @@ addon = DbCrudApiRolePermissions(
                         { 'data': 'longDescr', 'name': 'longDescr', 'label': 'Description', 
                           'className': 'field_req',
                         },
+                        { 'data': 'priority', 'name': 'priority', 'label': 'Priority', 
+                          'className': 'field_req',
+                        },
+                        { 'data': 'services', 'name': 'services', 'label': 'Services', 
+                          'className': 'field_req', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
+                        },
+                        { 'data': 'is_upricing', 'name': 'is_upricing', 'label': 'Unit Based/Fixed', 
+                          'className': 'field_req',
+                          '_treatment' : { 'boolean' : {'formfield':'is_upricing', 'dbfield':'is_upricing', 'falsedisplay':'fixed', 'truedisplay':'unit based'} },
+                        },
+                        { 'data': 'up_basedon', 'name': 'up_basedon', 'label': 'Unit Price Based On', 
+                        },
+                        { 'data': 'up_subfixed', 'name': 'up_subfixed', 'label': 'Subtract Before Units Calc', 
+                        },
                         { 'data': 'fee', 'name': 'fee', 'label': 'Fee', 
                           'className': 'field_req',
                         },
@@ -277,6 +292,9 @@ addon = DbCrudApiRolePermissions(
                                         'scrollX': True,
                                         'scrollXInner': "100%",
                                         'scrollY': True,
+                                        'order': [
+                                            ['priority:name', 'asc'],
+                                        ],
                                   },
                     )
 addon.register()
@@ -285,8 +303,8 @@ addon.register()
 # services endpoint
 ###########################################################################################
 
-service_dbattrs = 'id,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
-service_formfields = 'rowid,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
+service_dbattrs = 'id,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField,addons'.split(',')
+service_formfields = 'rowid,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField,addons'.split(',')
 service_dbmapping = dict(list(zip(service_dbattrs, service_formfields)))
 service_formmapping = dict(list(zip(service_formfields, service_dbattrs)))
 
@@ -308,6 +326,10 @@ service = DbCrudApiRolePermissions(
                         { 'data': 'service', 'name': 'service', 'label': 'Service', '_unique': True },
                         { 'data': 'serviceLong', 'name': 'serviceLong', 'label': 'Description',
                             'ed':{ 'label': 'Description (for contract)' }
+                        },
+                        { 'data': 'addons', 'name': 'addons', 'label': 'Add Ons', 
+                          'className': 'field_req', 
+                          '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addons', 'dbfield':'addons', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'isCalendarBlocked', 'name': 'isCalendarBlocked', 'label': 'Blocks Calendar', 
                           '_treatment' : { 'boolean' : {'formfield':'isCalendarBlocked', 'dbfield':'isCalendarBlocked'} },
@@ -630,28 +652,28 @@ event_view = EventsContract(
                           'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'mainDistance', 'name': 'mainDistance', 'label': 'Distance',
-                          'className': 'field_req field_show_finishline field_show_coursemarking table_hide',
+                          'className': 'field_req field_show_finishline field_show_chiptiming field_show_coursemarking table_hide',
                         },
                         { 'data': 'mainDistanceUnits', 'name': 'mainDistanceUnits', 'label': 'Units', 'type': 'select2', 
-                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'inhibitlabel field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                           'options':['M', 'km'], 
                           'ed':{ 'def':'km' }, 
                           'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
                         { 'data': 'funStartTime', 'name': 'funStartTime', 'label': 'Fun Run Start Time', 
-                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                           'type':'datetime', 'ed':{'format':'h:mm a', 'opts':{ 'momentStrict':True, 'minutesIncrement':15 }}, 
                         },
                         { 'data': 'funDistance', 'name': 'funDistance', 'label': 'Fun Distance',
-                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                         },
                         { 'data': 'funDistanceUnits', 'name': 'funDistanceUnits', 'label': 'Fun Units', 'type': 'select2',  
-                          'className': 'inhibitlabel field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'inhibitlabel field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                           'options':['M', 'km'], 'ed':{ 'def':'km' }, 'opts' : { 'minimumResultsForSearch': 'Infinity' },
                         },
 
                         { 'data': 'lead', 'name': 'lead', 'label': 'Lead', 
-                          'className': 'field_req field_show_finishline', 
+                          'className': 'field_req field_show_finishline field_show_chiptiming ', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':Lead, 'labelfield':'name', 'formfield':'lead', 
                                                              'dbfield':'lead', 'uselist':False, 'nullable': True,
                                                              'queryfilters':[Lead.roles.like('%finishline%'), Lead.active==True]} },
@@ -667,14 +689,14 @@ event_view = EventsContract(
                           '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'finishersPrevYear', 'name': 'finishersPrevYear', 'label': 'Prev Year #Finishers',
-                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                         },
                         { 'data': 'finishersCurrYear', 'name': 'finishersCurrYear', 'label': 'Curr Year #Finishers',
-                          'className': 'field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                         },
                         { 'data': 'maxParticipants', 'name': 'maxParticipants', 
                           'label': 'Max Participants',
-                          'className': 'field_req field_show_finishline field_show_coursemarking table_hide', 
+                          'className': 'field_req field_show_finishline field_show_chiptiming field_show_coursemarking table_hide', 
                         },
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },

@@ -12,6 +12,7 @@
 import os.path
 from configparser import SafeConfigParser
 from copy import deepcopy
+from datetime import datetime
 
 # pypi
 from sqlalchemy import create_engine
@@ -157,6 +158,13 @@ class Contract(Base):
     templateTypeId      = Column( Integer, ForeignKey('templatetype.id' ) )
     templateType        = relationship( 'TemplateType', backref='contracts', lazy=True )
     block               = Column( String(CONTRACT_BLOCK_LEN) )
+
+    # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
+    update_time         = Column(DateTime,
+                                 default=datetime.now,
+                                 onupdate=datetime.now
+                                 )
+
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
         'version_id_col' : version_id
@@ -180,6 +188,13 @@ eventservice_table = Table('eventservice', Base.metadata,
     Column( 'service_id', Integer, ForeignKey('service.id' ), nullable=False ),
     )
 
+serviceaddon_table = Table(
+    'serviceaddon',
+    Base.metadata,
+    Column( 'service_id', ForeignKey('service.id'), primary_key=True ),
+    Column( 'addon_id', ForeignKey('addon.id'), primary_key=True )
+)
+
 class Service(Base):
     __tablename__ =  'service'
     id                = Column( Integer, primary_key=True ) 
@@ -190,6 +205,13 @@ class Service(Base):
     feeType           = relationship( 'FeeType', backref='services', lazy=True )
     fee               = Column( Integer )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
+    addons    = relationship( 'AddOn', secondary=serviceaddon_table, back_populates='services')
+
+    # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
+    update_time         = Column(DateTime,
+                                 default=datetime.now,
+                                 onupdate=datetime.now
+                                 )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
@@ -320,8 +342,19 @@ class AddOn(Base):
     shortDescr  = Column( String(SERVICE_LEN) )
     longDescr   = Column( String(NOTES_LEN) )
     fee         = Column( Integer )
+    priority    = Column( Integer )
     # eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
+    is_upricing = Column( Boolean ) # True if using unit pricing
+    up_basedon  = Column( Text )    # field unit pricing is based on
+    up_subfixed = Column ( Integer )# how many to subtract off field for the unit pricing
+    services    = relationship( 'Service', secondary=serviceaddon_table, back_populates='addons')
     
+    # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
+    update_time         = Column(DateTime,
+                                 default=datetime.now,
+                                 onupdate=datetime.now
+                                 )
+
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
         'version_id_col' : version_id
@@ -412,8 +445,8 @@ class Event(Base):
     finishersPrevYear   = Column( Integer )
     finishersCurrYear   = Column( Integer )
     maxParticipants     = Column( Integer )
-    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
-    addOns              = relationship( 'AddOn', secondary=eventaddon_table, backref='events', lazy=True )
+    # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many, https://stackoverflow.com/a/46019895/799921
+    addOns              = relationship( 'AddOn', secondary=eventaddon_table, backref='events', lazy=True, order_by=AddOn.priority )
     contractSentDate    = Column( String(DATETIME_LEN) )
     contractSignedDate  = Column( String(DATETIME_LEN) )
     invoiceSentDate     = Column( String(DATE_LEN) )

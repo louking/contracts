@@ -94,7 +94,7 @@ class EventsContract(DbCrudApiRolePermissions):
                         # fixed fee
                         if service.feeType.feeType =='fixed':
                             thisfee = service.fee
-                            servicefee['fee'] = thisfee
+                            servicefee.update( {'fee':thisfee, 'qty': '', 'unitfee': 'fixed' } ) 
                             servicefees.append( servicefee )
 
                         # fee is based on another field
@@ -121,7 +121,7 @@ class EventsContract(DbCrudApiRolePermissions):
                                 if debug: current_app.logger.debug('type(fieldval)={} type(feebasedon.fieldValue)={}'.format(type(fieldval), type(feebasedon.fieldValue)))
                                 if fieldval <= feebasedon.fieldValue:
                                     thisfee = feebasedon.fee
-                                    servicefee['fee'] = thisfee
+                                    servicefee.update( {'fee':thisfee, 'qty':fieldval, 'unitfee': 'fixed' } ) 
                                     servicefees.append( servicefee )
                                     foundfee = True
                                     break
@@ -139,10 +139,18 @@ class EventsContract(DbCrudApiRolePermissions):
                         # accumulate total fee
                         feetotal += thisfee
 
-                    # need to calculate addons in addition to services
+                    # need to calculate addons in addition to services (note automatically sorted by priority)
                     for addon in eventdb.addOns:
-                        thisfee = addon.fee
-                        servicefee = {'service': addon.longDescr, 'fee': thisfee}
+                        servicefee = {'service': addon.longDescr}
+                        if not addon.is_upricing:
+                            thisfee = addon.fee
+                            servicefee.update({'fee': thisfee, 'qty': '', 'unitfee': 'fixed'})
+                        else:
+                            qty = getattr(eventdb, addon.up_basedon) - addon.up_subfixed
+                            if qty < 0:
+                                qty = 0
+                            thisfee = addon.fee * qty
+                            servicefee.update({'fee': thisfee, 'qty':qty, 'unitfee': f'${addon.fee}'})
                         servicefees.append(servicefee)
 
                         # accumulate total fee
@@ -152,6 +160,7 @@ class EventsContract(DbCrudApiRolePermissions):
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
                     docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
                                       addlfields={'servicenames': [s.service for s in eventdb.services],
+                                                  'addons'      : [a.shortDescr for a in eventdb.addOns],
                                                   'servicefees' : servicefees,
                                                   'event'       : eventdb.race.race,
                                                   'totalfees'   : { 'service' : 'TOTAL', 'fee' : feetotal },
@@ -211,6 +220,7 @@ class EventsContract(DbCrudApiRolePermissions):
                 # need to bring in full path for email, so use url_root
                 mergefields['acceptcontracturl'] = request.url_root[:-1] + url_for('frontend.acceptagreement', docid=docid)
                 mergefields['servicenames'] = [s.service for s in eventdb.services] 
+                mergefields['addons'] = [a.shortDescr for a in eventdb.addOns] 
                 mergefields['event'] = eventdb.race.race
 
                 html = template.render( mergefields )
