@@ -229,7 +229,7 @@ class EventsCalendar(MethodView):
         from .events import event_view
 
         # get the editor options, need url_root minus trailing /
-        dt = requests.get('{}{}/saform'.format( request.url_root[:-1], url_for( '.events-superadmin' )))
+        dt = requests.get(f'{request.url_root[:-1]}{url_for( ".events-superadmin" )}/saform', headers=request.headers)
         edoptions = dumps(dt.json()['edoptions'])
 
         context = {
