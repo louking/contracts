@@ -22,7 +22,7 @@ function afterdatatables() {
     event_setopentrigger( editor );
 
     // set up dependent field(s)
-    event_setdependent ( editor );
+    event_setdependent( editor );
 
     // special action for events view only
     editor.on('open', function( e, mode, action ) {
@@ -32,7 +32,7 @@ function afterdatatables() {
         return true;
     });
 
-    // set the triggers which case the form buttons to change
+    // set the triggers which cause the form buttons to change
     event_settriggers( editor );
 
     // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921

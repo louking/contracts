@@ -800,3 +800,22 @@ class AjaxGetClient(MethodView):
         else:
             return success_response()
 bp.add_url_rule('/_getclient',view_func=AjaxGetClient.as_view('_getclient'),methods=['GET'])
+
+class AjaxGetAddOns(MethodView):
+    decorators = [login_required]
+    
+    def get(self):
+        services_ids = request.args.get('services_ids', '')
+        addons = []
+        # handle empty case, services_ids == ''
+        if services_ids:
+            for service_id in services_ids.split(', '):
+                service = Service.query.filter_by(id=service_id).one()
+                for addon in service.addons:
+                    thisaddon = {'label': addon.shortDescr, 'value': addon.id}
+                    if thisaddon['label'] not in [a['label'] for a in addons]:
+                        addons.append(thisaddon)
+        
+        addons.sort(key = lambda i: i['label'])
+        return success_response(addons=addons)
+bp.add_url_rule('/_getaddons',view_func=AjaxGetAddOns.as_view('_getaddons'),methods=['GET'])

@@ -247,6 +247,25 @@ function event_sponsor_getclient( editor, client_id ) {
     } );
 }
 
+function event_getaddons(editor, services_ids) {
+    let urlparams = setParams({
+        services_ids: services_ids
+    })
+    $.ajax( {
+        url: `/admin/_getaddons?${urlparams}`,
+        type: 'get',
+        dataType: 'json',
+        success: function (json) {
+            // format https://editor.datatables.net/plug-ins/field-type/editor.select2
+            let addons = json.addons;
+            // set fields
+            let curraddons = editor.field('addOns.id').get();
+            editor.field('addOns.id').update(addons);
+            editor.field('addOns.id').set(curraddons);
+        }
+    } );
+}
+
 /**
  * common behavior when event form opened
  * 
@@ -276,6 +295,10 @@ function event_setdependent( editor ) {
     });
     editor.dependent( 'client.id', function( val, data, callback ) {
         event_sponsor_getclient( editor, val );
+        return {};
+    });
+    editor.dependent( 'services.id', function( val, data, callback ) {
+        event_getaddons( editor, val );
         return {};
     });
 }
