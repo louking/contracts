@@ -99,6 +99,7 @@ function event_configureformbuttons( that, action ) {
 
         // is current state selection in ['committed', 'contract-sent']?
         var contractsent = ['committed', 'contract-sent'].includes( that.field( 'state.id' ).inst('data')[0].text );
+        var committed = ['committed'].includes( that.field( 'state.id' ).inst('data')[0].text );
         that.buttons([
                 {
                     text: 'Resend Contract',
@@ -130,6 +131,15 @@ function event_configureformbuttons( that, action ) {
                                 data.addlaction = 'sendcontract';
                             });
                         }
+                    }
+                },
+                {
+                    text: 'Update and Initiate Invoice',
+                    className: ( committed ) ? 'enabled' : 'disabled',
+                    action: function () {
+                        that.submit(null, null, function(data) {
+                            data.addlaction = 'initiateinvoice';
+                        });
                     }
                 },
                 {

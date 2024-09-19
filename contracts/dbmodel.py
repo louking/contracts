@@ -452,6 +452,7 @@ class Event(Base):
     invoiceSentDate     = Column( String(DATE_LEN) )
     isOnCalendar        = Column( Boolean )
     contractDocId       = Column( String(FID_LEN) )
+    invoiceDocId        = Column( Text )
     notes               = Column( String(NOTES_LEN) )
 
     # added when contract approved

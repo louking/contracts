@@ -467,12 +467,12 @@ race.register()
 event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
+                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,invoiceDocId,notes,'
                     'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,notes,'
+                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,invoiceDocId,notes,'
                     'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
 event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
@@ -726,6 +726,9 @@ event_view = EventsContract(
                           },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc', 'opts':{'text':'click for contract'},
+                          'className': 'table_hide'
+                          },
+                        { 'data': 'invoiceDocId', 'name': 'invoiceDocId', 'label': 'Invoice Doc', 'type':'googledoc', 'opts':{'text':'click for invoice'},
                           'className': 'table_hide'
                           },
                         { 'data': 'isContractUpdated', 'name': 'isContractUpdated', 'label': 'Has Been Updated', 'type':'readonly' },

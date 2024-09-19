@@ -48,8 +48,16 @@ class EventsContract(DbCrudApiRolePermissions):
         note row has already been committed to the database, so can be retrieved
         '''
         # the following can be true only for put() [edit] method
-        if 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract']:
+        if 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract', 'initiateinvoice']:
             folderid = current_app.config['CONTRACTS_DB_FOLDER']
+            
+            # quote or invoice?
+            if form['addlaction'] == 'initiateinvoice':
+                doctype = 'INVOICE'
+                is_quote = False
+            else:
+                doctype = 'AGREEMENT/QUOTE'
+                is_quote = True
 
             # need an instance of contract manager to take care of saving the contract
             cm = ContractManager(contractType='race services', templateType='contract', driveFolderId=folderid)
@@ -57,17 +65,23 @@ class EventsContract(DbCrudApiRolePermissions):
             # pull record(s) from database and save as flat dotted record
             data = get_request_data(form)
             print(('data={}'.format(data)))
+            
+            # there's only going to be one id -- this sort of supports multi-edit, but that won't happen
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
                 # different subject line if contract had been accepted before. This must match contractviews.AcceptAgreement.post
                 annotation = ''
 
-                # if we are generating a new version of the contract
-                if form['addlaction'] == 'sendcontract':
+                # if we are generating a new version of the contract/invoice
+                if form['addlaction'] in ['sendcontract', 'initiateinvoice']:
+                    # maybe it's an update to the contract or invoice
                     # if there was already a document sent, indicate that we're updating it
-                    if eventdb.contractDocId:
+                    if is_quote and eventdb.contractDocId:
+                        # isContractUpdated is used to annotate the contract accepted email in contractviews.AcceptAgreement.post()
                         eventdb.isContractUpdated = True
+                        annotation = '(updated) '
+                    elif not is_quote and eventdb.invoiceDocId:
                         annotation = '(updated) '
 
                     # check appropriate fields are present for certain services
@@ -156,20 +170,26 @@ class EventsContract(DbCrudApiRolePermissions):
                         # accumulate total fee
                         feetotal += thisfee
 
-                    # generate contract
+                    # generate contract / invoice
                     if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
                     docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
                                       addlfields={'servicenames': [s.service for s in eventdb.services],
                                                   'addons'      : [a.shortDescr for a in eventdb.addOns],
+                                                  'doctype'     : doctype,
+                                                  'is_quote'    : is_quote,
                                                   'servicefees' : servicefees,
                                                   'event'       : eventdb.race.race,
                                                   'totalfees'   : { 'service' : 'TOTAL', 'fee' : feetotal },
-                                                 })
+                                                 },
+                                      is_quote=is_quote)
                     
                     # update database to show contract sent
-                    eventdb.state = State.query.filter_by(state=STATE_CONTRACT_SENT).one()
-                    eventdb.contractSentDate = dt.dt2asc( date.today() )
-                    eventdb.contractDocId = docid
+                    if is_quote:
+                        eventdb.state = State.query.filter_by(state=STATE_CONTRACT_SENT).one()
+                        eventdb.contractDocId = docid
+                        eventdb.contractSentDate = dt.dt2asc( date.today() )
+                    else:
+                        eventdb.invoiceDocId = docid
                     
                     # find index with correct id and show database updates
                     for resprow in self._responsedata:
@@ -185,7 +205,7 @@ class EventsContract(DbCrudApiRolePermissions):
 
                 # email sent depends on current state as this flows from 'sendcontract' and 'resendcontract'
                 if eventdb.state.state == STATE_COMMITTED:
-                    # prepare agreement accepted email 
+                    # prepare agreement accepted or invoice email 
                     templatestr = (db.session.query(Contract)
                                    .filter(Contract.contractTypeId==ContractType.id)
                                    .filter(ContractType.contractType=='race services')
@@ -194,7 +214,10 @@ class EventsContract(DbCrudApiRolePermissions):
                                    .one()
                                   ).block
                     template = Template( templatestr )
-                    subject = '{}ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(annotation, eventdb.race.race, eventdb.date)
+                    if is_quote:
+                        subject = f'{annotation}ACCEPTED - FSRC Race Services {doctype}: {eventdb.race.race} - {eventdb.date}'
+                    else:
+                        subject = f'{annotation}FSRC Race Services {doctype}: {eventdb.race.race} - {eventdb.date}'
 
                 elif eventdb.state.state == STATE_CONTRACT_SENT:
                     # send contract mail to client
@@ -206,7 +229,7 @@ class EventsContract(DbCrudApiRolePermissions):
                                .one()
                               ).block
                     template = Template( templatestr )
-                    subject = '{}FSRC Race Support Agreement: {} - {}'.format(annotation, eventdb.race.race, eventdb.date)
+                    subject = f'{annotation}FSRC Race Services {doctype}: {eventdb.race.race} - {eventdb.date}'
 
                 # state must be STATE_COMMITTED or STATE_CONTRACT_SENT, else logic error
                 else:
@@ -224,7 +247,13 @@ class EventsContract(DbCrudApiRolePermissions):
                 mergefields['event'] = eventdb.race.race
 
                 html = template.render( mergefields )
-                tolist = eventdb.client.contactEmail
-                cclist = current_app.config['CONTRACTS_CC']
+                # quote/agreement
+                if is_quote:
+                    tolist = eventdb.client.contactEmail
+                    cclist = current_app.config['CONTRACTS_CC']
+                # invoice
+                else:
+                    tolist = current_app.config['CONTRACTS_INVOICE_TO']
+                    cclist = current_app.config['CONTRACTS_INVOICE_CC']
                 fromlist = current_app.config['CONTRACTS_CONTACT']
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )

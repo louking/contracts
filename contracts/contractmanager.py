@@ -32,7 +32,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 # homegrown
-from contracts.dbmodel import db, Contract, ContractType, TemplateType
+from contracts.dbmodel import db, Contract, ContractType, ContractBlockType, TemplateType
 from loutilities import timeu
 from loutilities.googleauth import GoogleAuthService
 from .html2docx import convert
@@ -196,7 +196,7 @@ class ContractManager():
             raise parameterError('ContractManager(): doctype must be "docx" or "html", found {}'.format(self.doctype))
 
     #----------------------------------------------------------------------
-    def create(self, filename, mergefields, addlfields={}):
+    def create(self, filename, mergefields, addlfields={}, is_quote=True):
     #----------------------------------------------------------------------
         '''
         create the document
@@ -207,7 +207,8 @@ class ContractManager():
           * note different processing for .docx vs. .html
         * mergefields - flat dict with keys to be used as merge fields. If field contains 
           a function, the function is called with a single argument: the original mergefields itself
-        * any fields to be added to mergefields
+        * addlfields - any fields to be added to mergefields
+        * is_quote - True if quote being created, False if invoice being created
 
         returns: G Suite document id
         '''
@@ -263,6 +264,27 @@ class ContractManager():
 
         # fill contents for docx files
         elif self.doctype == 'docx':
+            # invoicestart and invoiceend are special ContractBlockTypes for docx doctype
+            invoicestart = db.session.query(ContractBlockType).filter_by(blockType='invoicestart').one_or_none()
+            invoiceend = db.session.query(ContractBlockType).filter_by(blockType='invoiceend').one_or_none()
+
+            # for contract quote or sponsor agreement, remove 'invoicestart' and 'invoiceend'
+            if is_quote:
+                templates = [t for t in templates if t.contractBlockType != invoicestart and t.contractBlockType != invoiceend]
+            
+            # for invoice, remove all templates outside of 'invoicestart' and 'invoiceend'
+            else:
+                if invoicestart:
+                    while len(templates) > 0 and templates[0].contractBlockType != invoicestart:
+                        templates.pop(0)
+                    if len(templates) > 0 and templates[0].contractBlockType == invoicestart:
+                        templates.pop(0)
+                if invoiceend:
+                    while len(templates) > 0 and templates[-1].contractBlockType != invoiceend:
+                        templates.pop()
+                    if len(templates) > 0 and templates[-1].contractBlockType == invoiceend:
+                        templates.pop()
+                
             for blockd in templates:
                 # retrieve block type text
                 blockType = blockd.contractBlockType.blockType
