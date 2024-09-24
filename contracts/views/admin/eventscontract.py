@@ -54,9 +54,11 @@ class EventsContract(DbCrudApiRolePermissions):
             # quote or invoice?
             if form['addlaction'] == 'initiateinvoice':
                 doctype = 'INVOICE'
+                templatetype = 'invoice email'
                 is_quote = False
             else:
                 doctype = 'AGREEMENT/QUOTE'
+                templatetype = 'agreement accepted view'
                 is_quote = True
 
             # need an instance of contract manager to take care of saving the contract
@@ -210,7 +212,7 @@ class EventsContract(DbCrudApiRolePermissions):
                                    .filter(Contract.contractTypeId==ContractType.id)
                                    .filter(ContractType.contractType=='race services')
                                    .filter(Contract.templateTypeId==TemplateType.id)
-                                   .filter(TemplateType.templateType=='agreement accepted view')
+                                   .filter(TemplateType.templateType==templatetype)
                                    .one()
                                   ).block
                     template = Template( templatestr )

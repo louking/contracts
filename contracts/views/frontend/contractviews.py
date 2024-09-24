@@ -147,7 +147,7 @@ class AcceptAgreement(MethodView):
         template = Template( templatestr )
         html = template.render( mergefields )
         tolist = mergefields['client'].contactEmail
-        cclist = current_app.config['CONTRACTS_TREAS_CC']
+        cclist = current_app.config['CONTRACTS_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print(('mergefields={}'.format(mergefields)))
         # different subject line if contract had been accepted before. This must match eventscontract.EventsContract.editor_method_posthook
