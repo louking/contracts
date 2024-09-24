@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build docs",
+            "type": "shell",
+            "command": "../venv/scripts/activate; ./make html",
+            "options": {
+                "cwd": "./docs"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
