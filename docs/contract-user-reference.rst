@@ -43,7 +43,7 @@ to the Race Support Agreement.
 The race director is given the option to view or download the agreement
 using links in the form.
 
-When the YES, I AGREE button is clicked, the :term:`event` :term:`state` moves to
+When the YES, I AGREE button is clicked, the :term:`contract race` :term:`state` moves to
 *committed*.
 
 -  The :ref:`agreement-accepted-email` is sent capturing the commitment

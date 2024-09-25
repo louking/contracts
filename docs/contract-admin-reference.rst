@@ -138,17 +138,24 @@ Edit Contract Race view
 ============================
 
 The Edit Contract Race view can be used to update the specifics about the race,
-and to generate a contract.
-
-Click **Update** to update any changed fields in the :term:`contract race`.
-
-Click **Update and Send Contract** button to generate the contract and send the
-:ref:`contract-email`  to the race director (Contact email), treasurer, and
-raceservices. The contract race state  is automatically set to *contract-sent*.
+to generate a contract, and to initiate the invoice process.
 
 The **Resend Contract** button is only active if contact has been sent. If in
 *contract-sent* :term:`state`, :ref:`contract-email` will be resent. If in
 *committed* :term:`state`, :ref:`agreement-accepted-email` will be resent.
+
+Click **Mark Invoice Sent** to set the **Invoice Sent Date** field to today's
+date.
+
+Click **Update and Send Contract** button to generate the contract and send the
+:ref:`contract-email`  to the race director (Contact email) and raceservices.
+The contract race state is automatically set to *contract-sent*.
+
+Click **Update and Initiate Invoice** button is only active if the contract race
+state is *committed*. This is used to generate the invoice document and send the
+:ref:`invoice-email` to the treasurer and raceservices. 
+
+Click **Update** to update any changed fields in the :term:`contract race`.
 
 If the :term:`contract race` needs to be deleted, click **Delete**. You will be asked
 for confirmation before the :term:`contract race` is deleted. Note another option is to
@@ -191,7 +198,7 @@ and can be changed by a superadmin.
    ACCEPT AGREEMENT button and follow the directions.
 
    Your invoice should arrive soon after you accept the agreement, but
-   the payment isn’t due until a few days before the race.
+   the payment isn't due until a few days before the race.
 
    In order to get your listing on our `website
    calendar <https://steeplechasers.org/events/>`__, we provide the
@@ -211,6 +218,35 @@ and can be changed by a superadmin.
 
 When race director clicks ACCEPT AGREEMENT, the link takes them to the
 :ref:`accept-agreement-view`.
+
+
+.. _invoice-email:
+
+Invoice email
+==============
+
+The invoice email is sent to give the treasurer access to the
+invoice document. 
+
+When the **Update and Initiate** button is clicked from the :ref:`edit-event-view`, 
+this email will be generated automatically.
+
+The email will be something like the following. Note this is configured in the system
+and can be changed by a superadmin.
+
+   To: treasurer@steeplechasers.org
+
+   From: raceservices@steeplechasers.org
+
+   Subject: FSRC Race Support Invoice: <Event> - <Date>
+
+   The race director <race director contact information> should be invoiced 
+   for <Event> on <Date>.
+
+   Click to `view <#invoice>`__ or `download <#invoice>`__ the invoice
+   document which should be included in the invoice. 
+
+   thanks,
 
 
 .. _agreement-accepted-email:
@@ -299,7 +335,7 @@ and can be changed by a superadmin.
 
    Hi <Contact First Name>,
 
-   Note this is an automated email, so it’s possible you have already
+   Note this is an automated email, so it's possible you have already
    coordinated on this. If so, please ignore.
 
    <Event> is coming up on <Date> and we wanted to make sure we have all
@@ -355,7 +391,7 @@ happens [5 days] after the contract race.
 -  for :term:`contract races <contract race>` which have *finishline* or *coursemarking* services, 
    a :ref:`post-event-email` is sent to thank the race
    director for the opportunity to provide our services, to let them
-   know they’ve been penciled in for the following year, and to ask
+   know they've been penciled in for the following year, and to ask
    them to complete a short survey on how well we did
 
 -  for :term:`contract races <contract race>` which have only *premiumpromotion* service, an email is sent
@@ -389,7 +425,7 @@ and can be changed by a superadmin.
    Thank you so much for using FSRC for race support services for
    <Event> on <Date>.
 
-   If you’d like FSRC to post your results to the
+   If you'd like FSRC to post your results to the
    `Results <http://steeplechasers.org/competition/current-results/>`__
    page of our website, please send these to results@steeplechasers.org.
    We recommend that you use our `race results
@@ -397,15 +433,15 @@ and can be changed by a superadmin.
    for formatting your results file.
 
    We have penciled you in for next year on <“renew” Date>. Please let
-   us know as soon as possible if you can confirm you’ll be staging your
-   event again next year, or if you’re sure you won’t be.
+   us know as soon as possible if you can confirm you'll be staging your
+   event again next year, or if you're sure you won't be.
 
-   And we’d love to hear how well you think we performed. Please take a
+   And we'd love to hear how well you think we performed. Please take a
    very short survey at <survey link>.
 
    [if premiumpromotion]
 
-   Please don’t forget to send email addresses of your participants to
+   Please don't forget to send email addresses of your participants to
    communication@steeplechasers.org. These folks will be included in our
    mailings about Frederick area local races.
 
