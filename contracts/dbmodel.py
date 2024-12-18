@@ -36,6 +36,7 @@ Table = db.Table
 Column = db.Column
 Integer = db.Integer
 Float = db.Float
+Numeric = db.Numeric
 Boolean = db.Boolean
 String = db.String
 Date = db.Date
@@ -203,7 +204,7 @@ class Service(Base):
     isCalendarBlocked = Column( Boolean )
     feeTypeId         = Column( Integer, ForeignKey('feetype.id' ), nullable=False )
     feeType           = relationship( 'FeeType', backref='services', lazy=True )
-    fee               = Column( Integer )              # must be set for feeType = fixed
+    fee               = Column( Numeric(precision=10, scale=2) )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
     addons    = relationship( 'AddOn', secondary=serviceaddon_table, back_populates='services')
 
@@ -311,7 +312,7 @@ class FeeBasedOn(Base):
     serviceId  = Column( Integer, ForeignKey('service.id' ), nullable=False )
     service    = relationship( 'Service', backref='feeBasedOns', lazy=True )
     fieldValue = Column( Integer )
-    fee        = Column( Integer )
+    fee        = Column( Numeric(precision=10, scale=2) )
 
     version_id          = Column(Integer, nullable=False, default=1)
     __mapper_args__ = {
@@ -341,7 +342,7 @@ class AddOn(Base):
     id          = Column( Integer, primary_key=True ) 
     shortDescr  = Column( String(SERVICE_LEN) )
     longDescr   = Column( String(NOTES_LEN) )
-    fee         = Column( Integer )
+    fee         = Column( Numeric(precision=10, scale=2) )
     priority    = Column( Integer )
     # eventId     = Column( Integer, ForeignKey('event.id' ), nullable=False )
     is_upricing = Column( Boolean ) # True if using unit pricing
