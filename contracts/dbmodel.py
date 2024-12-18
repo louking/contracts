@@ -189,13 +189,6 @@ eventservice_table = Table('eventservice', Base.metadata,
     Column( 'service_id', Integer, ForeignKey('service.id' ), nullable=False ),
     )
 
-serviceaddon_table = Table(
-    'serviceaddon',
-    Base.metadata,
-    Column( 'service_id', ForeignKey('service.id'), primary_key=True ),
-    Column( 'addon_id', ForeignKey('addon.id'), primary_key=True )
-)
-
 class Service(Base):
     __tablename__ =  'service'
     id                = Column( Integer, primary_key=True ) 
@@ -206,7 +199,6 @@ class Service(Base):
     feeType           = relationship( 'FeeType', backref='services', lazy=True )
     fee               = Column( Numeric(precision=10, scale=2) )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
-    addons    = relationship( 'AddOn', secondary=serviceaddon_table, back_populates='services')
 
     # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
     update_time         = Column(DateTime,
@@ -348,7 +340,6 @@ class AddOn(Base):
     is_upricing = Column( Boolean ) # True if using unit pricing
     up_basedon  = Column( Text )    # field unit pricing is based on
     up_subfixed = Column ( Integer )# how many to subtract off field for the unit pricing
-    services    = relationship( 'Service', secondary=serviceaddon_table, back_populates='addons')
     
     # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
     update_time         = Column(DateTime,

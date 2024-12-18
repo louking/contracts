@@ -239,8 +239,8 @@ feebasedon.register()
 # addon endpoint
 ###########################################################################################
 
-addon_dbattrs = 'id,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed,services'.split(',')
-addon_formfields = 'rowid,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed,services'.split(',')
+addon_dbattrs = 'id,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed'.split(',')
+addon_formfields = 'rowid,shortDescr,longDescr,fee,priority,is_upricing,up_basedon,up_subfixed'.split(',')
 addon_dbmapping = dict(list(zip(addon_dbattrs, addon_formfields)))
 addon_formmapping = dict(list(zip(addon_formfields, addon_dbattrs)))
 
@@ -267,9 +267,6 @@ addon = DbCrudApiRolePermissions(
                         },
                         { 'data': 'priority', 'name': 'priority', 'label': 'Priority', 
                           'className': 'field_req',
-                        },
-                        { 'data': 'services', 'name': 'services', 'label': 'Services', 
-                          '_treatment' : { 'relationship' : { 'fieldmodel':Service, 'labelfield':'service', 'formfield':'services', 'dbfield':'services', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'is_upricing', 'name': 'is_upricing', 'label': 'Unit Based/Fixed', 
                           'className': 'field_req',
@@ -302,8 +299,8 @@ addon.register()
 # services endpoint
 ###########################################################################################
 
-service_dbattrs = 'id,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField,addons'.split(',')
-service_formfields = 'rowid,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField,addons'.split(',')
+service_dbattrs = 'id,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
+service_formfields = 'rowid,service,serviceLong,isCalendarBlocked,feeType,fee,basedOnField'.split(',')
 service_dbmapping = dict(list(zip(service_dbattrs, service_formfields)))
 service_formmapping = dict(list(zip(service_formfields, service_dbattrs)))
 
@@ -328,9 +325,6 @@ service = DbCrudApiRolePermissions(
                         { 'data': 'serviceLong', 'name': 'serviceLong', 'label': 'Description',
                           'className': 'field_req', 
                             'ed':{ 'label': 'Description (for contract)' }
-                        },
-                        { 'data': 'addons', 'name': 'addons', 'label': 'Add Ons', 
-                          '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addons', 'dbfield':'addons', 'uselist':True, 'searchbox':False } },
                         },
                         { 'data': 'isCalendarBlocked', 'name': 'isCalendarBlocked', 'label': 'Blocks Calendar', 
                           'className': 'field_req', 
@@ -803,22 +797,3 @@ class AjaxGetClient(MethodView):
         else:
             return success_response()
 bp.add_url_rule('/_getclient',view_func=AjaxGetClient.as_view('_getclient'),methods=['GET'])
-
-class AjaxGetAddOns(MethodView):
-    decorators = [login_required]
-    
-    def get(self):
-        services_ids = request.args.get('services_ids', '')
-        addons = []
-        # handle empty case, services_ids == ''
-        if services_ids:
-            for service_id in services_ids.split(', '):
-                service = Service.query.filter_by(id=service_id).one()
-                for addon in service.addons:
-                    thisaddon = {'label': addon.shortDescr, 'value': addon.id}
-                    if thisaddon['label'] not in [a['label'] for a in addons]:
-                        addons.append(thisaddon)
-        
-        addons.sort(key = lambda i: i['label'])
-        return success_response(addons=addons)
-bp.add_url_rule('/_getaddons',view_func=AjaxGetAddOns.as_view('_getaddons'),methods=['GET'])
