@@ -5,12 +5,16 @@ contracts - package
 
 # standard
 import os.path
+from os import environ
 
 # pypi
-from flask import Flask, send_from_directory, g, session, request, url_for, current_app, render_template
+from flask import Flask, send_from_directory, g, session, request, url_for, render_template, current_app
 from flask_mail import Mail
 from jinja2 import ChoiceLoader, PackageLoader
 from flask_security import SQLAlchemyUserDatastore, current_user
+from werkzeug.local import LocalProxy
+
+# homegrown
 import loutilities
 from loutilities.configparser import getitems
 from loutilities.user import UserSecurity
@@ -24,18 +28,13 @@ from .dbmodel import update_local_tables
 from . import assets
 from .assets import asset_env, asset_bundles
 
-# get configuration
-# configfile = "contracts.cfg"
-# configpath = os.path.join(os.path.sep.join(os.path.dirname(__file__).split(os.path.sep)[:-1]), configfile)
-# appconfig = getitems(configpath, 'app')
-# app.config.update(appconfig)
-
 # define security globals
 user_datastore = None
 security = None
 
 # hold application here
 app = None
+appname = environ['APP_NAME']
 
 # create application
 def create_app(config_obj, configfiles=None, init_for_operation=True):
@@ -43,15 +42,21 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
     apply configuration object, then configuration files
     '''
     global app
-    app = Flask('contracts')
+    # can't have hyphen in package name, so need to specify with underscore
+    app = Flask(appname.replace('-', '_'))
     app.config.from_object(config_obj)
     if configfiles:
-        # backwards compatibility
-        if type(configfiles) == str:
-            configfiles = [configfiles]
         for configfile in configfiles:
             appconfig = getitems(configfile, 'app')
             app.config.update(appconfig)
+
+    # load any environment variables which start with FLASK_
+    app.config.from_prefixed_env(prefix='FLASK')
+
+    with app.app_context():
+        # turn on logging
+        from .applogging import setlogging
+        setlogging()
 
     # tell jinja to remove linebreaks
     app.jinja_env.trim_blocks = True
@@ -67,7 +72,7 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
         app.config[configkey] = app.config[configkey].format(productname=app.config['THISAPP_PRODUCTNAME_TEXT'])
 
     # initialize database
-    from contracts.dbmodel import db
+    from .dbmodel import db
     db.init_app(app)
 
     # add loutilities tables-assets for js/css/template loading
@@ -90,8 +95,6 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
         if init_for_operation:
             update_local_tables()
 
-        #     update_local_tables()
-
         # js/css files
         asset_env.append_path(app.static_folder)
         asset_env.append_path(loutilitiespath, '/loutilities/static')
@@ -111,19 +114,10 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
     mail = Mail(app)
 
     def security_send_mail(subject, recipient, template, **context):
-        # this may be called from view which doesn't reference interest
-        # if so pick up user's first interest to get from_email address
-        # if not g.interest:
-        #     g.interest = context['user'].interests[0].interest if context['user'].interests else None
         from_email = current_app.config['SECURITY_EMAIL_SENDER']
-        # if g.interest:
-        #     from_email = localinterest().from_email
-        # # use default if user didn't have any interests
-        # else:
-        #     from_email = current_app.config['SECURITY_EMAIL_SENDER']
-        #     # copied from flask_security.utils.send_mail
-        #     if isinstance(from_email, LocalProxy):
-        #         from_email = from_email._get_current_object()
+        # copied from flask_security.utils.send_mail
+        if isinstance(from_email, LocalProxy):
+            from_email = from_email._get_current_object()
         ctx = ('security/email', template)
         html = render_template('%s/%s.html' % ctx, **context)
         text = render_template('%s/%s.txt' % ctx, **context)
@@ -138,25 +132,19 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
     from .views import userrole as userroleviews
     from loutilities.user.views import bp as userrole
     app.register_blueprint(userrole)
-    from contracts.views.frontend import bp as frontend
+    from .views.frontend import bp as frontend
     app.register_blueprint(frontend)
+    from .views.admin import bp as admin
+    app.register_blueprint(admin)
 
     # need to force app context else get
     #    RuntimeError: Working outside of application context.
     #    RuntimeError: Attempted to generate a URL without the application context being pushed.
     # see http://kronosapiens.github.io/blog/2014/08/14/understanding-contexts-in-flask.html
     with app.app_context():
-        # admin views need to be defined within app context because of requests.addscripts() using url_for
-        from contracts.views.admin import bp as admin
-        app.register_blueprint(admin)
-
         # import navigation after views created
         from . import nav
-
-        # turn on logging
-        from .applogging import setlogging
-        setlogging()
-
+       
         # set up scoped session
         from sqlalchemy.orm import scoped_session, sessionmaker
         # see https://github.com/pallets/flask-sqlalchemy/blob/706982bb8a096220d29e5cef156950237753d89f/flask_sqlalchemy/__init__.py#L990
@@ -207,19 +195,9 @@ def create_app(config_obj, configfiles=None, init_for_operation=True):
             app.logger.info(
                 '{}: {} {} {}'.format(request.remote_addr, request.method, request.url, response.status_code))
         return response
-    
+
     # app back to caller
     return app
-
-# set static, templates if configured
-# app.static_folder = appconfig.get('STATIC_FOLDER', 'static')
-# app.template_folder = appconfig.get('TEMPLATE_FOLDER', 'templates')
-
-# # configure for debug
-# debug = app.config['DEBUG']
-# if debug:
-#     app.config['SECRET_KEY'] = 'flask development key'
-
 
 
 

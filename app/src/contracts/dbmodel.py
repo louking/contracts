@@ -1,27 +1,15 @@
-###########################################################################################
-# dbmodel - database model for contracts database
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       06/29/18        Lou King        Create
-#
-#   Copyright 2018 Lou King.  All rights reserved
-###########################################################################################
+"""
+dbmodel - database model for contracts database
+"""
 
 # standard
-import os.path
-from configparser import SafeConfigParser
 from copy import deepcopy
 from datetime import datetime
 
 # pypi
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.associationproxy import association_proxy
 
-from flask_sqlalchemy import SQLAlchemy
-from flask_security import current_user, UserMixin, RoleMixin
 from flask import current_app
 
 class parameterError(Exception): pass

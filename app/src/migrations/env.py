@@ -1,11 +1,7 @@
-from __future__ import with_statement
-
 import logging
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
 from sqlalchemy import MetaData
-from sqlalchemy import pool
 from flask import current_app
 
 from alembic import context
@@ -21,23 +17,37 @@ config = context.config
 fileConfig(config.config_file_name)
 logger = logging.getLogger('alembic.env')
 
+
+def get_engine(bind_key=None):
+    try:
+        # this works with Flask-SQLAlchemy<3 and Alchemical
+        return current_app.extensions['migrate'].db.get_engine(bind=bind_key)
+    except TypeError:
+        # this works with Flask-SQLAlchemy>=3
+        return current_app.extensions['migrate'].db.engines.get(bind_key)
+
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 config.set_main_option(
-    'sqlalchemy.url',
-    str(current_app.extensions['migrate'].db.engine.url).replace('%', '%%'))
+    'sqlalchemy.url', str(get_engine().url).replace('%', '%%'))
 bind_names = []
-# skip 'users' bind because this database migration is handled in https://github.com/louking/members
+# skip 'users' bind because this database migration is handled in https://github.com/louking/mysql-docker
 current_app.config['SQLALCHEMY_BINDS'].pop('users')
-for bind in current_app.config.get("SQLALCHEMY_BINDS"):
+if current_app.config.get('SQLALCHEMY_BINDS') is not None:
+    bind_names = list(current_app.config['SQLALCHEMY_BINDS'].keys())
+else:
+    get_bind_names = getattr(current_app.extensions['migrate'].db,
+                             'bind_names', None)
+    if get_bind_names:
+        bind_names = get_bind_names()
+for bind in bind_names:
     context.config.set_section_option(
         bind, "sqlalchemy.url",
-        str(current_app.extensions['migrate'].db.get_engine(
-            current_app, bind).url).replace('%', '%%'))
-    bind_names.append(bind)
-target_metadata = current_app.extensions['migrate'].db.metadata
+        str(get_engine(bind_key=bind).url).replace('%', '%%'))
+target_db = current_app.extensions['migrate'].db
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -49,8 +59,12 @@ def get_metadata(bind):
     """Return the metadata for a bind."""
     if bind == '':
         bind = None
+    if hasattr(target_db, 'metadatas'):
+        return target_db.metadatas[bind]
+
+    # legacy, less flexible implementation
     m = MetaData()
-    for t in target_metadata.tables.values():
+    for t in target_db.metadata.tables.values():
         if t.info.get('bind_key') == bind:
             t.tometadata(m)
     return m
@@ -81,6 +95,8 @@ def run_migrations_offline():
         rec['url'] = context.config.get_section_option(name, "sqlalchemy.url")
 
     for name, rec in engines.items():
+        # skip all but default bind
+        if name: continue
         logger.info("Migrating database %s" % (name or '<default>'))
         file_ = "%s.sql" % name
         logger.info("Writing output to %s" % file_)
@@ -121,20 +137,11 @@ def run_migrations_online():
     # for the direct-to-DB use case, start a transaction on all
     # engines, then run all migrations, then commit all transactions.
     engines = {
-        '': {
-            'engine': engine_from_config(
-                config.get_section(config.config_ini_section),
-                prefix='sqlalchemy.',
-                poolclass=pool.NullPool,
-            )
-        }
+        '': {'engine': get_engine()}
     }
     for name in bind_names:
         engines[name] = rec = {}
-        rec['engine'] = engine_from_config(
-            context.config.get_section(name),
-            prefix='sqlalchemy.',
-            poolclass=pool.NullPool)
+        rec['engine'] = get_engine(bind_key=name)
 
     for name, rec in engines.items():
         engine = rec['engine']
@@ -147,6 +154,8 @@ def run_migrations_online():
 
     try:
         for name, rec in engines.items():
+            # skip all but default bind
+            if name: continue
             logger.info("Migrating database %s" % (name or '<default>'))
             context.configure(
                 connection=rec['connection'],
@@ -164,7 +173,7 @@ def run_migrations_online():
 
         for rec in engines.values():
             rec['transaction'].commit()
-    except:
+    except:  # noqa: E722
         for rec in engines.values():
             rec['transaction'].rollback()
         raise

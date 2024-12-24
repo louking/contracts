@@ -9,6 +9,11 @@ from json import dumps
 
 # pypi
 from flask import url_for
+
+# before importing Nav, monkey patch MutableMapping to use abc.MutableMapping, see https://stackoverflow.com/a/78863584/799921
+import collections
+collections.MutableMapping = collections.abc.MutableMapping
+
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup, RawTag
 from flask_nav.renderers import SimpleRenderer
