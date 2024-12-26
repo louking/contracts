@@ -1,29 +1,19 @@
-###########################################################################################
-# event_tasks - background tasks needed for contract event management
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       12/20/18        Lou King        Create
-#
-#   Copyright 2018 Lou King.  All rights reserved
-###########################################################################################
 '''
-event_tasks - background tasks needed for contract event management
+contract_tasks - background tasks needed for contract event management
 =======================================================================
 
 '''
 # standard
-import os.path
 from copy import deepcopy
 from datetime import date, timedelta
 from urllib.parse import quote_plus
 from re import match
 
 # pypi
-from flask import Flask
-from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import current_app
+from flask.cli import with_appcontext
 from jinja2 import Template
-from click import argument
+from click import argument, group
 
 # homegrown
 from contracts import create_app
@@ -35,25 +25,11 @@ from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROM
 from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import TAG_PRERACERENEWEDREMINDEREMAILSENT, TAG_PRERACERENEWEDCANCELED
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, STATE_CANCELED
-from contracts.settings import Production
 from loutilities.flask_helpers.mailer import sendmail
 from contracts.utils import renew_event, renew_sponsorship
-from contracts.applogging import setlogging
-from loutilities.configparser import getitems
 from loutilities.timeu import asctime
 
-class parameterError(Exception): pass
-
-# get configuration and create app
-dirname = os.path.dirname(__file__)
-oneup = os.path.dirname(dirname)
-configpath = os.path.join(oneup, 'config', 'contracts.cfg')
-
-# userconfigpath first so configpath can override
-userconfigpath = os.path.join(oneup, 'config', 'users.cfg')
-configfiles = [userconfigpath, configpath]
-
-app = create_app(Production(configfiles), configfiles)
+from scripts import catch_errors, ParameterError
 
 # set up datatabase date formatter
 dbdate = asctime('%Y-%m-%d')
@@ -61,12 +37,18 @@ dbdate = asctime('%Y-%m-%d')
 # debug
 debug = False
 
-#----------------------------------------------------------------------
-@app.cli.command()
+# needs to be before any commands
+@group()
+def contract():
+    """Perform contract related tasks"""
+    pass
+
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def preraceemail(startdate, enddate):
-#----------------------------------------------------------------------
     '''Send pre-race email to race director and lead.'''
 
     # set up tag which is used to control this email
@@ -77,7 +59,7 @@ def preraceemail(startdate, enddate):
     if startdate == 'auto' and enddate == 'auto':
         # calculate start and end date window
         start = dbdate.dt2asc(date.today())
-        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_EMAIL']))
+        end = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_EMAIL']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -134,8 +116,8 @@ def preraceemail(startdate, enddate):
 
         subject = 'FSRC Pre-race Coordination: {} - {}'.format(event.race.race, event.date)
         tolist = event.client.contactEmail
-        cclist = app.config['CONTRACTS_CC'] + [event.lead.email]
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_app.config['CONTRACTS_CC'] + [event.lead.email]
+        fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
@@ -143,12 +125,12 @@ def preraceemail(startdate, enddate):
         event.tags.append(senttag)
         db.session.commit()
 
-#----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def leademail(startdate, enddate):
-#----------------------------------------------------------------------
     '''Send pre-race email to lead.'''
 
     # set up tag which is used to control this email
@@ -159,7 +141,7 @@ def leademail(startdate, enddate):
         # only send for races coming up within DAYS_LEAD_EMAIL in advance of the event,
         # but if it doesn't happen for some reason will retry until event passed
         start = dbdate.dt2asc(date.today())
-        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_LEAD_EMAIL']))
+        end = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_LEAD_EMAIL']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -215,8 +197,8 @@ def leademail(startdate, enddate):
 
         subject = 'FSRC race reminders for lead: {} - {}'.format(event.race.race, event.date)
         tolist = event.lead.email
-        cclist = app.config['CONTRACTS_CC']
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
@@ -224,12 +206,12 @@ def leademail(startdate, enddate):
         event.tags.append(senttag)
         db.session.commit()
 
-#----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def postraceprocessing(startdate, enddate):
-#----------------------------------------------------------------------
     '''Sending post-race email and renew race.'''
     # set up tag which is used to control this email
     senttag = Tag.query.filter_by(tag=TAG_POSTRACEMAILSENT).one()
@@ -239,8 +221,8 @@ def postraceprocessing(startdate, enddate):
         # processing for races DAYS_POSTRACE_EMAIL days after the event,
         # but if it doesn't happen for some reason will retry for a week
         # calculate start and end date window (try to send for 1 week)
-        start = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL'] + 7))
-        end = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_EMAIL']))
+        start = dbdate.dt2asc(date.today() - timedelta(current_app.config['DAYS_POSTRACE_EMAIL'] + 7))
+        end = dbdate.dt2asc(date.today() - timedelta(current_app.config['DAYS_POSTRACE_EMAIL']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -305,15 +287,15 @@ def postraceprocessing(startdate, enddate):
             'eventencoded' : quote_plus(event.race.race),
             'dateencoded'  : quote_plus(event.date),
         }
-        surveytemplate = Template( app.config['CONTRACTS_SURVEY_URL'] )
+        surveytemplate = Template( current_app.config['CONTRACTS_SURVEY_URL'] )
         mergefields['surveylink'] = surveytemplate.render( surveyfields )
 
         html = template.render( mergefields )
 
         subject = 'Thank You for using FSRC Race Support Services - {}'.format(event.date)
         tolist = event.client.contactEmail
-        cclist = app.config['CONTRACTS_CC']
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
@@ -323,12 +305,12 @@ def postraceprocessing(startdate, enddate):
         # pick up all db changes (event.tags)
         db.session.commit()
 
-#----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def preraceprempromoemail(startdate, enddate):
-#----------------------------------------------------------------------
     '''Send pre-race premium promotion email.'''
     # set up tags which are used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACEPREMPROMOEMAILSENT).one()
@@ -339,8 +321,8 @@ def preraceprempromoemail(startdate, enddate):
         # only send for races within one week window
         # this causes sending DAYS_PRERACE_PREMPROMO_EMAIL in advance of the event, 
         # but if it doesn't happen for some reason will retry for a week
-        start = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_PREMPROMO_EMAIL']) - timedelta(7))
-        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_PREMPROMO_EMAIL']))
+        start = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_PREMPROMO_EMAIL']) - timedelta(7))
+        end = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_PREMPROMO_EMAIL']))
     
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -398,8 +380,8 @@ def preraceprempromoemail(startdate, enddate):
 
         subject = 'Frederick Steeplechasers Premium Promotion for {}'.format(event.race.race)
         tolist = event.client.contactEmail
-        cclist = app.config['CONTRACTS_CC']
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
@@ -410,12 +392,12 @@ def preraceprempromoemail(startdate, enddate):
         db.session.commit()
 
 
-# ----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def latereminderemail(startdate, enddate):
-    # ----------------------------------------------------------------------
     '''Send pre-race premium promotion email.'''
     # set up tags which are used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACERENEWEDREMINDEREMAILSENT).one()
@@ -425,8 +407,8 @@ def latereminderemail(startdate, enddate):
         # only send for races within one week window
         # this causes sending DAYS_PRERACE_LATEREMINDER_EMAIL in advance of the event,
         # but if it doesn't happen for some reason will retry for a week
-        start = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_LATEREMINDER_EMAIL']) - timedelta(7))
-        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_LATEREMINDER_EMAIL']))
+        start = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_LATEREMINDER_EMAIL']) - timedelta(7))
+        end = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_LATEREMINDER_EMAIL']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -483,8 +465,8 @@ def latereminderemail(startdate, enddate):
 
         subject = 'Frederick Steeplechasers Services Reminder for {}'.format(event.race.race)
         tolist = event.client.contactEmail
-        cclist = app.config['CONTRACTS_CC']
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
 
         sendmail(subject, fromlist, tolist, html, ccaddr=cclist)
 
@@ -494,12 +476,12 @@ def latereminderemail(startdate, enddate):
         # pick up all db changes (event.tags)
         db.session.commit()
 
-# ----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def cancellaterace(startdate, enddate):
-    # ----------------------------------------------------------------------
     '''Send pre-race premium promotion email.'''
     # set up tags which are used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACERENEWEDCANCELED).one()
@@ -509,8 +491,8 @@ def cancellaterace(startdate, enddate):
         # only send for races within one week window
         # this causes sending DAYS_PRERACE_LATE_CANCEL in advance of the event,
         # but if it doesn't happen for some reason will retry for a week
-        start = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_LATE_CANCEL']) - timedelta(7))
-        end = dbdate.dt2asc(date.today() + timedelta(app.config['DAYS_PRERACE_LATE_CANCEL']))
+        start = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_LATE_CANCEL']) - timedelta(7))
+        end = dbdate.dt2asc(date.today() + timedelta(current_app.config['DAYS_PRERACE_LATE_CANCEL']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -568,9 +550,9 @@ def cancellaterace(startdate, enddate):
         html = template.render(mergefields)
 
         subject = 'Automatically canceling {}'.format(event.race.race)
-        tolist = app.config['CONTRACTS_CC']
+        tolist = current_app.config['CONTRACTS_CC']
         cclist = None
-        fromlist = app.config['CONTRACTS_CONTACT']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
 
         sendmail(subject, fromlist, tolist, html, ccaddr=cclist)
 
@@ -580,12 +562,12 @@ def cancellaterace(startdate, enddate):
         # pick up all db changes (event.tags)
         db.session.commit()
 
-# ----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate', default='auto')
 @argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
 def renewsponsorship(startdate, enddate):
-    # ----------------------------------------------------------------------
     '''Renew sponsorships for races within date window'''
 
     # calculate start and end date window
@@ -594,8 +576,8 @@ def renewsponsorship(startdate, enddate):
         # this causes sending DAYS_PRERACE_PREMPROMO_EMAIL after race,
         # but if it doesn't happen for some reason will retry for a week
         # calculate start and end date window (try to send for 1 week)
-        start = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_RENEWSPONSORSHIP'] + 7))
-        end = dbdate.dt2asc(date.today() - timedelta(app.config['DAYS_POSTRACE_RENEWSPONSORSHIP']))
+        start = dbdate.dt2asc(date.today() - timedelta(current_app.config['DAYS_POSTRACE_RENEWSPONSORSHIP'] + 7))
+        end = dbdate.dt2asc(date.today() - timedelta(current_app.config['DAYS_POSTRACE_RENEWSPONSORSHIP']))
 
     # verify both dates are present, check user input format is yyyy-mm-dd
     else:
@@ -637,12 +619,12 @@ def renewsponsorship(startdate, enddate):
 ### the following commands are designed for initial deployment
 #######################################################################
 
-#----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate')
 @argument('enddate')
-def renewraces(startdate, enddate):
-#----------------------------------------------------------------------
+@with_appcontext
+@catch_errors
+def xrenewraces(startdate, enddate):
     '''(initial deployment) Renew races between two dates yyyy-mm-dd'''
 
     # check input argument format
@@ -685,12 +667,12 @@ def renewraces(startdate, enddate):
     else:
         print('no events found')
 
-#----------------------------------------------------------------------
-@app.cli.command()
+@contract.command()
 @argument('startdate')
 @argument('enddate')
-def sendrenewemails(startdate, enddate):
-#----------------------------------------------------------------------
+@with_appcontext
+@catch_errors
+def xsendrenewemails(startdate, enddate):
     '''(initial deployment) Send "renewal" emails for renewed events between two dates yyyy-mm-dd.
     NOTE: emails are not sent to premium promotion only events.
     '''
@@ -757,8 +739,8 @@ def sendrenewemails(startdate, enddate):
 
         subject = 'FSRC Race Support Services is holding {} for {}'.format(event.date, event.race.race)
         tolist = event.client.contactEmail
-        cclist = app.config['CONTRACTS_CC']
-        fromlist = app.config['CONTRACTS_CONTACT']
+        cclist = current_current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 

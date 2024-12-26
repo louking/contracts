@@ -15,6 +15,8 @@ from flask_migrate import Migrate
 from contracts import create_app
 from contracts.settings import Production
 from contracts.dbmodel import db
+from scripts import ContractCli
+
 appname = environ['APP_NAME']
 
 abspath = os.path.abspath('/config')
@@ -29,6 +31,7 @@ app = create_app(Production(configfiles), configfiles, init_for_operation=False)
 
 # set up flask command processing (not needed within app_server.py)
 migrate = Migrate(app, db, compare_type=True)
+contract = ContractCli(app, db)
 
 # Needed only if serving web pages
 # implement proxy fix (https://github.com/sjmf/reverse-proxy-minimal-example)
