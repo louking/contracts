@@ -167,7 +167,7 @@ def nav_menu():
     # finally for non super-admin
     else:
         navbar.items.append(View('My Account', 'security.change_password'))
-        navbar.items.append(View('About', 'admin.sysinfo'))
+    navbar.items.append(View('About', 'admin.sysinfo'))
 
     return navbar
 
