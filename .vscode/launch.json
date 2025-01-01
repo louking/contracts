@@ -23,6 +23,43 @@
             "justMyCode": false,
         },
         {
+            "name": "Python: Remote Attach (local)",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {"host": "localhost", "port": 5678},
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/app/src",
+                    "remoteRoot": "/app"
+                },
+                // allow debugging of pip installed packages
+                {
+                    "localRoot": "${workspaceFolder}/.venv/Lib/site-packages",
+                    "remoteRoot": "/usr/local/lib/python3.12/site-packages"
+                }
+            ],
+            "justMyCode": false
+        },
+        {
+            // this is untested, didn't work first try
+            "name": "Python: Remote Attach (sandbox)",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {"host": "fsrc.loutilities.com", "port": 5678},
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/app/src",
+                    "remoteRoot": "/app"
+                },
+                // allow debugging of pip installed packages
+                {
+                    "localRoot": "${workspaceFolder}/.venv/Lib/site-packages",
+                    "remoteRoot": "/usr/local/lib/python3.12/site-packages"
+                }
+            ],
+            "justMyCode": false
+        },
+        {
             "name": "Launch Chrome",
             "request": "launch",
             "type": "chrome",
