@@ -146,7 +146,7 @@ class Contract(Base):
     contractBlockType   = relationship( 'ContractBlockType', backref='contracts', lazy=True )
     templateTypeId      = Column( Integer, ForeignKey('templatetype.id' ) )
     templateType        = relationship( 'TemplateType', backref='contracts', lazy=True )
-    block               = Column( String(CONTRACT_BLOCK_LEN) )
+    block               = Column( Text )
 
     # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
     update_time         = Column(DateTime,
