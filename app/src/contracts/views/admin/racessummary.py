@@ -144,7 +144,10 @@ class RaceRegistrationsApi(CrudApi):
                         regopendate = racedata[thisrace][thisevent]['dates'][racedate]['regopendate']
                     # we have to guess at registration open, as the lowest date
                     else:
-                        regopendate = min([regdate for regdate in racedata[thisrace][thisevent]['dates'][racedate]['regcounts']])
+                        regdates = [regdate for regdate in racedata[thisrace][thisevent]['dates'][racedate]['regcounts']]
+                        if len(regdates) == 0:
+                            continue
+                        regopendate = min(regdates)
                     for regdate in racedata[thisrace][thisevent]['dates'][racedate]['regcounts']:
                         count = racedata[thisrace][thisevent]['dates'][racedate]['regcounts'][regdate]
                         self.response.append(
