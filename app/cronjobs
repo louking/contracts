@@ -11,7 +11,7 @@ MAILFROM=noreply@steeplechasers.org # doesn't seem to work
 00 02 * * * test "$PROD" && cd /app && flask contract leademail && flask contract preraceemail && flask contract postraceprocessing && flask contract preraceprempromoemail && flask contract renewsponsorship && flask contract latereminderemail && flask contract cancellaterace
 
 # backup db (dev test) (see https://www.man7.org/linux/man-pages/man1/test.1.html)
-*/5 * * * * test "$DEV" && mysqldump -h db -u root -p"$(cat /run/secrets/root-password)" ${APP_DATABASE} | gzip > /backup/${APP_DATABASE}-$(date +%Y-%m-%d).sql.gz
+*/5 * * * * test "$DEV" && mariadb-dump -h db -u root -p"$(cat /run/secrets/root-password)" ${APP_DATABASE} | gzip > /backup/${APP_DATABASE}-$(date +%Y-%m-%d).sql.gz
 
 # nightly tasks (dev test)
 */5 * * * * test "$DEV" && cd /app && flask contract leademail && flask contract preraceemail && flask contract postraceprocessing && flask contract preraceprempromoemail && flask contract renewsponsorship && flask contract latereminderemail && flask contract cancellaterace
