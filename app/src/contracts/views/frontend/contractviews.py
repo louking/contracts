@@ -147,11 +147,11 @@ class AcceptAgreement(MethodView):
         template = Template( templatestr )
         html = template.render( mergefields )
         tolist = mergefields['client'].contactEmail
-        cclist = current_app.config['CONTRACTS_CC']
+        cclist = current_app.config['CONTRACTS_ACCEPT_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print(('mergefields={}'.format(mergefields)))
 
-        subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
+        subject = 'ACCEPTED - FSRC Race Services Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
         # update for web view
