@@ -3,5 +3,5 @@
     "restructuredtext.confPath"               : "${workspaceFolder}\\docs",
     "restructuredtext.updateOnTextChanged"    : "true",
     "restructuredtext.updateDelay"            : 1000,
-    "restructuredtext.sphinxBuildPath"        : "C:\\Users\\lking\\Documents\\Lou's Software\\projects\\contracts\\contracts\\venv\\Scripts\\sphinx-build.exe"
+    "restructuredtext.sphinxBuildPath"        : "C:\\Users\\lking\\Documents\\Lou's Software\\projects\\contracts\\contracts\\.venv\\Scripts\\sphinx-build.exe"
 }
