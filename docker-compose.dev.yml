@@ -1,35 +1,9 @@
-version: '3.8'
-
 services:
-  shell:
-    build: 
-      context: app
-      args:
-        - PYTHON_VER=${PYTHON_VER}
-    restart: always
-    depends_on:
-      - db
-    secrets:
-      - root-password
-      - users-password
-      - appdb-password
-    networks:
-      - backend-network
-      - frontend-network
-    volumes:
-      - ./app/src:/app
-      - ./config:/config:ro
-    environment:
-      - FLASK_DEBUG=True
-      - APP_DATABASE=${APP_DATABASE}
-      - APP_USER=${APP_DATABASE}
-      - APP_PASSWORD_FILE=/run/secrets/appdb-password
-    tty: true # https://stackoverflow.com/a/55953120/799921
-
   app:
     volumes:
       - ./app/src:/app
-
-  crond:
-    volumes:
-      - ../backup:/backup
+    # need workers=1 for debugging so file changes will be picked up
+    command: ["./dbupgrade_and_run.sh", "gunicorn", "--reload", "--bind", "0.0.0.0:5000", "--log-level", "info", 
+              "--workers=1", "--threads=4", 
+              "--access-logfile", "${ACCESS_LOG}", "--access-logformat", '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"', 
+              "--timeout", "120", "app_server:app"]
