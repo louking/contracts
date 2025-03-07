@@ -31,7 +31,7 @@ RUN apk add --no-cache mariadb-connector-c-dev \
     && rm -rf .cache/pip \
     && apk del .build-deps
 
-# we'll be doing mysql, mysqldump commands
+# we'll be doing mariadb, mariadb-dump commands
 RUN apk add --no-cache mysql-client
 
 # use msmtp for sendmail, need volume with /etc/msmtprc defined

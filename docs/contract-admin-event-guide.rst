@@ -92,7 +92,11 @@ This describes the life cycle for contract race management.
    * All details are known for the :term:`contract race`, and the race director is ready to move forward 
 
      * see :ref:`race-details-confirmed`
-     * click **Update and Send Contract** to generate a contract
+     * click **Create Contract** to generate a contract
+   
+   * Race service admin should review the generated contract before sending
+
+     * when the contract is ready, click **Send Contract**
      * :ref:`contract-email` is automatically generated to the race director 
 
    * Race Director agrees to contract electronically
@@ -104,8 +108,12 @@ This describes the life cycle for contract race management.
 
      * from :ref:`admin-calendar-view` click on the :term:`contract race` or from :ref:`event-overview-view`, 
        select the :term:`contract race`, click **Edit**
-     * click **Update and Initiate Invoice**  
+     * click **Create Invoice**  
      * the invoice document is generated
+   
+   * Race services admin should review the generated invoice before sending
+
+     * when the invoice is ready, click **Initiate Invoice**
      * FSRC Treasurer is notified that invoice should be sent to the race director from the accounting system
 
    * About 5 days before the :term:`contract race`
@@ -244,7 +252,12 @@ Now you can edit the :term:`contract race` with the current details and when rea
 
    * click **Update**
 
-     * or if you're ready to generate a contract, click **Update and Send Contract**
+     * or if you're ready to generate a contract, click **Create Contract**
+
+   * after reviewing the contract for completeness, the contract can be sent to the Race Director
+   
+     * click **Send Contract**
+     * :ref:`contract-email` is automatically generated
 
 
 .. _race-director-questions:
@@ -322,8 +335,12 @@ contracts will have all the items in the contract settled at the time the contra
 but some services may require additional information only available closer to the race. E.g., for chip timing
 the race director needs to identify how many bibs will be chipped before the invoice process can be initiated.
 
-When it's time to initiate the invoice process, the race services admin clicks **Update and Initiate Invoice** from 
-the :term:`contract race` edit view.
+When it's time to initiate the invoice process, the race services admin clicks **Create Invoice** from 
+the :term:`contract race` edit view. This will generate an invoice document which should be reviewed before sending.
+
+When the invoice is ready, the race services admin clicks **Initiate Invoice**. This will notify the treasurer that
+the invoice should be sent to the race director. The treasurer will generate a QBO invoice from the accounting system and
+should attach the contractility invoice document to the QBO invoice. 
 
 You can edit an :term:`contract race` in one of two ways.
 
@@ -380,7 +397,7 @@ Contract** button is desensitized.
 If it's necessary to change the contract after the initial agreement, simply
 edit the :term:`contract race`, make the  needed changes (e.g., add *premiumpromotion*),
 and change the :term:`state` to *tentative*. By changing  the :term:`state`, the
-**Update and Send Contract** button will be sensitized, and can be clicked to
+**Create Contract** and **Send Contract** buttons will be sensitized, and can be clicked to
 send another contract.
 
 Note once this is done, the system voids the previous contract and it is not accessible.

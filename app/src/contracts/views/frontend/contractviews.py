@@ -150,12 +150,8 @@ class AcceptAgreement(MethodView):
         cclist = current_app.config['CONTRACTS_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print(('mergefields={}'.format(mergefields)))
-        # different subject line if contract had been accepted before. This must match eventscontract.EventsContract.editor_method_posthook
-        annotation = ''
-        if thisevent.isContractUpdated:
-            annotation = '(updated) '
 
-        subject = '{}ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(annotation, mergefields['event'], mergefields['date'])
+        subject = 'ACCEPTED - FSRC Race Support Agreement: {} - {}'.format(mergefields['event'], mergefields['date'])
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
         # update for web view

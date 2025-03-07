@@ -1,12 +1,3 @@
-###########################################################################################
-# eventscontract - handle contract management for race services contract
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       10/15/18        Lou King        Create
-#
-#   Copyright 2018 Lou King
-###########################################################################################
 '''
 eventscontract - handle contract management for race services contract
 ===========================================================================
@@ -47,12 +38,14 @@ class EventsContract(DbCrudApiRolePermissions):
 
         note row has already been committed to the database, so can be retrieved
         '''
-        # the following can be true only for put() [edit] method
-        if 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract', 'initiateinvoice']:
-            folderid = current_app.config['CONTRACTS_DB_FOLDER']
-            
+        # set up 
+        if 'addlaction' in form and form['addlaction'] in ['createcontract', 'createinvoice', 'sendcontract', 'resendcontract', 'initiateinvoice']:
+            # pull record(s) from database and save as flat dotted record
+            data = get_request_data(form)
+            print(('data={}'.format(data)))
+                        
             # quote or invoice?
-            if form['addlaction'] == 'initiateinvoice':
+            if form['addlaction'] in ['createinvoice', 'initiateinvoice']:
                 doctype = 'INVOICE'
                 templatetype = 'invoice email'
                 is_quote = False
@@ -61,6 +54,15 @@ class EventsContract(DbCrudApiRolePermissions):
                 templatetype = 'agreement accepted view'
                 is_quote = True
 
+            if form['addlaction'] != 'resendcontract':
+                annotation = ''
+            else:
+                annotation = '(resend) '
+                
+        # the following can be true only for put() [edit] method
+        if 'addlaction' in form and form['addlaction'] in ['createcontract', 'createinvoice']:
+            folderid = current_app.config['CONTRACTS_DB_FOLDER']
+            
             # need an instance of contract manager to take care of saving the contract
             cm = ContractManager(contractType='race services', templateType='contract', driveFolderId=folderid)
 
@@ -72,139 +74,152 @@ class EventsContract(DbCrudApiRolePermissions):
             for thisid in data:
                 eventdb = Event.query.filter_by(id=thisid).one()
 
-                # different subject line if contract had been accepted before. This must match contractviews.AcceptAgreement.post
-                annotation = ''
+                # maybe we're creating/updating the contract or invoice
+                # if there was already a document sent, indicate that we're updating it
+                if is_quote and eventdb.contractDocId:
+                    # isContractUpdated is used to annotate the contract accepted email in contractviews.AcceptAgreement.post()
+                    eventdb.isContractUpdated = True
 
-                # if we are generating a new version of the contract/invoice
-                if form['addlaction'] in ['sendcontract', 'initiateinvoice']:
-                    # maybe it's an update to the contract or invoice
-                    # if there was already a document sent, indicate that we're updating it
-                    if is_quote and eventdb.contractDocId:
-                        # isContractUpdated is used to annotate the contract accepted email in contractviews.AcceptAgreement.post()
-                        eventdb.isContractUpdated = True
-                        annotation = '(updated) '
-                    elif not is_quote and eventdb.invoiceDocId:
-                        annotation = '(updated) '
-
-                    # check appropriate fields are present for certain services
-                    servicenames = {s.service for s in eventdb.services}
-                    if servicenames & {'coursemarking', 'finishline'}:
-                        self._fielderrors = []
-                        for field in ['race', 'date', 'mainStartTime', 'mainDistance' ]:
-                            if not data[thisid][field]:
-                                self._fielderrors.append({ 'name' : field, 'status' : 'please supply'})
-                        ## handle select fields
-                        for field in ['state', 'services', 'client', 'course', 'lead']:
-                            if not data[thisid][field]['id']:
-                                self._fielderrors.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
-                        if self._fielderrors:
-                            raise parameterError('missing fields')
-
-
-                    # calculate service fees
-                    servicefees = []
-
-                    feetotal = 0
-                    for service in eventdb.services:
-                        servicefee = { 'service' : service.serviceLong }
-                        # fixed fee
-                        if service.feeType.feeType =='fixed':
-                            thisfee = service.fee
-                            servicefee.update( {'fee':thisfee, 'qty': '', 'unitfee': 'fixed' } ) 
-                            servicefees.append( servicefee )
-
-                        # fee is based on another field
-                        elif service.feeType.feeType =='basedOnField':
-                            field = service.basedOnField
-                            # not clear why this needs to be converted to int, but otherwise see unicode value
-                            # if can't be converted, then invalid format
-                            try:
-                                fieldval = int(getattr(eventdb, field))
-                            except (TypeError, ValueError) as e:
-                                fieldval = None
-
-                            # field not set, then set self._fielderrors appropriately
-                            if not fieldval:
-                                formfield = self.dbmapping[field]   # hopefully not a function
-                                self._fielderrors = [{ 'name' : formfield, 'status' : 'needed to calculate fee' }]
-                                raise parameterError('cannot calculate fee if {} not set'.format(field))
-
-                            feebasedons = FeeBasedOn.query.filter_by(serviceId=service.id).order_by(FeeBasedOn.fieldValue).all()
-                            foundfee = False
-                            for feebasedon in feebasedons:
-                                lastfieldval = feebasedon.fieldValue
-                                if debug: current_app.logger.debug('fieldval={} feebasedon.fieldValue={}'.format(fieldval, feebasedon.fieldValue))
-                                if debug: current_app.logger.debug('type(fieldval)={} type(feebasedon.fieldValue)={}'.format(type(fieldval), type(feebasedon.fieldValue)))
-                                if fieldval <= feebasedon.fieldValue:
-                                    thisfee = feebasedon.fee
-                                    servicefee.update( {'fee':thisfee, 'qty':fieldval, 'unitfee': 'fixed' } ) 
-                                    servicefees.append( servicefee )
-                                    foundfee = True
-                                    break
-
-                            # if fee not found, then set fielderrors appropriately
-                            if not foundfee:
-                                formfield = self.dbmapping[field]   # hopefully not a function
-                                self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
-                                raise parameterError('cannot calculate fee if {} greater than {}'.format(field, lastfieldval))
-                                
-                        # not sure how we could get here, but best to be defensive
-                        else:
-                            raise parameterError('unknown feeType: {}'.format(service.feeType.feeType))
-
-                        # accumulate total fee
-                        feetotal += thisfee
-
-                    # need to calculate addons in addition to services (note automatically sorted by priority)
-                    for addon in eventdb.addOns:
-                        servicefee = {'service': addon.longDescr}
-                        if not addon.is_upricing:
-                            thisfee = addon.fee
-                            servicefee.update({'fee': thisfee, 'qty': '', 'unitfee': 'fixed'})
-                        else:
-                            qty = getattr(eventdb, addon.up_basedon) - addon.up_subfixed
-                            if qty < 0:
-                                qty = 0
-                            thisfee = addon.fee * qty
-                            servicefee.update({'fee': thisfee, 'qty':qty, 'unitfee': f'${addon.fee}'})
-                        servicefees.append(servicefee)
-
-                        # accumulate total fee
-                        feetotal += thisfee
-
-                    # generate contract / invoice
-                    if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
-                    docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
-                                      addlfields={'servicenames': [s.service for s in eventdb.services],
-                                                  'addons'      : [a.shortDescr for a in eventdb.addOns],
-                                                  'doctype'     : doctype,
-                                                  'is_quote'    : is_quote,
-                                                  'servicefees' : servicefees,
-                                                  'event'       : eventdb.race.race,
-                                                  'totalfees'   : { 'service' : 'TOTAL', 'fee' : feetotal },
-                                                 },
-                                      is_quote=is_quote)
+                if not is_quote:
+                    # if there's already an invoice, and it was previously initiated, we're updating it
+                    if eventdb.invoiceDocId and eventdb.isInvoiceInitiated:
+                        eventdb.isInvoiceUpdated = True
                     
-                    # update database to show contract sent
-                    if is_quote:
-                        eventdb.state = State.query.filter_by(state=STATE_CONTRACT_SENT).one()
-                        eventdb.contractDocId = docid
-                        eventdb.contractSentDate = dt.dt2asc( date.today() )
+                    # regardless, if we're creating an invoice, we haven't initiated it yet now
+                    eventdb.isInvoiceInitiated = False
+
+                # check appropriate fields are present for certain services
+                servicenames = {s.service for s in eventdb.services}
+                if servicenames & {'coursemarking', 'finishline'}:
+                    self._fielderrors = []
+                    for field in ['race', 'date', 'mainStartTime', 'mainDistance' ]:
+                        if not data[thisid][field]:
+                            self._fielderrors.append({ 'name' : field, 'status' : 'please supply'})
+                    ## handle select fields
+                    for field in ['state', 'services', 'client', 'course', 'lead']:
+                        if not data[thisid][field]['id']:
+                            self._fielderrors.append({ 'name' : '{}.id'.format(field), 'status' : 'please select'})
+                    if self._fielderrors:
+                        raise parameterError('missing fields')
+
+
+                # calculate service fees
+                servicefees = []
+
+                feetotal = 0
+                for service in eventdb.services:
+                    servicefee = { 'service' : service.serviceLong }
+                    # fixed fee
+                    if service.feeType.feeType =='fixed':
+                        thisfee = service.fee
+                        servicefee.update( {'fee':thisfee, 'qty': '', 'unitfee': 'fixed' } ) 
+                        servicefees.append( servicefee )
+
+                    # fee is based on another field
+                    elif service.feeType.feeType =='basedOnField':
+                        field = service.basedOnField
+                        # not clear why this needs to be converted to int, but otherwise see unicode value
+                        # if can't be converted, then invalid format
+                        try:
+                            fieldval = int(getattr(eventdb, field))
+                        except (TypeError, ValueError) as e:
+                            fieldval = None
+
+                        # field not set, then set self._fielderrors appropriately
+                        if not fieldval:
+                            formfield = self.dbmapping[field]   # hopefully not a function
+                            self._fielderrors = [{ 'name' : formfield, 'status' : 'needed to calculate fee' }]
+                            raise parameterError('cannot calculate fee if {} not set'.format(field))
+
+                        feebasedons = FeeBasedOn.query.filter_by(serviceId=service.id).order_by(FeeBasedOn.fieldValue).all()
+                        foundfee = False
+                        for feebasedon in feebasedons:
+                            lastfieldval = feebasedon.fieldValue
+                            if debug: current_app.logger.debug('fieldval={} feebasedon.fieldValue={}'.format(fieldval, feebasedon.fieldValue))
+                            if debug: current_app.logger.debug('type(fieldval)={} type(feebasedon.fieldValue)={}'.format(type(fieldval), type(feebasedon.fieldValue)))
+                            if fieldval <= feebasedon.fieldValue:
+                                thisfee = feebasedon.fee
+                                servicefee.update( {'fee':thisfee, 'qty':fieldval, 'unitfee': 'fixed' } ) 
+                                servicefees.append( servicefee )
+                                foundfee = True
+                                break
+
+                        # if fee not found, then set fielderrors appropriately
+                        if not foundfee:
+                            formfield = self.dbmapping[field]   # hopefully not a function
+                            self._fielderrors = [{ 'name' : formfield, 'status' : 'cannot calculate fee if this is greater than {}'.format(lastfieldval) }]
+                            raise parameterError('cannot calculate fee if {} greater than {}'.format(field, lastfieldval))
+                            
+                    # not sure how we could get here, but best to be defensive
                     else:
-                        eventdb.invoiceDocId = docid
-                    
-                    # find index with correct id and show database updates
-                    for resprow in self._responsedata:
-                        if resprow['rowid'] == thisid: 
-                            resprow['state'] = { key:val for (key,val) in list(eventdb.state.__dict__.items()) if key[0] != '_' }
-                            resprow['contractSentDate'] = eventdb.contractSentDate
-                            resprow['contractDocId'] = eventdb.contractDocId
+                        raise parameterError('unknown feeType: {}'.format(service.feeType.feeType))
 
-                # if we are just resending current version of the contract
+                    # accumulate total fee
+                    feetotal += thisfee
+
+                # need to calculate addons in addition to services (note automatically sorted by priority)
+                for addon in eventdb.addOns:
+                    servicefee = {'service': addon.longDescr}
+                    if not addon.is_upricing:
+                        thisfee = addon.fee
+                        servicefee.update({'fee': thisfee, 'qty': '', 'unitfee': 'fixed'})
+                    else:
+                        qty = getattr(eventdb, addon.up_basedon) - addon.up_subfixed
+                        if qty < 0:
+                            qty = 0
+                        thisfee = addon.fee * qty
+                        servicefee.update({'fee': thisfee, 'qty':qty, 'unitfee': f'${addon.fee}'})
+                    servicefees.append(servicefee)
+
+                    # accumulate total fee
+                    feetotal += thisfee
+
+                # generate contract / invoice
+                if debug: current_app.logger.debug('editor_method_posthook(): (before create()) eventdb.__dict__={}'.format(eventdb.__dict__))
+                docid = cm.create('{}-{}-{}.docx'.format(eventdb.client.client, eventdb.race.race, eventdb.date), eventdb, 
+                                    addlfields={'servicenames': [s.service for s in eventdb.services],
+                                                'addons'      : [a.shortDescr for a in eventdb.addOns],
+                                                'doctype'     : doctype,
+                                                'is_quote'    : is_quote,
+                                                'servicefees' : servicefees,
+                                                'event'       : eventdb.race.race,
+                                                'totalfees'   : { 'service' : 'TOTAL', 'fee' : feetotal },
+                                                },
+                                    is_quote=is_quote)
+                
+                # update database to show contract sent
+                if is_quote:
+                    eventdb.contractDocId = docid
                 else:
-                    docid = eventdb.contractDocId
-                    annotation = '(resend) '
+                    eventdb.invoiceDocId = docid
+                
+                # find index with correct id and show database updates
+                for resprow in self._responsedata:
+                    if resprow['rowid'] == thisid: 
+                        resprow['state'] = { key:val for (key,val) in list(eventdb.state.__dict__.items()) if key[0] != '_' }
+                        resprow['contractSentDate'] = eventdb.contractSentDate
+                        resprow['contractDocId'] = eventdb.contractDocId
 
+        elif 'addlaction' in form and form['addlaction'] in ['sendcontract', 'resendcontract', 'initiateinvoice']:
+             
+            # there's only going to be one id -- this sort of supports multi-edit, but that won't happen
+            for thisid in data:
+                eventdb = Event.query.filter_by(id=thisid).one()
+
+                if form['addlaction'] == 'sendcontract':
+                    eventdb.state = State.query.filter_by(state=STATE_CONTRACT_SENT).one()
+                    eventdb.contractSentDate = dt.dt2asc( date.today() )
+                    docid = eventdb.contractDocId
+                    
+                elif form['addlaction'] == 'resendcontract':
+                    docid = eventdb.contractDocId
+                
+                elif form['addlaction'] == 'initiateinvoice':
+                    if eventdb.isInvoiceUpdated:
+                        annotation = '(updated) '
+                    eventdb.isInvoiceInitiated = True
+                    docid = eventdb.invoiceDocId
+                
                 # email sent depends on current state as this flows from 'sendcontract' and 'resendcontract'
                 if eventdb.state.state == STATE_COMMITTED:
                     # prepare agreement accepted or invoice email 

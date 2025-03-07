@@ -140,22 +140,26 @@ Edit Contract Race view
 The Edit Contract Race view can be used to update the specifics about the race,
 to generate a contract, and to initiate the invoice process.
 
+Click **Update** to update any changed fields in the :term:`contract race`.
+
+The **Create Contract** button is only active if the race state is
+*contract-sent* or *committed*. This is used to generate the contract.
+
+The **Send Contract** is only active if the race state is not *committed*. This
+is used to send the :ref:`contract-email` to the race director (Contact email)
+and raceservices. The contract race state is automatically set to
+*contract-sent*.
+
 The **Resend Contract** button is only active if contact has been sent. If in
 *contract-sent* :term:`state`, :ref:`contract-email` will be resent. If in
 *committed* :term:`state`, :ref:`agreement-accepted-email` will be resent.
 
-Click **Mark Invoice Sent** to set the **Invoice Sent Date** field to today's
-date.
+Click **Create Invoice** button is only active if the contract race
+state is *committed*. This is used to generate the invoice document. 
 
-Click **Update and Send Contract** button to generate the contract and send the
-:ref:`contract-email`  to the race director (Contact email) and raceservices.
-The contract race state is automatically set to *contract-sent*.
-
-Click **Update and Initiate Invoice** button is only active if the contract race
-state is *committed*. This is used to generate the invoice document and send the
-:ref:`invoice-email` to the treasurer and raceservices. 
-
-Click **Update** to update any changed fields in the :term:`contract race`.
+Click **Initiate Invoice** button is only active if the contract race state is
+*committed*. This is used to send the :ref:`invoice-email` to the treasurer and
+raceservices. 
 
 If the :term:`contract race` needs to be deleted, click **Delete**. You will be asked
 for confirmation before the :term:`contract race` is deleted. Note another option is to

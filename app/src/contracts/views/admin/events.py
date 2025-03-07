@@ -461,17 +461,19 @@ race.register()
 event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,invoiceDocId,notes,'
-                    'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
+                    'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
+                    'contractDocId,invoiceDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,isContractUpdated,invoiceSentDate,isOnCalendar,tags,contractDocId,invoiceDocId,notes,'
-                    'contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
+                    'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
+                    'contractDocId,invoiceDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
 event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
-event_dbmapping['isContractUpdated'] = '__readonly__'
-event_formmapping['isContractUpdated'] = lambda dbrow: 'yes' if dbrow.isContractUpdated else 'no'
+event_dbmapping['isInvoiceInitiated'] = '__readonly__'
+event_formmapping['isInvoiceInitiated'] = lambda dbrow: 'yes' if dbrow.isInvoiceInitiated else 'no'
+event_dbmapping['isInvoiceUpdated'] = '__readonly__'
+event_formmapping['isInvoiceUpdated'] = lambda dbrow: 'yes' if dbrow.isInvoiceUpdated else 'no'
 
 ## validate fields
 def event_validate(action, formdata):
@@ -700,9 +702,6 @@ event_view = EventsContract(
                         { 'data': 'addOns', 'name': 'addOns', 'label': 'Add Ons', 
                           '_treatment' : { 'relationship' : { 'fieldmodel':AddOn, 'labelfield':'shortDescr', 'formfield':'addOns', 'dbfield':'addOns', 'uselist':True, 'searchbox':False } },
                         },
-                        { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
-                            'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
-                        },
                         { 'data': 'isOnCalendar', 'name': 'isOnCalendar', 'label': 'On Calendar', 
                           '_treatment' : {'boolean':{'formfield':'isOnCalendar', 'dbfield':'isOnCalendar'}},
                           'ed':{ 'def': 'no' }, 
@@ -722,16 +721,20 @@ event_view = EventsContract(
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc', 'opts':{'text':'click for contract'},
                           'className': 'table_hide'
                           },
-                        { 'data': 'invoiceDocId', 'name': 'invoiceDocId', 'label': 'Invoice Doc', 'type':'googledoc', 'opts':{'text':'click for invoice'},
-                          'className': 'table_hide'
-                          },
-                        { 'data': 'isContractUpdated', 'name': 'isContractUpdated', 'label': 'Has Been Updated', 'type':'readonly' },
                         { 'data': 'contractSignedDate', 'name': 'contractSignedDate', 'label': 'Contract Signed Date', 'type':'readonly' },
                         { 'data': 'contractApprover', 'name': 'contractApprover', 'label': 'Approver', 'type':'readonly' },
                         { 'data': 'contractApproverEmail', 'name': 'contractApproverEmail', 'label': 'Approver Email', 'type':'readonly' },
                         { 'data': 'contractApproverNotes', 'name': 'contractApproverNotes', 'label': 'Approver Notes', 'type':'textarea',
                           'render': '$.fn.dataTable.render.ellipsis( 20 )',
                           },
+                        { 'data': 'invoiceDocId', 'name': 'invoiceDocId', 'label': 'Invoice Doc', 'type':'googledoc', 'opts':{'text':'click for invoice'},
+                          'className': 'table_hide'
+                          },
+                        { 'data': 'isInvoiceInitiated', 'name': 'isInvoiceInitiated', 'label': 'Invoice Initiated', 'type':'readonly' },
+                        { 'data': 'isInvoiceUpdated', 'name': 'isInvoiceUpdated', 'label': 'Invoice Updated', 'type':'readonly' },
+                        { 'data': 'invoiceSentDate', 'name': 'invoiceSentDate', 'label': 'Invoice Sent Date', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
+                            'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
+                        },
 
                     ], 
                     validate = event_validate,

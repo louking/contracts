@@ -398,7 +398,7 @@ def preraceprempromoemail(startdate, enddate):
 @with_appcontext
 @catch_errors
 def latereminderemail(startdate, enddate):
-    '''Send pre-race premium promotion email.'''
+    '''Send late renewed reminder email.'''
     # set up tags which are used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACERENEWEDREMINDEREMAILSENT).one()
 
@@ -482,7 +482,7 @@ def latereminderemail(startdate, enddate):
 @with_appcontext
 @catch_errors
 def cancellaterace(startdate, enddate):
-    '''Send pre-race premium promotion email.'''
+    '''Cancel races for which we haven't heard back from client'''
     # set up tags which are used to control this email
     senttag = Tag.query.filter_by(tag=TAG_PRERACERENEWEDCANCELED).one()
 

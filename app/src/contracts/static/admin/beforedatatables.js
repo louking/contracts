@@ -102,31 +102,27 @@ function event_configureformbuttons( that, action ) {
         var committed = ['committed'].includes( that.field( 'state.id' ).inst('data')[0].text );
         that.buttons([
                 {
-                    text: 'Resend Contract',
-                    className: ( that.field( 'contractDocId' ).get() ) ? 'enabled' : 'disabled',
+                    text: 'Update',
                     action: function () {
-                        if ( that.field( 'contractDocId' ).get() ) {
+                        that.submit();
+                    }
+                },
+                {
+                    text: 'Create Contract',
+                    className: ( contractsent ) ? 'disabled' : 'enabled',
+                    action: function () {
+                        if ( ! contractsent ) {
                             that.submit(null, null, function(data) {
-                                data.addlaction = 'resendcontract';
+                                data.addlaction = 'createcontract';
                             });
                         }
                     }
                 },
                 {
-                    text: 'Mark Invoice Sent',
-                    className: ( that.field( 'invoiceSentDate' ).get() ) ? 'disabled' : 'enabled',
+                    text: 'Send Contract',
+                    className: ( that.field( 'contractDocId' ).get() && ! committed ) ? 'enabled' : 'disabled',
                     action: function () {
-                        if ( ! that.field( 'invoiceSentDate' ).get() ) {                 
-                            that.field( 'invoiceSentDate' ).set( currentdate() );
-                            that.submit();
-                        }                    
-                    }
-                },
-                {
-                    text: 'Update and Send Contract',
-                    className: ( contractsent ) ? 'disabled' : 'enabled',
-                    action: function () {
-                        if ( ! contractsent ) {
+                        if ( that.field( 'contractDocId' ).get() ) {
                             that.submit(null, null, function(data) {
                                 data.addlaction = 'sendcontract';
                             });
@@ -134,18 +130,36 @@ function event_configureformbuttons( that, action ) {
                     }
                 },
                 {
-                    text: 'Update and Initiate Invoice',
-                    className: ( committed ) ? 'enabled' : 'disabled',
+                    text: 'Resend Contract',
+                    className: ( contractsent ) ? 'enabled' : 'disabled',
                     action: function () {
-                        that.submit(null, null, function(data) {
-                            data.addlaction = 'initiateinvoice';
-                        });
+                        if ( contractsent ) {
+                            that.submit(null, null, function(data) {
+                                data.addlaction = 'resendcontract';
+                            });
+                        }
                     }
                 },
                 {
-                    text: 'Update',
+                    text: 'Create Invoice',
+                    className: ( committed ) ? 'enabled' : 'disabled',
                     action: function () {
-                        that.submit();
+                        if ( committed ) {
+                            that.submit(null, null, function(data) {
+                                data.addlaction = 'createinvoice';
+                            });
+                        }
+                    }
+                },
+                {
+                    text: 'Initiate Invoice',
+                    className: ( committed ) ? 'enabled' : 'disabled',
+                    action: function () {
+                        if ( committed ) {
+                            that.submit(null, null, function(data) {
+                                data.addlaction = 'initiateinvoice';
+                            });
+                        }
                     }
                 },
                 {

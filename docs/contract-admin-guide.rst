@@ -38,31 +38,11 @@ contract management and for race sponsor management.
 
   See :ref:`sponsor-admin-guide` for more details.
   
-.. _common-use-cases:
-
-
-Common Use Cases (What To Do...)
-==================================
-
-
-.. _log-in:
-
-When You Want to Log In
--------------------------
-From the contractility home page, click on *Log In* in the upper right corner. You will be shown a log in 
-page. Sign in with your contractility account.
-
-.. note::
-    contractility shares passwords with membertility. If you change the password
-    in one of these apps, it will be changed for both.
-
-
 .. toctree::
    :maxdepth: 4
    :caption: Contents:
 
+   common-use-cases
    contract-admin-event-guide
    contract-admin-sponsor-guide
-
-
 

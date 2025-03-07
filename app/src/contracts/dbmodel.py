@@ -187,6 +187,7 @@ class Service(Base):
     feeType           = relationship( 'FeeType', backref='services', lazy=True )
     fee               = Column( Numeric(precision=10, scale=2) )              # must be set for feeType = fixed
     basedOnField      = Column( String(FIELD_LEN) )    # must be set for feeType = basedOnField
+    priority          = Column( Integer )
 
     # track last update - https://docs.sqlalchemy.org/en/13/dialects/mysql.html#mysql-timestamp-onupdate
     update_time         = Column(DateTime,
@@ -421,7 +422,7 @@ class Event(Base):
     funDistanceUnits    = Column( Enum('M', 'km') )
 
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many
-    services            = relationship( 'Service', secondary=eventservice_table, backref='events', lazy=True )
+    services            = relationship( 'Service', secondary=eventservice_table, backref='events', lazy=True, order_by=Service.priority )
     finishersPrevYear   = Column( Integer )
     finishersCurrYear   = Column( Integer )
     maxParticipants     = Column( Integer )
@@ -433,15 +434,19 @@ class Event(Base):
     isOnCalendar        = Column( Boolean )
     contractDocId       = Column( String(FID_LEN) )
     invoiceDocId        = Column( Text )
-    notes               = Column( String(NOTES_LEN) )
+    notes               = Column( Text )
 
     # added when contract approved
     contractApprover    = Column( String(NAME_LEN) )
     contractApproverEmail = Column( String(EMAIL_LEN) )
-    contractApproverNotes = Column( String(NOTES_LEN) )
+    contractApproverNotes = Column( Text )
 
-    # set to True if contract updated after initially approved
+    # set to True if contract updated after initially approved (obsolete)
     isContractUpdated     = Column( Boolean, default=False )
+
+    # set to True if invoice is initiated, or updated after initiated
+    isInvoiceInitiated  = Column( Boolean, default=False  )
+    isInvoiceUpdated    = Column( Boolean, default=False  )
 
     # tags
     tags                = relationship( 'Tag', secondary=eventtag_table, backref='events', lazy=True )
