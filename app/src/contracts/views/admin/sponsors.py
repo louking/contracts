@@ -443,6 +443,7 @@ sponsorview_yadcf_options = [
     ]
 
 class ViewkeyView(DbCrudApiRolePermissions):
+    decorators = [] # no login required
     def permission(self):
         allowed = super().permission()
         if allowed:
