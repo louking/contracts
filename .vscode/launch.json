@@ -63,7 +63,7 @@
             "name": "Launch Chrome",
             "request": "launch",
             "type": "chrome",
-            "url": "http://dev.localhost:5000",
+            "url": "http://dev.localhost:8003",
             "webRoot": "${workspaceFolder}/contracts",
             // see https://code.visualstudio.com/docs/editor/variables-reference#_variables-scoped-per-workspace-folder
             "pathMapping": {"/loutilities/static": "${workspaceFolder:loutilities}/loutilities/tables-assets/static"},
