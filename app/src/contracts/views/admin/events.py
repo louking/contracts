@@ -83,7 +83,7 @@ lead = DbCrudApiRolePermissions(
                     ], 
                     servercolumns = None,  # not server side
                     idSrc = 'rowid', 
-                    buttons = ['create', 'editRefresh'],
+                    buttons = ['create', 'editRefresh', 'csv'],
                     dtoptions = {
                                         'scrollCollapse': True,
                                         'scrollX': True,
