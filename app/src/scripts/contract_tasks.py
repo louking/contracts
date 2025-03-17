@@ -20,6 +20,7 @@ from contracts import create_app
 from contracts.dbmodel import db, Event, Contract, ContractType, TemplateType, Tag, State
 from contracts.dbmodel import Sponsor, SponsorRaceDate
 from contracts.dbmodel import TAG_PRERACEMAILSENT, TAG_PRERACEMAILINHIBITED
+from contracts.dbmodel import TAG_BIBCOUNTMAILSENT, TAG_BIBCOUNTMAILINHIBITED
 from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED
 from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHIBITED
 from contracts.dbmodel import TAG_LEADEMAILSENT
@@ -115,6 +116,92 @@ def preraceemail(startdate, enddate):
         html = template.render( mergefields )
 
         subject = 'FSRC Pre-race Coordination: {} - {}'.format(event.race.race, event.date)
+        tolist = event.client.contactEmail
+        cclist = current_app.config['CONTRACTS_CC'] + [event.lead.email]
+        fromlist = current_app.config['CONTRACTS_CONTACT']
+        
+        sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
+
+        # mark as sent
+        event.tags.append(senttag)
+        db.session.commit()
+
+@contract.command()
+@argument('startdate', default='auto')
+@argument('enddate', default='auto')
+@with_appcontext
+@catch_errors
+def chipcountemail(startdate, enddate):
+    '''Send bib count request email to race director and lead.'''
+
+    # set up tag which is used to control this email
+    senttag = Tag.query.filter_by(tag=TAG_BIBCOUNTMAILSENT).one()
+    inhibittag = Tag.query.filter_by(tag=TAG_BIBCOUNTMAILINHIBITED).one()
+
+    # calculate start and end date window
+    if startdate == 'auto' and enddate == 'auto':
+        # calculate start and end date window
+        start = dbdate.dt2asc(date.today())
+        end = dbdate.dt2asc(date.today() 
+                            + timedelta(current_app.config['DAYS_PRE_BIBCOUNT_REQUIRED_EMAIL'] 
+                                        + current_app.config['DAYS_PRERACE_BIBCOUNT_REQUIRED']))
+
+    # verify both dates are present, check user input format is yyyy-mm-dd
+    else:
+        if startdate == 'auto' or enddate == 'auto':
+            print('ERROR: startdate and enddate must both be specified')
+            return
+
+        if (not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', startdate) or
+                not match(r'^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$', enddate)):
+            print('ERROR: startdate and enddate must be in yyyy-mm-dd format')
+            return
+
+        # cli specified dates format is fine, and both dates specified
+        start = startdate
+        end = enddate
+
+    # use correct filter to get races in next N days
+    events = Event.query.filter(Event.date.between(start, end)).all()
+
+    for event in events:
+        # ignore uncommitted events
+        if event.state.state != STATE_COMMITTED: continue
+
+        # don't send if this message has already been sent or was inhibited by admin
+        if senttag in event.tags or inhibittag in event.tags: continue
+
+        # don't send if not chip service service
+        if 'chiptiming' not in [e.service for e in event.services]: continue
+
+        # send bib count mail to client
+        templatestr = (db.session.query(Contract)
+                   .filter(Contract.contractTypeId==ContractType.id)
+                   .filter(ContractType.contractType=='race services')
+                   .filter(Contract.templateTypeId==TemplateType.id)
+                   .filter(TemplateType.templateType=='bib count email')
+                   .one()
+                  ).block
+        template = Template( templatestr )
+
+        # bring in needed relations
+        garbage = event.client
+        garbage = event.lead
+        garbage = event.course
+
+        # merge database fields into template and send email
+        mergefields = deepcopy(event.__dict__)
+        docid = event.contractDocId
+
+        mergefields['viewcontracturl'] = f'https://docs.google.com/document/d/{docid}/view'
+        mergefields['downloadcontracturl'] = f'https://docs.google.com/document/d/{docid}/export?format=pdf'
+        mergefields['servicenames'] = [s.service for s in event.services] 
+        mergefields['event'] = event.race.race
+        mergefields['chipcountdate'] = dbdate.dt2asc(dbdate.asc2dt(event.date) - timedelta(current_app.config['DAYS_PRERACE_BIBCOUNT_REQUIRED']))
+
+        html = template.render( mergefields )
+
+        subject = f'FSRC Bib Count Query: {event.race.race} - {event.date}'
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC'] + [event.lead.email]
         fromlist = current_app.config['CONTRACTS_CONTACT']
@@ -739,7 +826,7 @@ def xsendrenewemails(startdate, enddate):
 
         subject = 'FSRC Race Support Services is holding {} for {}'.format(event.date, event.race.race)
         tolist = event.client.contactEmail
-        cclist = current_current_app.config['CONTRACTS_CC']
+        cclist = current_app.config['CONTRACTS_CC']
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )

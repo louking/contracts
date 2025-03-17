@@ -223,11 +223,13 @@ class Tag(Base):
 ## (or in the code without very careful consideration of the migration plan)
 ## hyphens are avoided because these would cause wrapping in table displays
 TAG_PRERACEMAILSENT         = 'preraceemailsent'
+TAG_BIBCOUNTMAILSENT         = 'bibcountemailsent'
 TAG_POSTRACEMAILSENT        = 'postraceemailsent'
 TAG_PRERACEPREMPROMOEMAILSENT = 'preracepremoromoemailsent'
 TAG_PRERACERENEWEDREMINDEREMAILSENT = 'preracerenwdreminderemailsent'
 TAG_PRERACERENEWEDCANCELED = 'preracerenewedcanceled'
 TAG_PRERACEMAILINHIBITED    = 'inhibitpreraceemail'
+TAG_BIBCOUNTMAILINHIBITED    = 'inhibitbibcountemail'
 TAG_POSTRACEMAILINHIBITED   = 'inhibitpostraceemail'
 TAG_PRERACEPREMPROMOEMAILINHIBITED = 'inhibitpreracepremoromoemail'
 TAG_RACERENEWED             = 'racerenewed'
@@ -239,6 +241,8 @@ TAG_LEADEMAILSENT           = 'leademailsent'
 tags = [
     {'tag':TAG_PRERACEMAILSENT, 'description':'pre-race email has been sent', 'isBuiltIn':True},
     {'tag':TAG_PRERACEMAILINHIBITED, 'description':'admin wants to inhibit pre-race email', 'isBuiltIn':True},
+    {'tag':TAG_BIBCOUNTMAILSENT, 'description':'bib count request email has been sent', 'isBuiltIn':True},
+    {'tag':TAG_BIBCOUNTMAILINHIBITED, 'description':'admin wants to inhibit bib count request email', 'isBuiltIn':True},
     {'tag':TAG_POSTRACEMAILSENT, 'description':'post-race email has been sent', 'isBuiltIn':True},
     {'tag':TAG_POSTRACEMAILINHIBITED, 'description':'admin wants to inhibit post-race email', 'isBuiltIn':True},
     {'tag':TAG_RACERENEWED, 'description':'race has been renewed, or admin wants to to inhibit race renewal', 'isBuiltIn':True},
