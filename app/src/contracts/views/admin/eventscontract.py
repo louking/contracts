@@ -90,7 +90,7 @@ class EventsContract(DbCrudApiRolePermissions):
 
                 # check appropriate fields are present for certain services
                 servicenames = {s.service for s in eventdb.services}
-                if servicenames & {'coursemarking', 'finishline'}:
+                if servicenames & {'coursemarking', 'basic', 'scoring', 'chiptiming'}:
                     self._fielderrors = []
                     for field in ['race', 'date', 'mainStartTime', 'mainDistance' ]:
                         if not data[thisid][field]:

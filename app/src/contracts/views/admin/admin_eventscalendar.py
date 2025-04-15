@@ -66,7 +66,7 @@ class EventsCalendarApi(MethodView):
             # some services should cause the day to show it is blocked, unless state is canceled
             # TODO: make this table driven
             blocked = False
-            if ( { 'coursemarking', 'finishline' } & { s.service for s in event.services} ) and event.state.state != STATE_CANCELED:
+            if ( { 'coursemarking', 'basic', 'scoring', 'chiptiming' } & { s.service for s in event.services} ) and event.state.state != STATE_CANCELED:
                 blocked = True
 
             # set color class for event

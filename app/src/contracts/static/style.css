@@ -68,7 +68,8 @@ h2              { font-size: 1.2em; }
 }
 
 /* don't show finish line services if not selected */
-.DTE_Field.field_show_finishline,
+.DTE_Field.field_show_basic,
+.DTE_Field.field_show_scoring,
 .DTE_Field.field_show_chiptiming,
 .DTE_Field.field_show_coursemarking
 {
@@ -81,7 +82,8 @@ h2              { font-size: 1.2em; }
 }
 
 /* show finish line services if selected */
-.service_finishline .DTE_Field.field_show_finishline,
+.service_basic .DTE_Field.field_show_basic,
+.service_scoring .DTE_Field.field_show_scoring,
 .service_chiptiming .DTE_Field.field_show_chiptiming,
 .service_coursemarking .DTE_Field.field_show_coursemarking
 {
