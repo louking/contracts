@@ -22,6 +22,7 @@ from flask.views import MethodView
 from flask_login import login_required
 from loutilities.tables import DbCrudApiRolePermissions
 from loutilities.tables import REGEX_URL, SEPARATOR
+from loutilities.timeu import asctime
 
 # homegrown
 from . import bp
@@ -475,6 +476,12 @@ event_formmapping['isInvoiceInitiated'] = lambda dbrow: 'yes' if dbrow.isInvoice
 event_dbmapping['isInvoiceUpdated'] = '__readonly__'
 event_formmapping['isInvoiceUpdated'] = lambda dbrow: 'yes' if dbrow.isInvoiceUpdated else 'no'
 
+tYmd = asctime('%Y-%m-%d')
+dow = asctime('%a')
+
+event_dbmapping['dow'] = '__readonly__'
+event_formmapping['dow'] = lambda dbrow: dow.dt2asc(tYmd.asc2dt(dbrow.date)) if dbrow.date else ''
+
 ## validate fields
 def event_validate(action, formdata):
     results = []
@@ -616,6 +623,7 @@ event_view = EventsContract(
                                                             } 
                                          },
                         },
+                        { 'data': 'dow', 'name': 'dow', 'label': 'Day', 'type':'readonly' },
                         { 'data': 'date', 'name': 'date', 'label': 'Date', 'type':'datetime', 
                           'className': 'field_req',
                           'ed':{ 'label': 'Date (yyyy-mm-dd)', 'format':'YYYY-MM-DD', 
