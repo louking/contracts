@@ -230,7 +230,9 @@ sponsor_view = SponsorContract(
                                                depmodelref='race_id',
                                                depmodelfield='race_level', 
                                                depformfield='level.id', # <dependentfield>.<relationship valuefield, default 'id'>
-                                               depvaluefield='id', 
+                                               depvaluefield='id',
+                                               # negate sortkey to sort descending
+                                               sortkey=lambda row: -row.minsponsorship,
                                                )
                            },
 
