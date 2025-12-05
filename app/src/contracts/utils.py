@@ -112,11 +112,13 @@ def renew_event(event):
         # clear the contract fields and other fields we want to start empty
         newevent.tags = []
         for f in ['contractSentDate', 'contractSignedDate', 'invoiceSentDate', 'isOnCalendar', 'contractDocId', 
-                  'notes', 'contractApprover', 'contractApproverEmail', 'contractApproverNotes', 'lead']:
+                  'notes', 'contractApprover', 'contractApproverEmail', 'contractApproverNotes', 'lead',
+                  'markinglead', 'invoiceDocId']:
             setattr(newevent, f, None)
 
-        # renewed race contract has not been updated yet
-        newevent.isContractUpdated = False
+        # set certain boolean fields to false for new event
+        for f in ['isContractUpdated', 'isInvoiceUpdated', 'isInvoiceInitiated', 'isOnCalendar']:
+            setattr(newevent, f, False)
         
         # make sure services are carried over
         for service in event.services:
