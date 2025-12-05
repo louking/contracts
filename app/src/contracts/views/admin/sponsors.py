@@ -281,12 +281,6 @@ sponsor_view = SponsorContract(
                         { 'data': 'invoicesent', 'name': 'invoicesent', 'label': 'Invoice Sent', 'type':'datetime', 'dateFormat': 'yy-mm-dd',
                             'ed':{ 'label': 'Invoice Sent Date (yyyy-mm-dd)' }
                         },
-                        { 'data': 'RegSiteUpdated', 'name': 'RegSiteUpdated', 'label': 'Registration Site Updated', 
-                          'type': 'select2',
-                          'options':['no', 'yes', 'n/a'], 
-                          'ed':{ 'def': 'no' }, 
-                          'className': 'field_req',
-                        },
                         { 'data': 'isWebsiteUpdated', 'name': 'isWebsiteUpdated', 'label': 'Website Updated', 
                           'className': 'field_req',
                           '_treatment' : {'boolean':{'formfield':'isWebsiteUpdated', 'dbfield':'isWebsiteUpdated'}},
