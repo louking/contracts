@@ -117,7 +117,7 @@ platformdirs==4.1.0
 prometheus-client==0.14.1
 prompt-toolkit==3.0.43
 proto-plus==1.25.0
-protobuf==4.25.4
+protobuf==5.29.6
 pure-eval==0.2.2
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
