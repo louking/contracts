@@ -1,14 +1,3 @@
-###########################################################################################
-# assets - javascript and css asset handling
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       11/16/18        Lou King        Create
-#
-#   Copyright 2018 Lou King.  All rights reserved
-#
-###########################################################################################
-
 '''
 assets - javascript and css asset handling
 ===================================================
@@ -195,6 +184,7 @@ asset_bundles = {
         'admin/sponsorquerylog.js',
 
         # must be before datatables
+        'mutex-promise.js',                     # from loutilities
         'user/admin/beforedatatables.js',       # from loutilities
         'admin/beforedatatables.js',
         'editor.select2.mymethods.js',          # from loutilities
