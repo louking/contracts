@@ -120,7 +120,7 @@ function event_configureformbuttons( that, action ) {
                 },
                 {
                     text: 'Send Contract',
-                    className: ( that.field( 'contractDocId' ).get() && ! committed ) ? 'enabled' : 'disabled',
+                    className: ( that.field( 'contractDocId' ).get() && ! committed && ! contractsent ) ? 'enabled' : 'disabled',
                     action: function () {
                         if ( that.field( 'contractDocId' ).get() ) {
                             that.submit(null, null, function(data) {
