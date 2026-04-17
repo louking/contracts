@@ -11,7 +11,7 @@ jq_ui_ver = '1.12.1'
 
 # dataTables
 dt_datatables_ver = '1.13.4'
-dt_editor_ver = '2.1.2'
+dt_editor_ver = '2.5.2'
 dt_buttons_ver = '2.3.6'
 dt_colvis_ver = '1.5.4'
 dt_fixedcolumns_ver = '4.2.2'
@@ -152,7 +152,7 @@ asset_bundles = {
         # select2 is required for use by Editor forms
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
         # the order here is important
-        'js/FieldType-Select2/editor.select2.js',
+        'js/FieldType-Select2/editor.select2-v3.js',
 
         # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
         'js/moment-{ver}/moment.js'.format(ver=moment_ver),
@@ -165,10 +165,6 @@ asset_bundles = {
         'admin/editor.googledoc.js',
         'admin/layout.js',
         'admin/crudapi.js',
-        'admin/datatables.js',
-        'admin/datatables.dataRender.ellipsis.js',
-        'filters.js',
-        'charts.js',
         'admin/events.js',
         'admin/sponsors.js',            # must be after events
         'admin/sponsorshipsview.js',    # must be after events
@@ -185,6 +181,10 @@ asset_bundles = {
 
         # must be before datatables
         'mutex-promise.js',                     # from loutilities
+        'datatables.js',                 # from loutilities
+        'datatables.dataRender.ellipsis.js',    # from loutilities
+        'filters.js',
+        'charts.js',
         'user/admin/beforedatatables.js',       # from loutilities
         'admin/beforedatatables.js',
         'editor.select2.mymethods.js',          # from loutilities

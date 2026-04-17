@@ -2,6 +2,9 @@ services:
   app:
     volumes:
       - ./app/src:/app
+      # this needs to be duplicated here from docker-compose.yml so it can override the above bind mount
+      - ${JS_COMMON_HOST}:/app/${APP_NAME}/static/js:ro
+    
     # # need workers=1 for debugging so file changes will be picked up
     # command: ["./dbupgrade_and_run.sh", "gunicorn", "--reload", "--bind", "0.0.0.0:5000", "--log-level", "info", 
     #           "--workers=1", "--threads=4", 
