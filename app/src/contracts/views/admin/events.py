@@ -459,12 +459,12 @@ race.register()
 # events endpoint
 ###########################################################################################
 
-event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,course,'
+event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,client.ccEmails,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
                     'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
                     'contractDocId,invoiceDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
-event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,course,'
+event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,client_cc_emails,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
                     'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
@@ -645,6 +645,9 @@ event_view = EventsContract(
                         },
                         { 'data': 'client_name', 'name': 'client_name', 'label': 'Client Name', 'type':'readonly' },
                         { 'data': 'client_email', 'name': 'client_email', 'label': 'Client Email', 'type':'readonly' },
+                        { 'data': 'client_cc_emails', 
+                          'className': 'table_hide',
+                          'name': 'client_cc_emails', 'label': 'Client CC Emails', 'type':'readonly' },
                         { 'data': 'eventUrl', 'name': 'eventUrl', 'label': 'Event URL' },
                         { 'data': 'registrationUrl', 'name': 'registrationUrl', 'label': 'Event Registration URL' },
                         { 'data': 'course', 'name': 'course', 'label': 'Course', 
@@ -804,7 +807,13 @@ class AjaxGetClient(MethodView):
         client_id = request.args.get('client_id', None)
         if client_id:
             client = Client.query.filter_by(id=client_id).one()
-            return success_response(client={'name': client.name, 'contactEmail': client.contactEmail})
+            return success_response(
+                client={
+                    'name': client.name, 
+                    'contactEmail': client.contactEmail, 
+                    'ccEmails': client.ccEmails
+                    }
+                )
         else:
             return success_response()
 bp.add_url_rule('/_getclient',view_func=AjaxGetClient.as_view('_getclient'),methods=['GET'])

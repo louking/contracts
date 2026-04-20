@@ -267,6 +267,7 @@ function event_sponsor_getclient( editor, client_id ) {
             // set fields
             editor.set( 'client_name', client.name );
             editor.set( 'client_email', client.contactEmail );
+            editor.set( 'client_cc_emails', client.ccEmails );
         }
     } );
 }

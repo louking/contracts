@@ -1,13 +1,3 @@
-###########################################################################################
-# common - views and apis common to different admin types
-#
-#       Date            Author          Reason
-#       ----            ------          ------
-#       07/09/18        Lou King        Create
-#
-#   Copyright 2018 Lou King
-#
-###########################################################################################
 '''
 common - views and apis common to different admin types
 ==========================================================
@@ -32,10 +22,11 @@ adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract
 # clients endpoint
 ###########################################################################################
 
-client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
-client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,contactTitle,clientPhone,clientAddr,notes'.split(',')
+client_dbattrs = 'id,client,clientUrl,contactFirstName,contactLastName,contactEmail,ccEmails,contactTitle,clientPhone,clientAddr,notes'.split(',')
+client_formfields = 'rowid,client,clientUrl,contactFirstName,contactLastName,contactEmail,ccEmails,contactTitle,clientPhone,clientAddr,notes'.split(',')
 client_dbmapping = dict(list(zip(client_dbattrs, client_formfields)))
 client_formmapping = dict(list(zip(client_formfields, client_dbattrs)))
+CLIENT_EMAIL_SEPARATOR = ', '
 
 def client_validate(action, formdata):
     results = []
@@ -45,9 +36,11 @@ def client_validate(action, formdata):
         if formdata[field] and not match(REGEX_URL, formdata[field]):
             results.append({ 'name' : field, 'status' : 'invalid url: correct format is like http[s]://example.com' })
 
-    for field in ['contactEmail']:
-        if formdata[field] and not match(REGEX_EMAIL, formdata[field]):
-            results.append({ 'name' : field, 'status' : 'invalid email: correct format is like john.doe@example.com' })
+    for field in ['ccEmails']:
+        for email in formdata[field].split(CLIENT_EMAIL_SEPARATOR):
+            email = email.strip()
+            if email and not match(REGEX_EMAIL, email):
+                results.append({ 'name' : field, 'status' : f'invalid email {email}: correct format is like john.doe@example.com' })
 
     return results
 
@@ -78,6 +71,10 @@ client = DbCrudApiRolePermissions(
                         },
                         { 'data': 'contactEmail', 'name': 'contactEmail', 'label': 'Contact Email',
                           'className': 'field_req',
+                        },
+                        { 'data': 'ccEmails', 'name': 'ccEmails', 'label': 'Cc Emails',
+                          'type': 'select2', 'separator': CLIENT_EMAIL_SEPARATOR,
+                          'opts': {'tags': True, 'multiple': True, 'tokenSeparators': [',', ' '], },
                         },
                         { 'data': 'contactTitle', 'name': 'contactTitle', 'label': 'Contact Title',
                         },

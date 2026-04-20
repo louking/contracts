@@ -26,6 +26,7 @@ from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROM
 from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import TAG_PRERACERENEWEDREMINDEREMAILSENT, TAG_PRERACERENEWEDCANCELED
 from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, STATE_CANCELED
+from contracts.views.admin.common import CLIENT_EMAIL_SEPARATOR
 from loutilities.flask_helpers.mailer import sendmail
 from contracts.utils import renew_event, renew_sponsorship
 from loutilities.timeu import asctime
@@ -118,6 +119,8 @@ def preraceemail(startdate, enddate):
         subject = 'FSRC Pre-race Coordination: {} - {}'.format(event.race.race, event.date)
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC'] + [event.lead.email]
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
@@ -204,6 +207,8 @@ def chipcountemail(startdate, enddate):
         subject = f'FSRC Bib Count Query: {event.race.race} - {event.date}'
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC'] + [event.lead.email]
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
@@ -382,6 +387,8 @@ def postraceprocessing(startdate, enddate):
         subject = 'Thank You for using FSRC Race Support Services - {}'.format(event.date)
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC']
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
@@ -468,6 +475,8 @@ def preraceprempromoemail(startdate, enddate):
         subject = 'Frederick Steeplechasers Premium Promotion for {}'.format(event.race.race)
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC']
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
@@ -553,6 +562,8 @@ def latereminderemail(startdate, enddate):
         subject = 'Frederick Steeplechasers Services Reminder for {}'.format(event.race.race)
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC']
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
 
         sendmail(subject, fromlist, tolist, html, ccaddr=cclist)
@@ -827,6 +838,8 @@ def xsendrenewemails(startdate, enddate):
         subject = 'FSRC Race Support Services is holding {} for {}'.format(event.date, event.race.race)
         tolist = event.client.contactEmail
         cclist = current_app.config['CONTRACTS_CC']
+        if event.client.ccEmails:
+            cclist = cclist + [cc.strip() for cc in event.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         
         sendmail( subject, fromlist, tolist, html, ccaddr=cclist )

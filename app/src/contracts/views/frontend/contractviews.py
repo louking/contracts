@@ -28,6 +28,7 @@ from jinja2 import Template
 from . import bp
 from contracts.dbmodel import db, Event, State, Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED
+from contracts.views.admin.common import CLIENT_EMAIL_SEPARATOR
 from loutilities.flask_helpers.mailer import sendmail
 from loutilities.flask_helpers.blueprints import add_url_rules
 from loutilities.timeu import asctime
@@ -148,6 +149,8 @@ class AcceptAgreement(MethodView):
         html = template.render( mergefields )
         tolist = mergefields['client'].contactEmail
         cclist = current_app.config['CONTRACTS_ACCEPT_CC']
+        if mergefields['client'].ccEmails:
+            cclist = cclist + [cc.strip() for cc in mergefields['client'].ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
         fromlist = current_app.config['CONTRACTS_CONTACT']
         print(('mergefields={}'.format(mergefields)))
 

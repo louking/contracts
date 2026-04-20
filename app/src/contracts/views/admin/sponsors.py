@@ -44,8 +44,8 @@ adminguide = f'https://contractility.readthedocs.io/en/{__docversion__}/contract
 # sponsors endpoint
 ###########################################################################################
 
-sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,client.clientAddr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
-sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,client_addr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
+sponsor_dbattrs = 'id,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client.name,client.contactEmail,client.ccEmails,client.clientAddr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
+sponsor_formfields = 'rowid,raceyear,racecontact,amount,couponcode,trend,contractDocId,race,client,client_name,client_email,client_cc_emails,client_addr,state,level,datesolicited,dateagreed,invoicesent,RegSiteUpdated,isWebsiteUpdated,isLogoReceived,isSponsorThankedFB,tags,notes'.split(',')
 sponsor_dbmapping = dict(list(zip(sponsor_dbattrs, sponsor_formfields)))
 sponsor_formmapping = dict(list(zip(sponsor_formfields, sponsor_dbattrs)))
 
@@ -263,6 +263,7 @@ sponsor_view = SponsorContract(
                         },
                         { 'data': 'client_email', 'name': 'client_email', 'label': 'Client Email', 'type': 'readonly',
                         },
+                        { 'data': 'client_cc_emails', 'name': 'client_cc_emails', 'label': 'Client CC Emails', 'type':'readonly' },
                         { 'data': 'client_addr', 'name': 'client_addr', 'label': 'Client Addr', 'type': 'readonly',
                         },
                         { 'data': 'racecontact', 'name': 'racecontact', 'label': 'Race Contact', 
@@ -348,9 +349,9 @@ sponsor_view.register()
 ###########################################################################################
 
 sponsorview_dbattrs = 'id,raceyear,racecontact,amount,trend,contractDocId,race.race,client.client,' \
-                      'client.name,client.contactEmail,state.state,level.race_level,notes'.split(',')
+                      'client.name,client.contactEmail,client.ccEmails,state.state,level.race_level,notes'.split(',')
 sponsorview_formfields = 'rowid,raceyear,racecontact,amount,trend,contractDocId,race,client,' \
-                         'client_name,client_email,state,level,notes'.split(',')
+                         'client_name,client_email,client_cc_emails,state,level,notes'.split(',')
 sponsorview_dbmapping = dict(list(zip(sponsorview_dbattrs, sponsorview_formfields)))
 sponsorview_formmapping = dict(list(zip(sponsorview_formfields, sponsorview_dbattrs)))
 
@@ -482,6 +483,7 @@ sponsorview = ViewkeyView(
                         },
                         { 'data': 'client_email', 'name': 'client_email', 'label': 'Sponsor Email', 'type': 'readonly',
                         },
+                        { 'data': 'client_cc_emails', 'name': 'client_cc_emails', 'label': 'Client CC Emails', 'type':'readonly' },
                         { 'data': 'state', 'name': 'state', 'label': 'State',
                         },
                         { 'data': 'level', 'name': 'level', 'label': 'Sponsorship Level',

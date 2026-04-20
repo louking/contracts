@@ -15,7 +15,7 @@ from flask import current_app
 class parameterError(Exception): pass
 
 # set up database - SQLAlchemy() must be done after app.config SQLALCHEMY_* assignments
-from loutilities.user.model import db, LocalUserMixin, ManageLocalTables, EMAIL_LEN
+from loutilities.user.model import db, LocalUserMixin, ManageLocalTables
 
 # separator for SponsorRace CC fields
 SPONSORRACE_CC_SEPARATOR = ';'
@@ -372,6 +372,7 @@ class Client(Base):
     contactFirstName    = Column( String(NAME_LEN) )
     contactLastName     = Column( String(NAME_LEN) )
     contactEmail        = Column( String(EMAIL_LEN) )
+    ccEmails            = Column( String(EMAIL_LEN*5) ) # ', ' separated list of email addresses
     contactTitle        = Column( String(TITLE_LEN) )
     notes               = Column( String(NOTES_LEN) )
     

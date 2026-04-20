@@ -16,6 +16,7 @@ from loutilities.timeu import asctime
 # homegrown
 from ...dbmodel import db, Event, State, FeeBasedOn, Contract, ContractType, TemplateType
 from ...dbmodel import STATE_COMMITTED, STATE_CONTRACT_SENT
+from .common import CLIENT_EMAIL_SEPARATOR
 from ...contractmanager import ContractManager
 
 dt = asctime('%Y-%m-%d')
@@ -268,6 +269,8 @@ class EventsContract(DbCrudApiRolePermissions):
                 if is_quote:
                     tolist = eventdb.client.contactEmail
                     cclist = current_app.config['CONTRACTS_CC']
+                    if eventdb.client.ccEmails:
+                        cclist = cclist + [cc.strip() for cc in eventdb.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
                 # invoice
                 else:
                     tolist = current_app.config['CONTRACTS_INVOICE_TO']

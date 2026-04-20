@@ -152,7 +152,7 @@ asset_bundles = {
         # select2 is required for use by Editor forms
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
         # the order here is important
-        'js/FieldType-Select2/editor.select2-v3.js',
+        'js/FieldType-Select2/editor.select2-v4.js',
 
         # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
         'js/moment-{ver}/moment.js'.format(ver=moment_ver),

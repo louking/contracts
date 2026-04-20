@@ -16,6 +16,7 @@ from contracts.dbmodel import db, State, Sponsor, SponsorRaceDate, SponsorBenefi
 from contracts.dbmodel import SponsorRaceVbl
 from contracts.dbmodel import Contract, ContractType, TemplateType
 from contracts.dbmodel import STATE_COMMITTED, SPONSORRACE_CC_SEPARATOR
+from .common import CLIENT_EMAIL_SEPARATOR
 from ...trends import check_sponsorship_conflicts, render_sponsorship_conflicts
 from contracts.contractmanager import ContractManager
 from loutilities.flask_helpers.mailer import sendmail
@@ -214,6 +215,8 @@ class SponsorContract(DbCrudApiRolePermissions):
                 tolist = thissponsorship.client.contactEmail
                 rdemail = '{} <{}>'.format(thissponsorship.race.racedirector, thissponsorship.race.rdemail)
                 cclist = [rdemail] + [cc.strip() for cc in thissponsorship.race.agreement_cc.split(SPONSORRACE_CC_SEPARATOR)]
+                if thissponsorship.client.ccEmails:
+                    cclist = cclist + [cc.strip() for cc in thissponsorship.client.ccEmails.split(CLIENT_EMAIL_SEPARATOR) if cc.strip()]
                 fromlist = thissponsorship.race.email_from
                 sendmail( subject, fromlist, tolist, html, ccaddr=cclist )
 
