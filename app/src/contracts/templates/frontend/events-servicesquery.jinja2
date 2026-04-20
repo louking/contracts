@@ -20,7 +20,7 @@
             <p class="disclaimer">Race directors who want to request a reservation with our race support
             services team, who want to sign up for premium promotion, or who want more information should
             fill out as much of this form as possible.</p>
-            <p class="disclaimer">We will use 'contact email' to get back to you as soon as possible, 
+            <p class="disclaimer">We will use 'Contact Email' to get back to you as soon as possible, 
             normally within two business days.</p>
             <p class="disclaimer">Fields marked with a * are required.</p>
           </div>
@@ -64,6 +64,12 @@
         </div>
         <div class="row">
           <div class="input-field col s12">
+            <input id="location" type="text" name="location" class="validate" required="" aria-required="true">
+            <label for="location">Location *</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
             <input id="event_url" type="url" name="event_url" class="validate" aria-required="false">
             <label for="event_url">Event Website</label>
           </div>
@@ -83,8 +89,8 @@
         </div>
         <div class="row">
           <p>
-            <label for="is_new-race">
-                <input id="is_new-race" name="is_new-race" type="checkbox" />
+            <label for="is_new_race">
+                <input id="is_new_race" name="is_new_race" type="checkbox" />
                 <span>Check if this is a new race</span>
             </label>
           </p>
