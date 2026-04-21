@@ -462,12 +462,12 @@ race.register()
 event_dbattrs =    ('id,race,date,state,eventUrl,registrationUrl,client,client.name,client.contactEmail,client.ccEmails,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
+                    'contractSentReminderDate,contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
                     'contractDocId,invoiceDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_formfields = ('rowid,race,date,state,eventUrl,registrationUrl,client,client_name,client_email,client_cc_emails,course,'
                     'lead,markinglead,mainStartTime,mainDistance,mainDistanceUnits,funStartTime,funDistance,funDistanceUnits,'
                     'services,finishersPrevYear,finishersCurrYear,maxParticipants,addOns,contractSentDate,'
-                    'contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
+                    'contractSentReminderDate,contractSignedDate,invoiceSentDate,isInvoiceInitiated,isInvoiceUpdated,isOnCalendar,tags,'
                     'contractDocId,invoiceDocId,notes,contractApprover,contractApproverEmail,contractApproverNotes'.split(','))
 event_dbmapping = dict(list(zip(event_dbattrs, event_formfields)))
 event_formmapping = dict(list(zip(event_formfields, event_dbattrs)))
@@ -729,6 +729,8 @@ event_view = EventsContract(
                           'render': '$.fn.dataTable.render.ellipsis( 20 )',
                           },
                         { 'data': 'contractSentDate', 'name': 'contractSentDate', 'label': 'Contract Sent Date', 'type':'readonly' },
+                        { 'data': 'contractSentReminderDate', 'name': 'contractSentReminderDate', 'label': 'Contract Sent Reminder Date', 
+                          'type':'datetime', 'dateFormat': 'yy-mm-dd', 'className': 'table_hide' },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Contract Doc', 'type':'googledoc', 'opts':{'text':'click for contract'},
                           'className': 'table_hide'
                           },

@@ -234,6 +234,7 @@ TAG_POSTRACEMAILINHIBITED   = 'inhibitpostraceemail'
 TAG_PRERACEPREMPROMOEMAILINHIBITED = 'inhibitpreracepremoromoemail'
 TAG_RACERENEWED             = 'racerenewed'
 TAG_LEADEMAILSENT           = 'leademailsent'
+TAG_CONTRACTSENTREMINDERINHIBITED = 'inhibitcontractsentreminder'
 
 ## these tags are used to initialize the database in dbinit_contracts.py, 
 ## That file is one time use, so changing
@@ -254,6 +255,9 @@ tags = [
      'isBuiltIn': True},
     {'tag': TAG_PRERACERENEWEDCANCELED,
      'description': "canceled finish line event that hasn't yet been renewed because we haven't heard back from race director",
+     'isBuiltIn': True},
+    {'tag': TAG_CONTRACTSENTREMINDERINHIBITED,
+     'description': "admin wants to inhibit contract-sent reminder emails",
      'isBuiltIn': True},
 ]
 
@@ -434,6 +438,7 @@ class Event(Base):
     # see http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html Many To Many, https://stackoverflow.com/a/46019895/799921
     addOns              = relationship( 'AddOn', secondary=eventaddon_table, backref='events', lazy=True, order_by=AddOn.priority )
     contractSentDate    = Column( String(DATETIME_LEN) )
+    contractSentReminderDate = Column( String(DATE_LEN) )
     contractSignedDate  = Column( String(DATETIME_LEN) )
     invoiceSentDate     = Column( String(DATE_LEN) )
     isOnCalendar        = Column( Boolean )

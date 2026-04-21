@@ -34,6 +34,7 @@ templatetypes = [
     {'templateType' : 'prempromo email', 'description' : 'premium promotion email before start of promotion', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'late renewed reminder email', 'description' : 'late reminder of race still in renewed-pending state', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'canceled email', 'description' : 'canceled race because we gave up on race still in renewed-pending state ', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
+    {'templateType' : 'contract sent reminder email', 'description' : 'reminder to admin that a contract has been sent but not yet signed', 'contractType' : ContractType.query.filter_by(contractType='race services').one},
     {'templateType' : 'sponsor agreement', 'description' : 'sponsor agreement', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
     {'templateType' : 'sponsor email', 'description' : 'sponsorship agreement sponsor email', 'contractType' : ContractType.query.filter_by(contractType='race sponsorship').one},
 ]

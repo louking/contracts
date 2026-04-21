@@ -25,7 +25,8 @@ from contracts.dbmodel import TAG_POSTRACEMAILSENT, TAG_POSTRACEMAILINHIBITED
 from contracts.dbmodel import TAG_PRERACEPREMPROMOEMAILSENT, TAG_PRERACEPREMPROMOEMAILINHIBITED
 from contracts.dbmodel import TAG_LEADEMAILSENT
 from contracts.dbmodel import TAG_PRERACERENEWEDREMINDEREMAILSENT, TAG_PRERACERENEWEDCANCELED
-from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, STATE_CANCELED
+from contracts.dbmodel import TAG_CONTRACTSENTREMINDERINHIBITED
+from contracts.dbmodel import STATE_COMMITTED, STATE_RENEWED_PENDING, STATE_CANCELED, STATE_CONTRACT_SENT
 from contracts.views.admin.common import CLIENT_EMAIL_SEPARATOR
 from loutilities.flask_helpers.mailer import sendmail
 from contracts.utils import renew_event, renew_sponsorship
@@ -658,6 +659,59 @@ def cancellaterace(startdate, enddate):
         event.tags.append(senttag)
 
         # pick up all db changes (event.tags)
+        db.session.commit()
+
+@contract.command()
+@with_appcontext
+@catch_errors
+def contractsentreminder():
+    '''Send reminder to admin for contracts sent but not yet signed.'''
+    inhibittag = Tag.query.filter_by(tag=TAG_CONTRACTSENTREMINDERINHIBITED).one()
+    interval = current_app.config['DAYS_POST_CONTRACT_REMINDER']
+
+    events = Event.query.filter(Event.state.has(state=STATE_CONTRACT_SENT)).all()
+
+    for event in events:
+        if inhibittag in event.tags: continue
+        if not event.contractSentDate: continue
+
+        sent_date = dbdate.asc2dt(event.contractSentDate)
+        days_since_sent = (date.today() - sent_date.date()).days
+
+        if days_since_sent < interval:
+            continue
+
+        if event.contractSentReminderDate:
+            last_reminder = dbdate.asc2dt(event.contractSentReminderDate)
+            days_since_reminder = (date.today() - last_reminder.date()).days
+            if days_since_reminder < interval:
+                continue
+
+        templatestr = (db.session.query(Contract)
+                       .filter(Contract.contractTypeId == ContractType.id)
+                       .filter(ContractType.contractType == 'race services')
+                       .filter(Contract.templateTypeId == TemplateType.id)
+                       .filter(TemplateType.templateType == 'contract sent reminder email')
+                       .one()
+                       ).block
+        template = Template(templatestr)
+
+        garbage = event.client
+        garbage = event.lead
+
+        mergefields = deepcopy(event.__dict__)
+        mergefields['event'] = event.race.race
+        mergefields['days_since_sent'] = days_since_sent
+
+        html = template.render(mergefields)
+
+        subject = 'Contract pending signature: {} - {}'.format(event.race.race, event.date)
+        tolist = current_app.config['CONTRACTS_CC']
+        fromlist = current_app.config['CONTRACTS_CONTACT']
+
+        sendmail(subject, fromlist, tolist, html)
+
+        event.contractSentReminderDate = dbdate.dt2asc(date.today())
         db.session.commit()
 
 @contract.command()
