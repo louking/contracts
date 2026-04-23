@@ -299,7 +299,7 @@ sponsor_view = SponsorContract(
                         },
                         { 'data': 'contractDocId', 'name': 'contractDocId', 'label': 'Agreement', 'type':'googledoc', 'opts':{'text':'click for contract'},
                           'render': '$.fn.dataTable.render.ellipsis( 10 )',
-                          'className': 'table_hide',
+                          'visible': False,
                           },
                         { 'data': 'tags', 'name': 'tags', 'label': 'Tags',
                           '_treatment' : { 'relationship' : { 'fieldmodel':SponsorTag, 'labelfield':'tag', 'formfield':'tags', 'dbfield':'tags',

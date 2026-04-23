@@ -5,19 +5,12 @@ assets - javascript and css asset handling
 
 from flask_assets import Bundle, Environment
 
-# jquery
-jq_ver = '3.4.1'
-jq_ui_ver = '1.12.1'
+# jquery (now included with datatables)
+jq_ver = '3.7.1'
+jq_ui_ver = '1.14.2'
 
 # dataTables
-dt_datatables_ver = '1.13.4'
-dt_editor_ver = '2.5.2'
-dt_buttons_ver = '2.3.6'
-dt_colvis_ver = '1.5.4'
-dt_fixedcolumns_ver = '4.2.2'
-dt_select_ver = '1.6.2'
-dt_datetime_ver = '1.4.1'
-dt_editor_plugin_fieldtype_ver = '?'
+dt_datatables_ver = '2.3.7-pkgs-jqui'
 
 # select2
 # NOTE: patch to jquery ui required, see https://github.com/select2/select2/issues/1246#issuecomment-17428249
@@ -28,9 +21,9 @@ s2_ver = '4.0.13'
 sm_ver = '1.1.1'
 
 # yadcf
-yadcf_ver = '0.9.4.beta.27'
+yadcf_ver = '2.0.1.beta.9'
 
-moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/)
+# moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/) (in datatables)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
 fullcalendar_ver = '3.9.0'  # fullcalendar.io
 materialize_ver = '1.0.0'   # materializecss.com
@@ -53,21 +46,17 @@ materialize_bundle_css = Bundle(
 asset_bundles = {
 
     'frontend_js': Bundle(
-        'js/jQuery-{ver}/jquery.js'.format(ver=jq_ver),
+        f'js/jQuery-{jq_ver}/jquery-{jq_ver}.js',
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
 
         # date time formatting 
-        'js/moment-{ver}/moment.js'.format(ver=moment_ver),
+        # 'js/moment-{ver}/moment.js'.format(ver=moment_ver), # in datatables
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
         'legend.js',
         'frontend/eventscalendar.js',
 
-        'js/DataTables-{ver}/js/jquery.dataTables.js'.format(ver=dt_datatables_ver),
-        'js/DataTables-{ver}/js/dataTables.jqueryui.js'.format(ver=dt_datatables_ver),
-
-        'js/Buttons-{ver}/js/dataTables.buttons.js'.format(ver=dt_buttons_ver),
-        'js/Buttons-{ver}/js/buttons.jqueryui.js'.format(ver=dt_buttons_ver),
+        'js/DataTables-{ver}/datatables.js'.format(ver=dt_datatables_ver),
 
         'datatables.js',                        # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities
@@ -79,8 +68,6 @@ asset_bundles = {
 
     'frontend_css': Bundle(
         'js/jquery-ui-{ver}.custom/jquery-ui.css'.format(ver=jq_ui_ver),
-        'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
-        'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),
         # next line causes rendering problems. See https://stackoverflow.com/questions/25681573/fullcalendar-header-buttons-missing
         # 'fullcalendar/{ver}/fullcalendar.print.css'.format(fullcalendar_ver),
@@ -126,28 +113,15 @@ asset_bundles = {
         ),
 
     'admin_js': Bundle(
-        'js/jQuery-{ver}/jquery.js'.format(ver=jq_ver),
+        f'js/jQuery-{jq_ver}/jquery-{jq_ver}.js',
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
 
         'js/lodash-{ver}/lodash.js'.format(ver=lodash_ver),
 
+        'js/DataTables-{ver}/datatables.js'.format(ver=dt_datatables_ver),
+
         f'js/smartmenus-{sm_ver}/jquery.smartmenus.js',
 
-        'js/DataTables-{ver}/js/jquery.dataTables.js'.format(ver=dt_datatables_ver),
-        'js/DataTables-{ver}/js/dataTables.jqueryui.js'.format(ver=dt_datatables_ver),
-
-        'js/Buttons-{ver}/js/dataTables.buttons.js'.format(ver=dt_buttons_ver),
-        'js/Buttons-{ver}/js/buttons.jqueryui.js'.format(ver=dt_buttons_ver),
-        'js/Buttons-{ver}/js/buttons.html5.js'.format(ver=dt_buttons_ver),
-        'js/Buttons-{ver}/js/buttons.colVis.js'.format(ver=dt_colvis_ver), 
-
-        'js/FixedColumns-{ver}/js/dataTables.fixedColumns.js'.format(ver=dt_fixedcolumns_ver),
-
-        'js/Editor-{ver}/js/dataTables.editor.js'.format(ver=dt_editor_ver),
-        'js/Editor-{ver}/js/editor.jqueryui.js'.format(ver=dt_editor_ver),
-
-        'js/Select-{ver}/js/dataTables.select.js'.format(ver=dt_select_ver),
-        f'js/DateTime-{dt_datetime_ver}/js/dataTables.dateTime.js',
 
         # select2 is required for use by Editor forms
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
@@ -155,7 +129,7 @@ asset_bundles = {
         'js/FieldType-Select2/editor.select2-v4.js',
 
         # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
-        'js/moment-{ver}/moment.js'.format(ver=moment_ver),
+        # 'js/moment-{ver}/moment.js'.format(ver=moment_ver), # in datatables
 
         'js/yadcf-{ver}/jquery.dataTables.yadcf.js'.format(ver=yadcf_ver),
 
@@ -203,15 +177,11 @@ asset_bundles = {
         'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
         'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
 
+        'js/DataTables-{ver}/datatables.css'.format(ver=dt_datatables_ver),
+
         f'js/smartmenus-{sm_ver}/css/sm-core-css.css',
         f'js/smartmenus-{sm_ver}/css/sm-blue/sm-blue.css',
 
-        'js/DataTables-{ver}/css/dataTables.jqueryui.css'.format(ver=dt_datatables_ver),
-        'js/Buttons-{ver}/css/buttons.jqueryui.css'.format(ver=dt_buttons_ver),
-        'js/FixedColumns-{ver}/css/fixedColumns.jqueryui.css'.format(ver=dt_fixedcolumns_ver),
-        'js/Editor-{ver}/css/editor.jqueryui.css'.format(ver=dt_editor_ver),
-        f'js/DateTime-{dt_datetime_ver}/css/dataTables.dateTime.css',
-        'js/Select-{ver}/css/select.jqueryui.css'.format(ver=dt_select_ver),
         'js/select2-{ver}/css/select2.css'.format(ver=s2_ver),
         'js/yadcf-{ver}/jquery.dataTables.yadcf.css'.format(ver=yadcf_ver),
         'js/fullcalendar-{ver}/fullcalendar.css'.format(ver=fullcalendar_ver),

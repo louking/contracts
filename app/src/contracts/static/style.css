@@ -59,6 +59,10 @@ h2              { font-size: 1.2em; }
     font-family: Verdana,Arial,sans-serif;
 }
 
+.ui-widget {
+    font-size: 0.8em;
+}
+
 
 /******************************************/
 /* editor field management                */
@@ -74,11 +78,6 @@ h2              { font-size: 1.2em; }
 .DTE_Field.field_show_coursemarking
 {
   display: none;
-}
-
-.dataTable .table_hide
-{
-    display: none;
 }
 
 /* show finish line services if selected */
