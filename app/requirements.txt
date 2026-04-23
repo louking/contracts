@@ -83,7 +83,7 @@ ipython==8.21.0
 ipython-genutils==0.2.0
 itsdangerous==2.2.0
 jedi==0.18.1
-Jinja2==3.1.5
+Jinja2==3.1.6
 jsmin==3.0.1
 jsonschema==4.16.0
 lazy==1.5
@@ -146,7 +146,7 @@ rstcheck==6.2.4
 rstcheck-core==1.2.1
 scandir==1.10.0
 Send2Trash==1.8.0
-setuptools==75.6.0
+setuptools==82.0.1
 shellingham==1.5.0
 simplegeneric==0.8.1
 singledispatch==3.7.0
