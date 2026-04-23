@@ -39,7 +39,7 @@ dnspython==2.6.1
 docopt==0.6.2
 docutils==0.17.1
 dominate==2.7.0
-email-validator==2.1.0.post1
+email-validator==2.3.0
 entrypoints==0.4
 enum34==1.1.10
 esbonio==0.14.0
@@ -57,11 +57,11 @@ Flask-Mail==0.9.1
 Flask-Migrate==3.1.0
 flask-nav==0.6
 Flask-Principal==0.4.0
-Flask-Security-Too==5.5.2
+Flask-Security-Too==5.8.0
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.2.1
 fmt==0.3.1
-FormEncode==2.0.1
+FormEncode==2.1.1
 funcsigs==1.0.2
 google-api-core==2.30.3
 google-api-python-client==2.62.0
@@ -87,6 +87,7 @@ Jinja2==3.1.6
 jsmin==3.0.1
 jsonschema==4.16.0
 lazy==1.5
+libpass==1.9.3
 loutilities==3.12.0
 lsprotocol==2023.0.1
 lxml==6.1.0
@@ -107,7 +108,6 @@ packaging==21.3
 pandocfilters==1.5.0
 paramiko==3.5.0
 parso==0.8.3
-passlib==1.7.4
 pathlib2==2.3.7.post1
 pbr==5.10.0
 pickleshare==0.7.5
