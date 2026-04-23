@@ -146,7 +146,7 @@ rstcheck==6.2.4
 rstcheck-core==1.2.1
 scandir==1.10.0
 Send2Trash==1.8.0
-setuptools==75.6.0
+setuptools==78.1.1
 shellingham==1.5.0
 simplegeneric==0.8.1
 singledispatch==3.7.0
