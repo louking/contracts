@@ -35,7 +35,6 @@ services:
       - frontend-network
     volumes:
       - ${VAR_LOG_HOST}:/var/log
-      - ${JS_COMMON_HOST}:/app/${APP_NAME}/static/js:ro
     environment:
       TZ: ${TZ}
     ports:
@@ -79,6 +78,7 @@ services:
       - ${DB_INIT_DIR}:/initdb.d
       - ${APP_LOGGING_HOST}:${APP_LOGGING_PATH}
       - ${GSUITE_SERVICE_KEY_FILE_HOST}:${FLASK_GSUITE_SERVICE_KEY_FILE}:ro
+      - ${JS_COMMON_HOST}:/app/${APP_NAME}/static/js:ro
     environment: &app-env
       TZ: ${TZ}
       APP_VER: ${APP_VER}
