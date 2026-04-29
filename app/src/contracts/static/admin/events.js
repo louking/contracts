@@ -35,6 +35,9 @@ function afterdatatables() {
     // set the triggers which cause the form buttons to change
     event_settriggers( editor );
 
+    // initialize filters
+    fltr_init();
+
     // prevent field focus issue. see https://stackoverflow.com/a/16126064/799921
     $.ui.dialog.prototype._focusTabbable = $.noop;
 }

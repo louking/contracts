@@ -5,7 +5,7 @@ assets - javascript and css asset handling
 
 from flask_assets import Bundle, Environment
 
-# jquery (now included with datatables)
+# jquery
 jq_ver = '3.7.1'
 jq_ui_ver = '1.14.2'
 
@@ -21,7 +21,7 @@ s2_ver = '4.0.13'
 sm_ver = '1.1.1'
 
 # yadcf
-yadcf_ver = '2.0.1.beta.9'
+yadcf_ver = '2.0.1.beta.9.louking.1'
 
 # moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/) (in datatables)
 lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
@@ -136,6 +136,9 @@ asset_bundles = {
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
         'js/d3-{ver}/d3.js'.format(ver=d3_ver),
 
+        # this needs to be before events.js, sponsors.js, etc
+        'filters.js',                   # from loutilities
+
         'admin/editor.googledoc.js',
         'admin/layout.js',
         'admin/crudapi.js',
@@ -157,7 +160,6 @@ asset_bundles = {
         'mutex-promise.js',                     # from loutilities
         'datatables.js',                 # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities
-        'filters.js',
         'charts.js',
         'user/admin/beforedatatables.js',       # from loutilities
         'admin/beforedatatables.js',
