@@ -10,7 +10,7 @@ jq_ver = '3.7.1'
 jq_ui_ver = '1.14.2'
 
 # dataTables
-dt_datatables_ver = '2.3.7-pkgs-jqui'
+dt_datatables_ver = '2.3.8-pkgs-jqui'
 
 # select2
 # NOTE: patch to jquery ui required, see https://github.com/select2/select2/issues/1246#issuecomment-17428249
@@ -24,7 +24,7 @@ sm_ver = '1.1.1'
 yadcf_ver = '2.0.1.beta.9.louking.1'
 
 # moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/) (in datatables)
-lodash_ver = '4.17.11'      # lodash.js (see https://lodash.com)
+lodash_ver = '4.17.21'      # lodash.js (see https://lodash.com)
 fullcalendar_ver = '3.9.0'  # fullcalendar.io
 materialize_ver = '1.0.0'   # materializecss.com
 d3_ver = '7.4.2'            # d3js.org (see https://d3js.org/)
@@ -175,9 +175,9 @@ asset_bundles = {
         ),
 
     'admin_css': Bundle(
-        'js/jquery-ui-{ver}.custom/jquery-ui.css'.format(ver=jq_ui_ver),
-        'js/jquery-ui-{ver}.custom/jquery-ui.structure.css'.format(ver=jq_ui_ver),
-        'js/jquery-ui-{ver}.custom/jquery-ui.theme.css'.format(ver=jq_ui_ver),
+        f'js/jquery-ui-{jq_ui_ver}.custom/jquery-ui.css',
+        f'js/jquery-ui-{jq_ui_ver}.custom/jquery-ui.structure.css',
+        f'js/jquery-ui-{jq_ui_ver}.custom/jquery-ui.theme.css',
 
         'js/DataTables-{ver}/datatables.css'.format(ver=dt_datatables_ver),
 
