@@ -114,6 +114,7 @@ services:
     volumes:
       - ./config:/config:ro
       - ./config/msmtprc:/etc/msmtprc:ro
+      - ./config/cronjobs:/etc/crontabs/appuser
       - ${DB_INIT_DIR}:/initdb.d
       - ${VAR_LOG_HOST}:/var/log
       - ${GSUITE_SERVICE_KEY_FILE_HOST}:${FLASK_GSUITE_SERVICE_KEY_FILE}:ro
