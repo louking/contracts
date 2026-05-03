@@ -54,6 +54,23 @@ flask db upgrade      # apply migrations
 flask db migrate      # generate new migration
 ```
 
+### Static JS Assets
+
+JS assets are **not** served from the repo's `app/src/rrwebapp/static/js/` directory. That path is shadowed by a Docker volume mount defined in `docker-compose.yml`:
+
+```yaml
+- ${JS_COMMON_HOST}:/app/${APP_NAME}/static/js:ro
+```
+
+`JS_COMMON_HOST` is set in `.env`:
+```
+JS_COMMON_HOST="C:\Users\lking\Documents\Lou's Software\operational\js-common"
+```
+
+This shared `js-common` directory contains all versioned JS bundles (jQuery, DataTables, yadcf, etc.) used across multiple apps. Editing files under `static/js/` in the repo has no effect on the running container — changes must be placed in `js-common`.
+
+The yadcf development repo lives at `C:\Users\lking\Documents\Lou's Software\projects\yadcf\yadcf\`. After editing yadcf there, the built file must be copied into `js-common` under the appropriate versioned directory (e.g., `js/yadcf-<version>/`) for it to be picked up by the app.
+
 ## Testing
 ```bash
 pytest test/
