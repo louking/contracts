@@ -21,7 +21,7 @@ s2_ver = '4.0.13'
 sm_ver = '1.1.1'
 
 # yadcf
-yadcf_ver = '2.0.1.beta.9.louking.1'
+yadcf_ver = '2.0.1.beta.9.louking.3'
 
 # moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/) (in datatables)
 lodash_ver = '4.17.21'      # lodash.js (see https://lodash.com)
@@ -121,7 +121,6 @@ asset_bundles = {
         'js/DataTables-{ver}/datatables.js'.format(ver=dt_datatables_ver),
 
         f'js/smartmenus-{sm_ver}/jquery.smartmenus.js',
-
 
         # select2 is required for use by Editor forms
         'js/select2-{ver}/js/select2.full.js'.format(ver=s2_ver),
