@@ -22,6 +22,7 @@ sm_ver = '1.1.1'
 
 # yadcf
 yadcf_ver = '2.0.1.beta.9.louking.3'
+yadcf_suffix = '-2.0'
 
 # moment_ver = '2.22.2'       # moment.js (see https://momentjs.com/) (in datatables)
 lodash_ver = '4.17.21'      # lodash.js (see https://lodash.com)
@@ -130,7 +131,7 @@ asset_bundles = {
         # date time formatting for datatables editor, per https://editor.datatables.net/reference/field/datetime
         # 'js/moment-{ver}/moment.js'.format(ver=moment_ver), # in datatables
 
-        'js/yadcf-{ver}/jquery.dataTables.yadcf.js'.format(ver=yadcf_ver),
+        f'js/yadcf-{yadcf_ver}/jquery.dataTables.yadcf{yadcf_suffix}.js',
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
         'js/d3-{ver}/d3.js'.format(ver=d3_ver),
