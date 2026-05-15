@@ -5,7 +5,7 @@
 
 ## Tech Stack
 - **Backend**: Python 3.12, Flask 3.0, SQLAlchemy 1.4, Alembic (migrations)
-- **Database**: MySQL 8.0 (via mysqlclient driver)
+- **Database**: MySQL 8.0 (via PyMySQL driver)
 - **Frontend**: Jinja2 templates, WTForms, Flask-Assets/webassets
 - **Auth**: Flask-Security-Too, Flask-Principal
 - **Document Gen**: python-docx, html2docx
@@ -95,3 +95,47 @@ pytest test/
 
 ## Deployment
 Uses Fabric (`fabfile.py`) for remote deployment via docker compose pull + up.
+
+## MySQL SSL / Driver Note
+
+**Problem:** MySQL 8.0+ in Docker with Alpine-based app containers causes `MySQLdb.OperationalError: (2026, 'TLS/SSL error: Certificate verification failure')`. Alpine uses MariaDB Connector/C (not libmysqlclient), which defaults to SSL with cert verification. MySQL 8.0 auto-generates self-signed certs. Server-side workarounds (`--skip-ssl`) are unreliable in 8.0.40+.
+
+**Fix:** Use **PyMySQL** instead of mysqlclient. PyMySQL is pure Python, does not use MariaDB Connector/C, and does not attempt SSL by default.
+
+Three files to change:
+
+1. **`app/requirements.txt`** — remove `mysqlclient==x.x.x` and add `PyMySQL==1.1.3`. Also remove `typed_ast` if present — it does not build on Python 3.12 and is no longer needed (its functionality is in the standard `ast` module).
+
+2. **`app/src/<appname>/settings.py`** — change URI scheme in `RealDb.__init__`:
+   ```python
+   # before
+   db_uri = f'mysql://{dbuser}:{password}@{dbserver}/{dbname}'
+   # after
+   db_uri = f'mysql+pymysql://{dbuser}:{password}@{dbserver}/{dbname}'
+   ```
+   Same change for `usersdb_uri` if present.
+
+3. **`app/Dockerfile`** — remove the C build scaffolding for mysqlclient (PyMySQL needs no compilation):
+   ```dockerfile
+   # remove these lines:
+   RUN apk add --no-cache mariadb-connector-c-dev \
+       && apk add --no-cache --virtual .build-deps build-base mariadb-dev \
+       && pip install -r requirements.txt \
+       && rm -rf .cache/pip \
+       && apk del .build-deps
+   # replace with:
+   RUN pip install -r requirements.txt \
+       && rm -rf .cache/pip
+   ```
+   Keep `apk add --no-cache mysql-client` — the startup script and cron backup jobs use the `mariadb`/`mariadb-dump` CLI.
+
+4. **`app/client.my.cnf`** — must exist with `ssl = false` to suppress SSL for CLI tools (`mariadb`, `mariadb-dump`). The Dockerfile copies it to `/home/appuser/.my.cnf`:
+   ```ini
+   # see https://stackoverflow.com/a/78683658
+   [client]
+   ssl = false
+   ```
+   And in the Dockerfile:
+   ```dockerfile
+   COPY client.my.cnf /home/appuser/.my.cnf
+   ```
