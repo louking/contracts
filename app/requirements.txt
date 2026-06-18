@@ -14,7 +14,7 @@ backports.shutil-get-terminal-size==1.0.0
 backports.shutil_which==3.5.2
 bcrypt==4.2.0
 beautifulsoup4==4.11.1
-bleach==5.0.1
+bleach==6.4.0
 blinker==1.9.0
 cachetools==5.2.0
 cattrs==23.1.2
