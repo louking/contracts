@@ -6,6 +6,7 @@ racessummary - summary views for races
 
 # pypi
 from flask import current_app, request
+from flask_security import auth_required
 from loutilities.timeu import asctime
 from loutilities.tables import CrudApi
 from dominate.tags import div, h2
@@ -29,7 +30,7 @@ class parameterError(Exception): pass
 
 class RaceRegistrationsApi(CrudApi):
 
-    from flask_security import current_user
+    decorators = [auth_required()]
 
     #----------------------------------------------------------------------
     def __init__(self, **kwargs):
