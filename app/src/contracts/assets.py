@@ -50,15 +50,14 @@ asset_bundles = {
         f'js/jQuery-{jq_ver}/jquery-{jq_ver}.js',
         'js/jquery-ui-{ver}.custom/jquery-ui.js'.format(ver=jq_ui_ver),
 
-        # date time formatting 
-        # 'js/moment-{ver}/moment.js'.format(ver=moment_ver), # in datatables
+        # must be before fullcalendar — datatables bundle includes moment.js which fullcalendar requires
+        'js/DataTables-{ver}/datatables.js'.format(ver=dt_datatables_ver),
 
         'js/fullcalendar-{ver}/fullcalendar.js'.format(ver=fullcalendar_ver),
         'legend.js',
         'frontend/eventscalendar.js',
 
-        'js/DataTables-{ver}/datatables.js'.format(ver=dt_datatables_ver),
-
+        'mutex-promise.js',                     # from loutilities
         'datatables.js',                        # from loutilities
         'datatables.dataRender.ellipsis.js',    # from loutilities
         'editor.buttons.editrefresh.js',        # from loutilities
