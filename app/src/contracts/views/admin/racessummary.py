@@ -30,6 +30,7 @@ class parameterError(Exception): pass
 
 class RaceRegistrationsApi(CrudApi):
 
+    from flask_security import current_user
     decorators = [auth_required()]
 
     #----------------------------------------------------------------------
