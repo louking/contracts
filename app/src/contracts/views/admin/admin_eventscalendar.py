@@ -20,7 +20,6 @@ from json import dumps
 from flask import request, jsonify, render_template, url_for
 from flask.views import MethodView
 from flask_security.decorators import roles_accepted
-import requests
 from loutilities.flask_helpers.blueprints import add_url_rules
 
 # home grown
@@ -228,9 +227,7 @@ class EventsCalendar(MethodView):
     #----------------------------------------------------------------------
         from .events import event_view
 
-        # get the editor options, need url_root minus trailing /
-        dt = requests.get(f'{request.url_root[:-1]}{url_for( ".events-superadmin" )}/saform', headers=request.headers)
-        edoptions = dumps(dt.json()['edoptions'])
+        edoptions = dumps(event_view.getedoptions())
 
         context = {
                    'pagename'     : 'contract races',
