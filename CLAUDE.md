@@ -96,6 +96,27 @@ pytest test/
 ## Deployment
 Uses Fabric (`fabfile.py`) for remote deployment via docker compose pull + up.
 
+## Production Infrastructure
+
+The production server runs **Caddy** as the HTTPS reverse proxy. Caddy terminates TLS and forwards traffic to the Docker container on port 8003 (`APP_PORT`). The Caddyfile lives on the production server (not in this repo) and covers all loutilities apps.
+
+### Caddy HTTP/3 / QUIC Issue
+
+Caddy enables HTTP/3 (QUIC) by default. This can cause intermittent `net::ERR_QUIC_PROTOCOL_ERROR 200 (OK)` in Chrome, where the page returns 200 but renders blank — the QUIC connection drops mid-stream. The Flask app is not at fault; it's a Caddy transport issue that shows up with larger responses.
+
+**Fix:** add `protocols h1 h2` to the global `servers` block in the Caddyfile to disable HTTP/3 across all sites:
+
+```
+{
+    servers {
+        protocols h1 h2
+        # ... rest of existing servers block
+    }
+}
+```
+
+After editing, reload Caddy: `caddy reload` or `systemctl reload caddy`.
+
 ## MySQL SSL / Driver Note
 
 **Problem:** MySQL 8.0+ in Docker with Alpine-based app containers causes `MySQLdb.OperationalError: (2026, 'TLS/SSL error: Certificate verification failure')`. Alpine uses MariaDB Connector/C (not libmysqlclient), which defaults to SSL with cert verification. MySQL 8.0 auto-generates self-signed certs. Server-side workarounds (`--skip-ssl`) are unreliable in 8.0.40+.
