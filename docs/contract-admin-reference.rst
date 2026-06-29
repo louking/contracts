@@ -635,7 +635,7 @@ Sponsorship Management
 Sponsorship Overview view
 ===========================
 
-**Navigation:** Signature Races > Sponsorships
+**Navigation:** FSRC Races > Sponsorships
 
 This view  provides a table  of all the :term:`sponsorships <sponsorship>`  in the database. The
 admin can create a new :term:`sponsorship`, or  select an :term:`sponsorship` for various 
@@ -740,7 +740,7 @@ using the Sponsor Query Form.
 Sponsor Query Log
 =====================
 
-**Navigation:** Signature Races > Query Log
+**Navigation:** FSRC Races > Query Log
 
 When a sponsor :term:`client` fills out the :ref:`sponsor-query-form`, the contents of the form are 
 saved in the Sponsor Query Log.

@@ -57,7 +57,7 @@ def nav_menu():
     contracts = Subgroup('Contracts')
     client_races = Subgroup('Contract Races')
     services  = Subgroup('Contract Services')
-    sponsors  = Subgroup('Signature Races')
+    sponsors  = Subgroup('FSRC Races')
     superadmin = Subgroup('Super')
 
     # event administrative stuff
