@@ -1,13 +1,18 @@
 # from http://flask-dance.readthedocs.io/en/latest/testing.html
 
+import os
 import time
 
 import pytest
 
-from racesupportcontracts import create_app
-from racesupportcontracts.dbmodel import db
-from racesupportcontracts.settings import Testing
-# from racesupportcontracts import mail
+# APP_NAME is normally supplied by Docker Compose's .env; set it here so the
+# contracts package (which reads it at import time) also works for local/CI pytest runs
+os.environ.setdefault('APP_NAME', 'contracts')
+
+from contracts import create_app
+from contracts.dbmodel import db
+from contracts.settings import Testing
+# from contracts import mail
 
 fake_time = time.time()
 

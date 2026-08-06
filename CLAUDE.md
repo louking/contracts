@@ -73,8 +73,13 @@ The yadcf development repo lives at `C:\Users\lking\Documents\Lou's Software\pro
 
 ## Testing
 ```bash
-pytest test/
+pytest
 ```
+Run from the repo root; `pytest.ini` puts `app/src` on `sys.path` so `contracts`/`running` import normally. `test/conftest.py` sets `APP_NAME` (normally supplied by Docker Compose's `.env`) since `contracts/__init__.py` reads it at import time — needed for `contracts` to import outside the container at all.
+
+Most of `contracts.runsignup.RunSignUp`'s methods are tested via `monkeypatch`-ing `_rsuget`/`_rsupost` (or `session.post`) rather than hitting the real API — see `test/test_runsignup.py` for the pattern. Tests that only need a `RSU_*`-config'd Flask app (e.g. `test/test_helpers.py`) build a bare `Flask(__name__)` rather than going through the full `create_app()` — `create_app()`'s `Testing` config is currently missing `EXCEPTION_EMAIL`, which `loutilities.user.applogging.setlogging()` requires, so `create_app(Testing)`-dependent tests (`test_basic.py::test_login`) currently error at setup. Pre-existing gap, not yet fixed.
+
+**Gotcha (fixed once, watch for regression):** `test/conftest.py` used to import from `racesupportcontracts` (the app's pre-rename package name) instead of `contracts` — this failed at conftest *collection* time, so it silently broke every test in `test/`, not just the ones using the `app`/`dbapp` fixtures. If `pytest` suddenly reports zero tests collected or a conftest ImportError, check this first.
 
 ## Key Entry Points
 - `app/src/app_server.py` — production WSGI entry (gunicorn)
