@@ -89,9 +89,21 @@ pytest test/
 - `config/db/` — DB password secrets (mounted as Docker secrets)
 
 ## External Services
-- **RunSignUp**: race registration data (RSU_KEY, RSU_SECRET in config)
+- **RunSignUp**: race registration data (RSU_KEY, RSU_SECRET, RSU_API_REG_TOKEN, RSU_API_REG_SECRET in config)
 - **Google Workspace**: service account JSON for Sheets API access
 - **msmtp**: outbound mail relay
+
+### RunSignUp Client (`app/src/contracts/runsignup.py`)
+
+`contracts.runsignup.RunSignUp` subclasses `running.runsignup.RunSignupBase` (from the `runtilities` PyPI package, `github.com/louking/running` — now a real dependency in `requirements.txt`). The base class owns all the shared plumbing: `__init__`/`open`/`close`, session setup, `client_credentials`, and `_rsuget`/`_rsugetcsv`. contracts' subclass adds only what `running`'s own `RunSignUp` doesn't need: `getcoupons`/`setcoupon` (coupon management for contract billing, POST-based) and `getraceparticipants`/`getremovedparticipants`, plus a local `_rsupost` since `RunSignupBase` only implements GET. This mirrors `members`' `helpers.make_runsignup_client()`, which builds `running.runsignup.RunSignUp` directly — contracts still needs its own subclass rather than using `running`'s `RunSignUp` as-is because of the coupon/POST and participant methods.
+
+This inheritance only became safe once `running.runsignup_fluent.RunSignupFluent` (which needs `universalclient`/`rauth`) was split out of `running/runsignup.py` into its own module — before that, importing `running.runsignup` at all would have dragged in those extra dependencies. Don't reintroduce that coupling.
+
+**Gotcha:** `running.runsignup` imports `loutilities.csvwt` at module level (for the unrelated `members2csv()` helper), which in turn imports `openpyxl` unconditionally — so `openpyxl` had to be added to `requirements.txt` even though contracts never calls anything CSV/Excel-related here. If this trips again after a `running`/`loutilities` bump, it's this transitive import, not a real new feature dependency.
+
+**Instantiation is centralized**: use `helpers.make_runsignup_client(**kwargs)` rather than constructing `RunSignUp(...)` directly — it reads `RSU_KEY`/`RSU_SECRET`/`RSU_API_REG_TOKEN`/`RSU_API_REG_SECRET` from `current_app.config` once. Same pattern as `members`' `helpers.make_runsignup_client()`.
+
+Endpoints are on `api.runsignup.com/rest/...` (migrated Aug 2025 from the legacy `runsignup.com/rest/...`), and the client sends the `rsu_api_reg` token/`X-RSU-API-REG-SECRET` header required by all API callers starting 2027-01-01 per https://info.runsignup.com/2026/07/17/new-api-registration-requirements/ (existing `api_key`/`api_secret` still required alongside it). The legacy email/password Login API path has been removed — it was unused dead code (confirmed both call sites only ever passed `key=`/`secret=`).
 
 ## Deployment
 Uses Fabric (`fabfile.py`) for remote deployment via docker compose pull + up.

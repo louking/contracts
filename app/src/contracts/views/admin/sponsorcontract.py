@@ -20,7 +20,7 @@ from .common import CLIENT_EMAIL_SEPARATOR
 from ...trends import check_sponsorship_conflicts, render_sponsorship_conflicts
 from contracts.contractmanager import ContractManager
 from loutilities.flask_helpers.mailer import sendmail
-from contracts.runsignup import RunSignUp
+from contracts.helpers import make_runsignup_client
 from contracts.trends import calculateTrend
 
 from loutilities.tables import DbCrudApiRolePermissions, get_request_data
@@ -168,7 +168,7 @@ class SponsorContract(DbCrudApiRolePermissions):
                         couponcode = thissponsorship.couponcode
                         start = thissponsorship.dateagreed
                         if thissponsorship.race.couponprovider.lower() == 'runsignup':
-                            with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET'], debug=debug) as rsu:
+                            with make_runsignup_client(debug=debug) as rsu:
                                 coupons = rsu.getcoupons(raceid, couponcode)
                                 # rsu search includes any coupons with the couponcode with the coupon string, so we need to filter
                                 coupons = [c for c in coupons if c['coupon_code']==couponcode]

@@ -43,6 +43,7 @@ email-validator==2.3.0
 entrypoints==0.4
 enum34==1.1.10
 esbonio==0.14.0
+et_xmlfile==2.0.0
 exceptiongroup==1.2.0
 executing==1.0.0
 fabric==3.2.2
@@ -103,6 +104,7 @@ nest-asyncio==1.5.5
 nose2==0.12.0
 oauth2client==4.1.3
 oauthlib==3.2.2
+openpyxl==3.0.10
 packaging==21.3
 pandocfilters==1.5.0
 paramiko==3.5.0
@@ -144,6 +146,7 @@ rich==13.9.4
 rsa==4.9
 rstcheck==6.2.4
 rstcheck-core==1.2.1
+runtilities==3.0.0
 scandir==1.10.0
 Send2Trash==1.8.0
 setuptools==82.0.1
@@ -194,4 +197,5 @@ widgetsnbextension==4.0.3
 win_unicode_console==0.5
 wrapt==1.17.0
 WTForms==3.0.1
+xlrd==2.0.2
 zipp==3.20.2

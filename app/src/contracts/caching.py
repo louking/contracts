@@ -14,7 +14,7 @@ from pytz import timezone
 
 # homegrown
 from .dbmodel import db, SponsorRace, SponsorRaceRegCache
-from .runsignup import RunSignUp
+from .helpers import make_runsignup_client
 from .version import __docversion__
 
 ymd = asctime('%Y-%m-%d')
@@ -60,7 +60,7 @@ def update_raceregcache(race_id, onlyrecentevents=True):
     racetz = timezone(race.timezone)
 
     # get events from service provider
-    with RunSignUp(key=current_app.config['RSU_KEY'], secret=current_app.config['RSU_SECRET']) as rsu:
+    with make_runsignup_client() as rsu:
         # get race, event data from service provider
         events = rsu.getraceevents(race_id)
         
