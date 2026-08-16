@@ -1,8 +1,9 @@
 {
+    "python.defaultInterpreterPath"           : "${workspaceFolder}/.venv/bin/python",
     "restructuredtext.builtDocumentationPath" : "${workspaceRoot}/docs/_build/html",
-    "restructuredtext.confPath"               : "${workspaceFolder}\\docs",
+    "restructuredtext.confPath"               : "${workspaceFolder}/docs",
     "restructuredtext.updateOnTextChanged"    : "true",
     "restructuredtext.updateDelay"            : 1000,
-    "restructuredtext.sphinxBuildPath"        : "C:\\Users\\lking\\Documents\\Lou's Software\\projects\\contracts\\contracts\\.venv\\Scripts\\sphinx-build.exe",
+    "restructuredtext.sphinxBuildPath"        : "${workspaceFolder}/.venv/bin/sphinx-build",
     "claudeCode.initialPermissionMode": "acceptEdits"
 }
