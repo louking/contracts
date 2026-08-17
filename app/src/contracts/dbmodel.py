@@ -937,7 +937,12 @@ def update_local_tables():
     '''
     keep LocalUser table consistent with external db User table
     '''
+    # lockfile serializes update() across gunicorn's worker processes, which all share this
+    # container's filesystem but each independently call create_app() -> update_local_tables()
+    # at boot. Without it, concurrent workers can each find no existing localuser row for a
+    # new user and insert their own duplicate. See louking/contracts#578.
     # appname needs to match Application.application
-    localtables = ManageLocalTables(db, 'contracts', LocalUser, LocalInterest, hasuserinterest=True)
+    localtables = ManageLocalTables(db, 'contracts', LocalUser, LocalInterest, hasuserinterest=True,
+                                     lockfile='/tmp/contracts_managelocaltables.lock')
     localtables.update()
 

@@ -4,7 +4,7 @@ test_dbmodel - test contracts.dbmodel
 '''
 
 # homegrown
-from contracts.dbmodel import db, DateRule, Tag, ModelItem, getmodelitems, initdbmodels
+from contracts.dbmodel import db, DateRule, Tag, ModelItem, getmodelitems, initdbmodels, update_local_tables
 
 
 # ----------------------------------------------------------------------
@@ -142,3 +142,32 @@ def test_initdbmodels_merge_uses_callable_checkkeys(bare_dbapp):
 
     tag = Tag.query.filter_by(tag='foo').one()
     assert tag.description == 'updated via callable'
+
+
+# ----------------------------------------------------------------------
+# update_local_tables
+# ----------------------------------------------------------------------
+
+def test_update_local_tables_passes_lockfile(monkeypatch):
+    # regression test for louking/contracts#578: contracts runs multiple gunicorn workers,
+    # each independently calling update_local_tables() at boot. Without a lockfile,
+    # ManageLocalTables.update() (loutilities.user.model) has no way to serialize those
+    # workers, and concurrent callers can each insert their own duplicate localuser row for
+    # a newly-synced (user_id, interest_id). Confirm update_local_tables() actually passes a
+    # lockfile through, rather than relying on loutilities' default (unserialized) behavior.
+    calls = {}
+
+    class FakeManageLocalTables:
+        def __init__(self, *args, **kwargs):
+            calls['args'] = args
+            calls['kwargs'] = kwargs
+
+        def update(self):
+            calls['updated'] = True
+
+    monkeypatch.setattr('contracts.dbmodel.ManageLocalTables', FakeManageLocalTables)
+
+    update_local_tables()
+
+    assert calls['kwargs'].get('lockfile')
+    assert calls['updated']
